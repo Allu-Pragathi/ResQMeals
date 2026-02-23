@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   // "DONOR", "NGO", "ADMIN"
+  address   String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  donations Donation[] // if Donor
+  requests  Request[]  // if NGO
+}
+
+model Donation {
+  id          String   @id @default(uuid())
+  foodType    String
+  quantity    String
+  expiry      String
+  location    String
+  status      String   @default("Pending") // "Pending", "Accepted", "Picked", "Delivered"
+  donorId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  donor       User     @relation(fields: [donorId], references: [id])
+  requests    Request[]
+}
+
+model Request {
+  id          String   @id @default(uuid())
+  donationId  String
+  ngoId       String
+  status      String   @default("Pending") // "Pending", "Approved", "Rejected"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  donation    Donation @relation(fields: [donationId], references: [id])
+  ngo         User     @relation(fields: [ngoId], references: [id])
+}

@@ -13,7 +13,7 @@ export default {
           DEFAULT: '#FBBF24', // Amber-400
           foreground: 'rgb(var(--accent-foreground) / <alpha-value>)',
         },
-        slate: '#0F172A',
+
         soft: '#FFF7ED', // Orange-50
         background: 'rgb(var(--background) / <alpha-value>)',
         foreground: 'rgb(var(--foreground) / <alpha-value>)',
@@ -44,14 +44,24 @@ export default {
           '33%': { transform: 'translate(20px, -10px) scale(1.05)' },
           '66%': { transform: 'translate(-10px, 10px) scale(0.97)' },
         },
+        scroll: {
+          to: {
+            transform: 'translate(calc(-50% - 0.5rem))',
+          },
+        },
+        ticker: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
       },
       animation: {
         float: 'float 6s ease-in-out infinite',
         'fade-up': 'fadeUp 700ms ease-out forwards',
         blob: 'blob 16s ease-in-out infinite',
+        scroll: "scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite",
+        ticker: 'ticker 30s linear infinite',
       },
     },
   },
   plugins: [],
 }
-

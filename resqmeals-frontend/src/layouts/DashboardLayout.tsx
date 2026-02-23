@@ -4,7 +4,6 @@ import { motion } from 'framer-motion'
 import {
     LayoutDashboard,
     UserCog,
-    Settings,
     LogOut,
     HandHeart,
     UtensilsCrossed,
@@ -64,7 +63,11 @@ const DashboardLayout = () => {
 
         if (isDonor) {
             return [
-                ...commonLinks,
+                {
+                    label: "Home",
+                    href: "/donor/home",
+                    icon: <Home className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
                 {
                     label: "Dashboard",
                     href: "/donor",
@@ -151,6 +154,9 @@ const DashboardLayout = () => {
                                     href: "/auth",
                                     icon: <LogOut className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
                                 }}
+                                onClick={() => {
+                                    localStorage.removeItem('resqmeals_current_user')
+                                }}
                             />
                         </div>
                     </div>
@@ -158,8 +164,19 @@ const DashboardLayout = () => {
             </Sidebar>
 
             {/* Main Content Area */}
-            <div className="flex flex-1 overflow-y-auto bg-white dark:bg-neutral-900 p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700">
-                <div className="w-full h-full">
+            <div className="flex flex-1 relative overflow-y-auto bg-[#fafafa] dark:bg-neutral-900 p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700">
+                {/* Decorative Ambient Background */}
+                <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden rounded-tl-2xl">
+                    {/* Grid Pattern */}
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+
+                    {/* Ambient Glows */}
+                    <div className="absolute -top-40 right-0 w-[500px] h-[500px] bg-primary/15 rounded-full blur-[120px]"></div>
+                    <div className="absolute top-[40%] -left-40 w-[400px] h-[400px] bg-emerald-400/10 rounded-full blur-[100px]"></div>
+                    <div className="absolute -bottom-40 left-1/2 w-[600px] h-[600px] bg-blue-400/5 rounded-full blur-[150px]"></div>
+                </div>
+
+                <div className="w-full h-full relative z-10">
                     <Outlet />
                 </div>
             </div>

@@ -191,3 +191,39 @@ export const recentDonations = [
     time: '2 hrs ago',
   },
 ]
+
+export const volunteerRequests = [
+  {
+    id: 'T-101',
+    type: 'Pickup & Delivery',
+    from: 'Fresh Bakery, 2nd St',
+    to: 'Hope Shelter, Main Road',
+    distance: '1.2 km',
+    items: '20 Boxes of Bread',
+    urgent: true,
+    points: 50,
+    status: 'Open'
+  },
+  {
+    id: 'T-102',
+    type: 'Quality Check',
+    from: 'Community Garden',
+    to: 'N/A',
+    distance: '0.8 km',
+    items: 'Fresh Vegetables',
+    urgent: false,
+    points: 30,
+    status: 'Open'
+  },
+  {
+    id: 'T-103',
+    type: 'Pickup & Delivery',
+    from: 'Wedding Hall A',
+    to: 'City Orphanage',
+    distance: '3.5 km',
+    items: '50 Meals',
+    urgent: true,
+    points: 100,
+    status: 'Assigned'
+  }
+]

@@ -1,69 +1,72 @@
-// React imports removed as they are not currently used in this static version
-// We need to add the leaflet CSS in index.html or import it here if we install the types
-// For this MVP we will use an iframe or a simple image placeholder, 
-// BUT to impress the user, let's create a "simulated" interactive map using CSS and images
-// or a very simple leaflet implementation if we had the package.
-// Let's stick to a high-quality "Live Map" visualization using a static image with pulsing markers.
+
 
 export function LiveMapSection() {
     return (
-        <div className="w-full max-w-6xl mx-auto rounded-3xl overflow-hidden shadow-2xl border border-neutral-200 dark:border-neutral-800 bg-white relative">
-            <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg border border-neutral-100">
-                <h3 className="font-bold text-lg text-primary">Our Reach Across India</h3>
-                <p className="text-sm text-slate-600 mb-2">Delivering services in these key locations</p>
-                <div className="flex items-center gap-2 mt-2">
-                    <span className="relative flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                    </span>
-                    <span className="text-sm font-medium">Active in 5 Major Cities</span>
+        <div className="w-full relative h-[600px] rounded-xl overflow-hidden shadow-xl border border-slate-200 bg-slate-50">
+            {/* Top Bar */}
+            <div className="absolute top-0 left-0 right-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                <div>
+                    <h3 className="font-bold text-lg text-slate-900">Live Donations Map</h3>
+                    <p className="text-sm text-slate-500">Active in 3 Cities: Mumbai, Delhi, Bangalore</p>
                 </div>
             </div>
 
-            {/* 
-        Ideally we would use an actual Map library like 'react-leaflet' or 'mapbox-gl' here.
-        Using a high-quality dark map texture to simulate a digital map interface.
-       */}
-            <div className="relative aspect-video w-full bg-blue-50/30 group overflow-hidden flex items-center justify-center">
+            {/* Map Area */}
+            <div className="absolute inset-0 z-0 bg-blue-100 relative overflow-hidden flex items-center justify-center">
+                {/* India Map Background */}
                 <img
-                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/India_map_blank.svg/800px-India_map_blank.svg.png"
-                    alt="Service Locations Map"
-                    className="h-[110%] w-auto object-contain -mt-8 opacity-90 hover:scale-105 transition-all duration-700"
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/India_location_map.svg/800px-India_location_map.svg.png"
+                    alt="India Map"
+                    className="h-[95%] w-auto object-contain opacity-70"
                 />
 
-                {/* Animated Markers simulating live data across India */}
-                {/* Delhi (North) */}
-                <Marker top="30%" left="35%" label="Delhi: Fresh Bread Pickup" type="food" delay="0s" />
-                {/* Mumbai (West) */}
-                <Marker top="60%" left="25%" label="Mumbai: Wedding Surplus" type="food" delay="1s" />
-                {/* Bangalore (South) */}
-                <Marker top="80%" left="35%" label="Bangalore: Volunteer Van" type="volunteer" delay="2s" />
-                {/* Kolkata (East) */}
-                <Marker top="48%" left="65%" label="Kolkata: Restaurant Donation" type="food" delay="3s" />
-                {/* Hyderabad (Central South) */}
-                <Marker top="65%" left="40%" label="Hyderabad: Event Leftovers" type="food" delay="1.5s" />
+                {/* Markers for Major Cities (Adjusted for this specific map projection) */}
+                {/* Delhi */}
+                <Marker top="28%" left="37%" label="Delhi" type="restaurant" />
+
+                {/* Mumbai */}
+                <Marker top="58%" left="28%" label="Mumbai" type="ngo" />
+
+                {/* Bangalore */}
+                <Marker top="78%" left="38%" label="Bangalore" type="restaurant" />
+            </div>
+
+            {/* Map Controls (Zoom buttons) */}
+            <div className="absolute bottom-6 right-6 z-20 flex flex-col gap-2">
+                <button className="w-10 h-10 bg-white rounded-lg shadow-md border border-slate-100 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                </button>
+                <button className="w-10 h-10 bg-white rounded-lg shadow-md border border-slate-100 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                    </svg>
+                </button>
             </div>
         </div>
     );
 }
 
-function Marker({ top, left, label, type, delay }: { top: string, left: string, label: string, type: 'food' | 'volunteer', delay: string }) {
-    const color = type === 'food' ? 'bg-orange-500' : 'bg-green-500';
+function Marker({ top, left, label, type }: { top: string, left: string, label: string, type: 'restaurant' | 'ngo' }) {
+    const color = type === 'restaurant' ? 'bg-emerald-500' : 'bg-orange-500';
 
     return (
         <div
             className="absolute group cursor-pointer"
-            style={{ top, left, animationDelay: delay }}
+            style={{ top, left }}
         >
-            <div className="relative flex items-center justify-center">
-                <span className={`animate-ping absolute inline-flex h-8 w-8 rounded-full ${color} opacity-75`} style={{ animationDuration: '3s', animationDelay: delay }}></span>
-                <span className={`relative inline-flex rounded-full h-4 w-4 ${color} border-2 border-white shadow-md`}></span>
+            <div className="relative flex items-center justify-center -translate-x-1/2 -translate-y-1/2">
+                <span className={`animate-ping absolute inline-flex h-6 w-6 rounded-full ${color} opacity-75`}></span>
+                <span className={`relative inline-flex rounded-full h-3 w-3 ${color} border-2 border-white shadow-md`}></span>
 
                 {/* Tooltip */}
-                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-3 py-1 bg-black/80 text-white text-xs rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 pointer-events-none shadow-xl z-50">
                     {label}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
                 </div>
             </div>
         </div>
     )
 }
+

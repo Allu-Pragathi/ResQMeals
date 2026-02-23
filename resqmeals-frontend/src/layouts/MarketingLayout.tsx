@@ -6,7 +6,7 @@ const MarketingLayout = () => {
     return (
         <div className="min-h-screen bg-gradient-to-b from-soft to-white text-slate">
             <Navbar />
-            <main className="mx-auto max-w-7xl px-4 pb-20 pt-6 sm:px-6 lg:px-8">
+            <main className="flex-1 pb-20 pt-6">
                 <Outlet />
             </main>
             <Footer />
