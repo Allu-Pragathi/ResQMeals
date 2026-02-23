@@ -9,11 +9,11 @@ import { VolunteerSection } from '../components/ui/volunteer-section'
 const animatedTestimonials = [
   {
     quote:
-      "ResQMeals has transformed how we handle surplus food. What used to go to waste now feeds hundreds of families in our community every week.",
-    name: "Priya Sharma",
-    designation: "Restaurant Owner, Mumbai",
+      "Working on the backend architecture and seamless logistics flow for ResQMeals has been incredibly fulfilling. Our system ensures that surplus food reaches its destination quickly and efficiently.",
+    name: "Hari Hara Naidu",
+    designation: "Co-Creator, ResQMeals",
     srcs: [
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "/Hari%20Hara%20Naidu.jpg",
       "https://images.unsplash.com/photo-1556910103-1c02745a30bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     ],
   },
@@ -33,7 +33,7 @@ const animatedTestimonials = [
     name: "Allu Pragathi",
     designation: "Co-Creator, ResQMeals",
     srcs: [
-      "/Allu%20Pragathi.jpeg",
+      "/Allu%20Pragathi.jpg",
       "https://images.unsplash.com/photo-1531545514256-b1400bc00f31?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     ],
   },

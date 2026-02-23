@@ -15,7 +15,7 @@ export function LiveMapSection() {
             <div className="absolute inset-0 z-0 bg-blue-100 relative overflow-hidden flex items-center justify-center">
                 {/* India Map Background */}
                 <img
-                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/India_location_map.svg/800px-India_location_map.svg.png"
+                    src="/india-map.svg"
                     alt="India Map"
                     className="h-[95%] w-auto object-contain opacity-70"
                 />
