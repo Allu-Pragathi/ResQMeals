@@ -1,12 +1,10 @@
-# 🍲 ResQMeals - Fighting Food Waste Together
-
-![ResQMeals Banner](https://images.unsplash.com/photo-1593113565214-80afcb4a45d7?q=80&w=2000&auto=format&fit=crop) *(Consider replacing this an actual screenshot of your app)*
+# ResQMeals - Fighting Food Waste Together
 
 **ResQMeals** is a full-stack web application designed to connect food donors (like restaurants, event venues, and grocery stores) with nearby NGOs and volunteers to reduce food waste and help communities in need.
 
 ---
 
-## 🚀 Features
+## Features
 
 ### For Donors (Restaurants/Venues)
 * **Quick List**: Easily post excess food available for donation with details like type, quantity, and expiration time.
@@ -20,7 +18,7 @@
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ResQMeals is built using modern, enterprise-grade technologies:
 
@@ -40,7 +38,7 @@ ResQMeals is built using modern, enterprise-grade technologies:
 
 ---
 
-## 💻 Running the Project Locally
+## Running the Project Locally
 
 Follow these steps to get ResQMeals running on your local machine.
 
@@ -96,9 +94,9 @@ Open your browser and navigate to `http://localhost:5173` (or whichever port Vit
 
 ---
 
-## 🤝 Contributing
+## Contributing
 Contributions, issues, and feature requests are welcome!
 Feel free to check [issues page](https://github.com/Allu-Pragathi/ResQMeals/issues).
 
-## 📝 License
+## license
 This project is [MIT](https://choosealicense.com/licenses/mit/) licensed.
