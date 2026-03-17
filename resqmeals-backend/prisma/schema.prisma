@@ -13,10 +13,14 @@ model User {
   email     String   @unique
   password  String
   role      String   // "DONOR", "NGO", "ADMIN"
-  address   String?
-  phone     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  address    String?
+  phone      String?
+  darpanId   String?  // For NGO verification
+  isVerified Boolean  @default(false)
+  latitude   Float?
+  longitude  Float?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   donations Donation[] // if Donor
   requests  Request[]  // if NGO
@@ -28,6 +32,8 @@ model Donation {
   quantity    String
   expiry      String
   location    String
+  latitude    Float?
+  longitude   Float?
   status      String   @default("Pending") // "Pending", "Accepted", "Picked", "Delivered"
   donorId     String
   createdAt   DateTime @default(now())

@@ -1,5 +1,11 @@
 import express from 'express';
-import { getAllDonations, createDonation, getMyDonations } from '../controllers/donation.controller';
+import { 
+    getAllDonations, 
+    createDonation, 
+    getMyDonations, 
+    acceptDonation, 
+    updateDonationStatus 
+} from '../controllers/donation.controller';
 import { authenticateToken } from '../middleware/auth.middleware';
 
 const router = express.Router();
@@ -11,5 +17,7 @@ router.use(authenticateToken as express.RequestHandler);
 router.get('/', getAllDonations as express.RequestHandler);
 router.post('/', createDonation as express.RequestHandler);
 router.get('/me', getMyDonations as express.RequestHandler);
+router.patch('/:id/accept', acceptDonation as express.RequestHandler);
+router.patch('/:id/status', updateDonationStatus as express.RequestHandler);
 
 export default router;

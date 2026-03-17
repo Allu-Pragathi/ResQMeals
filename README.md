@@ -38,12 +38,23 @@ ResQMeals is built using modern, enterprise-grade technologies:
 
 ---
 
+## Project Structure
+
+This repository is divided into three main components:
+
+1. **[resqmeals-frontend](./resqmeals-frontend)**: The React user interface.
+2. **[resqmeals-backend](./resqmeals-backend)**: The Node.js/Express API server.
+3. **[ngo-pipeline](./ngo-pipeline)**: Python scripts for data cleaning and scraping NGO data.
+
+---
+
 ## Running the Project Locally
 
 Follow these steps to get ResQMeals running on your local machine.
 
 ### Prerequisites
-* [Node.js](https://nodejs.org/) (v16.x or higher)
+* [Node.js](https://nodejs.org/) (v18.x or higher)
+* [Python 3.10+](https://www.python.org/) (for the data pipeline)
 * [PostgreSQL](https://www.postgresql.org/) (or a Supabase account)
 * Git
 
@@ -55,42 +66,53 @@ cd ResQMeals
 
 ### Step 2: Backend Setup
 ```bash
-# Navigate to the backend folder
 cd resqmeals-backend
-
-# Install dependencies
 npm install
 
-# Set up your environment variables
-# Create a .env file and add:
-# DATABASE_URL="your-postgres-connection-string"
-# JWT_SECRET="your-super-secret-key"
+# Set up environment variables
+cp .env.template .env
+# Edit .env with your DATABASE_URL and JWT_SECRET
 
-# Run Prisma Migrations
-npx prisma migrate dev --name init
+# Run Migrations
+npx prisma migrate dev
 
-# Start the server (runs on Port 5000)
+# Start development server (Runs on Port 8000)
 npm run dev
 ```
 
 ### Step 3: Frontend Setup
-Open a new terminal window:
 ```bash
-# Navigate to the frontend folder
+# In a new terminal
 cd resqmeals-frontend
-
-# Install dependencies
 npm install
 
-# Ensure your frontend knows where the backend is
-# Create a .env file locally if needed, but standard Axios setup points to localhost:5000
-
-# Start the development server (runs with Vite)
+# Start development server (Runs on Port 5173)
 npm run dev
 ```
 
-### Step 4: View the App
-Open your browser and navigate to `http://localhost:5173` (or whichever port Vite provides).
+---
+
+## Data Pipeline (Optional)
+
+If you need to scrape or clean NGO data:
+
+1. **Navigate to the pipeline folder**:
+   ```bash
+   cd ngo-pipeline
+   ```
+2. **Install Python dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. **Setup environment**:
+   ```bash
+   cp .env.template .env
+   # Add your SUPABASE_URL and SUPABASE_KEY
+   ```
+4. **Run scripts**:
+   ```bash
+   python main.py
+   ```
 
 ---
 
@@ -98,5 +120,6 @@ Open your browser and navigate to `http://localhost:5173` (or whichever port Vit
 Contributions, issues, and feature requests are welcome!
 Feel free to check [issues page](https://github.com/Allu-Pragathi/ResQMeals/issues).
 
-## license
+## License
 This project is [MIT](https://choosealicense.com/licenses/mit/) licensed.
+

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Eye, EyeOff, Mail, Lock, ArrowRight, AlertCircle, User, MapPin } from 'lucide-react'
-import axios from 'axios'
+import api from '../lib/api'
 import RoleSelector from '../components/RoleSelector'
 
 const Auth = () => {
@@ -72,7 +72,7 @@ const Auth = () => {
     try {
       if (isLogin) {
         // Live Backend Login Logic
-        const response = await axios.post('http://localhost:8000/api/auth/login', {
+        const response = await api.post('/auth/login', {
           email,
           password
         })
@@ -92,7 +92,7 @@ const Auth = () => {
           return
         }
 
-        const response = await axios.post('http://localhost:8000/api/auth/register', {
+        const response = await api.post('/auth/register', {
           email,
           password,
           role: role.toUpperCase(),

@@ -16,17 +16,32 @@ import ChartCard from '../components/ChartCard'
 import DataTable from '../components/DataTable'
 import Sidebar from '../components/Sidebar'
 import StatusBadge from '../components/StatusBadge'
+import { useState, useEffect } from 'react'
+import api from '../lib/api'
 import {
   donationsPerDay,
   foodTypeDistribution,
   kpiCards,
   ngoContribution,
-  recentDonations,
 } from '../data/mockData'
 
 const COLORS = ['#F97316', '#F5A524', '#0EA5E9', '#8B5CF6', '#38BDF8']
 
 const AdminDashboard = () => {
+  const [donations, setDonations] = useState<any[]>([])
+
+  useEffect(() => {
+    const fetchAllDonations = async () => {
+      try {
+        const res = await api.get('/donations')
+        setDonations(res.data.donations)
+      } catch (err) {
+        console.error('Failed to fetch donations', err)
+      }
+    }
+    fetchAllDonations()
+  }, [])
+
   return (
     <div className="flex flex-col gap-6 lg:flex-row">
       <Sidebar />
@@ -42,9 +57,21 @@ const AdminDashboard = () => {
         </header>
 
         <section className="grid gap-4 md:grid-cols-3">
-          {kpiCards.map((kpi) => (
-            <KPICard key={kpi.label} label={kpi.label} value={kpi.value} trend={kpi.trend} />
-          ))}
+          <KPICard 
+            label="Total donations" 
+            value={donations.length.toString()} 
+            trend={donations.length > 0 ? "+100%" : "0%"} 
+          />
+          <KPICard 
+            label="People fed (est.)" 
+            value={(donations.length * 40).toLocaleString()} 
+            trend="+5.2%" 
+          />
+          <KPICard 
+            label="Active Cities" 
+            value="3" 
+            trend="Mumbai, Delhi, Bangalore" 
+          />
         </section>
 
         <section id="analytics" className="grid gap-4 lg:grid-cols-3">
@@ -124,18 +151,26 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {recentDonations.map((item) => (
-                  <tr key={item.id} className="border-t border-slate/5">
-                    <td className="px-4 py-3 text-slate/80">{item.id}</td>
-                    <td className="px-4 py-3 text-slate/80">{item.donor}</td>
-                    <td className="px-4 py-3 text-slate/80">{item.ngo}</td>
-                    <td className="px-4 py-3 text-slate/80">{item.items}</td>
-                    <td className="px-4 py-3 text-slate/80">
-                      <StatusBadge status={item.status} />
+                {donations.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-slate-400">
+                      No live donations found.
                     </td>
-                    <td className="px-4 py-3 text-slate/60">{item.time}</td>
                   </tr>
-                ))}
+                ) : (
+                  donations.slice(0, 10).map((item) => (
+                    <tr key={item.id} className="border-t border-slate/5">
+                      <td className="px-4 py-3 text-slate/80 font-mono text-xs">{item.id.split('-')[0]}...</td>
+                      <td className="px-4 py-3 text-slate/80">{item.donor?.name || 'N/A'}</td>
+                      <td className="px-4 py-3 text-slate/80">{item.requests?.[0]?.ngo?.name || '-'}</td>
+                      <td className="px-4 py-3 text-slate/80">{item.foodType} ({item.quantity})</td>
+                      <td className="px-4 py-3 text-slate/80">
+                        <StatusBadge status={item.status} />
+                      </td>
+                      <td className="px-4 py-3 text-slate/60">{new Date(item.createdAt).toLocaleDateString()}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

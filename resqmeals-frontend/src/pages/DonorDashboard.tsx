@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import api from '../lib/api'
 import StatusBadge from '../components/StatusBadge'
 import { Plus, Package, Clock, MapPin, Loader2, TrendingUp, User, Mail, Phone, BellRing, UserCog } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { DonorMap } from '../components/ui/donor-map'
 
 type Donation = {
   id: string
@@ -51,13 +52,8 @@ const DonorDashboard = () => {
 
     const fetchMyDonations = async () => {
       try {
-        const token = localStorage.getItem('resqmeals_token')
-        if (token) {
-          const res = await axios.get('http://localhost:8000/api/donations/me', {
-            headers: { Authorization: `Bearer ${token}` }
-          })
-          setDonations(res.data.donations)
-        }
+        const res = await api.get('/donations/me')
+        setDonations(res.data.donations)
       } catch (err) {
         console.error('Failed to fetch donations from server', err)
       }
@@ -77,10 +73,7 @@ const DonorDashboard = () => {
     setIsSubmitting(true)
 
     try {
-      const token = localStorage.getItem('resqmeals_token')
-      const response = await axios.post('http://localhost:8000/api/donations', formData, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.post('/donations', formData)
 
       // The backend returns the full newly inserted donation object
       const newDonation = response.data.donation
@@ -109,7 +102,8 @@ const DonorDashboard = () => {
   const isProfile = location.pathname.includes('profile')
   const isDonations = location.pathname.includes('donations')
   const isHome = location.pathname.includes('home')
-  const isDashboard = !isProfile && !isDonations && !isHome
+  const isMap = location.pathname.includes('map')
+  const isDashboard = !isProfile && !isDonations && !isHome && !isMap
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
@@ -260,37 +254,9 @@ const DonorDashboard = () => {
                 </div>
               </div>
 
-              {/* Local Network Pulse - Span 12 */}
-              <div className="md:col-span-12 rounded-[2.5rem] bg-white border border-slate-100 p-8 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
-                <div className="absolute right-0 top-0 w-64 h-full bg-gradient-to-l from-emerald-50 to-transparent pointer-events-none"></div>
-
-                <div className="flex items-center gap-6 relative z-10 w-full">
-                  <div className="relative flex items-center justify-center w-16 h-16 shrink-0">
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-20 animate-ping"></span>
-                    <div className="relative bg-emerald-50 text-emerald-600 h-16 w-16 rounded-full flex items-center justify-center shadow-inner">
-                      <MapPin className="w-7 h-7" />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold text-slate-900">Neighborhood Pulse</h3>
-                    <p className="text-slate-500 text-sm mt-1">There are currently <strong className="text-emerald-600 font-bold">12 NGOs</strong> and <strong className="text-emerald-600 font-bold">8 Volunteers</strong> actively looking for food within a 5km radius of your location right now.</p>
-                  </div>
-                  <button
-                    aria-label="Navigate to donations to broadcast availability"
-                    onClick={() => navigate('/donor/donations')}
-                    className="hidden md:block whitespace-nowrap bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-3 rounded-xl transition-all shadow-md active:scale-95 shrink-0 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
-                  >
-                    Broadcast Availability
-                  </button>
-                </div>
-                {/* Mobile visible button */}
-                <button
-                  aria-label="Navigate to donations to broadcast availability"
-                  onClick={() => navigate('/donor/donations')}
-                  className="w-full md:hidden bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-3 rounded-xl transition-colors shadow-md active:scale-95 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
-                >
-                  Broadcast Availability
-                </button>
+              {/* Local Network Pulse - Live Map Section */}
+              <div className="md:col-span-12">
+                <DonorMap donorLocation={user?.address} />
               </div>
 
             </div>
@@ -465,6 +431,32 @@ const DonorDashboard = () => {
             >
               Save Changes
             </button>
+          </div>
+        </section>
+      )}
+
+      {/* RESCUE MAP VIEW */}
+      {isMap && (
+        <section className="space-y-6">
+          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+            <h2 className="text-2xl font-bold text-slate-900">Rescue Network Explorer</h2>
+            <p className="text-slate-500 mt-1">Real-time visualization of help being delivered in your area.</p>
+          </div>
+          <DonorMap donorLocation={user?.address} />
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6 rounded-3xl bg-emerald-50 border border-emerald-100">
+              <h4 className="font-bold text-emerald-800 mb-2">Safe Zones</h4>
+              <p className="text-sm text-emerald-600">All highlighted areas are verified for safe food handling and rapid distribution.</p>
+            </div>
+            <div className="p-6 rounded-3xl bg-blue-50 border border-blue-100">
+              <h4 className="font-bold text-blue-800 mb-2">NGO Response</h4>
+              <p className="text-sm text-blue-600">Average response time for donation pickup in your sector is 18 minutes.</p>
+            </div>
+            <div className="p-6 rounded-3xl bg-orange-50 border border-orange-100">
+              <h4 className="font-bold text-orange-800 mb-2">Global Impact</h4>
+              <p className="text-sm text-orange-600">Your city has rescued over 2.4 tons of food this week alone!</p>
+            </div>
           </div>
         </section>
       )}

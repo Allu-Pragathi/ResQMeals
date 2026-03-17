@@ -8,7 +8,8 @@ import {
     HandHeart,
     UtensilsCrossed,
     BarChart3,
-    Home
+    Home,
+    MapPin
 } from 'lucide-react'
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar'
 import { cn } from '@/lib/utils'
@@ -49,6 +50,7 @@ const DashboardLayout = () => {
     // Determine dashboard type based on path
     const isDonor = location.pathname.startsWith('/donor')
     const isNGO = location.pathname.startsWith('/ngo')
+    const isEvents = location.pathname.startsWith('/events')
     const isAdmin = location.pathname.startsWith('/admin')
 
     // Define links based on role
@@ -79,6 +81,11 @@ const DashboardLayout = () => {
                     icon: <UtensilsCrossed className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
                 },
                 {
+                    label: "Rescue Map",
+                    href: "/donor/map",
+                    icon: <MapPin className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
+                {
                     label: "Profile",
                     href: "/donor/profile",
                     icon: <UserCog className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
@@ -102,6 +109,27 @@ const DashboardLayout = () => {
                 {
                     label: "Profile",
                     href: "/ngo/profile",
+                    icon: <UserCog className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
+            ]
+        }
+
+        if (isEvents) {
+            return [
+                ...commonLinks,
+                {
+                    label: "Dashboard",
+                    href: "/events",
+                    icon: <LayoutDashboard className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
+                {
+                    label: "Schedule Pickup",
+                    href: "/events/schedule",
+                    icon: <UtensilsCrossed className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
+                {
+                    label: "Profile",
+                    href: "/events/profile",
                     icon: <UserCog className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
                 },
             ]

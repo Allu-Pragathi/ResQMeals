@@ -1,4 +1,4 @@
-export const impactMetrics = [
+ export const impactMetrics = [
   { label: 'Total Donations', value: '12,450', change: '+8% vs last month' },
   { label: 'People Fed', value: '520k', change: '+3.2% vs last month' },
   { label: 'Active NGOs', value: '128', change: 'Across 14 regions' },
