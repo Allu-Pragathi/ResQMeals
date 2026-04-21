@@ -32,3 +32,16 @@ out/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Temporary and Scratch files
+**/scratch/
+*.log
+*_log.txt
+build_output.txt
+ai_out.txt
+out*.txt
+*.json.bak
+test_chat.json
+events_users.json
+latest_user.json
+queried_user.json

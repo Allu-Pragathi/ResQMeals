@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -9,10 +9,15 @@ import {
     UtensilsCrossed,
     BarChart3,
     Home,
-    MapPin
+    MapPin,
+    Bell,
+    AlertCircle,
+    MessageSquare,
+    Trophy
 } from 'lucide-react'
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar'
 import { cn } from '@/lib/utils'
+import ChatWidget from '@/components/ChatWidget'
 
 export const Logo = () => {
     return (
@@ -45,13 +50,22 @@ export const LogoIcon = () => {
 
 const DashboardLayout = () => {
     const [open, setOpen] = useState(false)
+    const [isChatOpen, setIsChatOpen] = useState(false)
+
+    const [user, setUser] = useState<any>(null)
     const location = useLocation()
+
+    useEffect(() => {
+        const savedUser = localStorage.getItem('resqmeals_current_user')
+        if (savedUser) setUser(JSON.parse(savedUser))
+    }, [location.pathname]) // Refresh on navigation to catch status updates
 
     // Determine dashboard type based on path
     const isDonor = location.pathname.startsWith('/donor')
     const isNGO = location.pathname.startsWith('/ngo')
     const isEvents = location.pathname.startsWith('/events')
     const isAdmin = location.pathname.startsWith('/admin')
+    const isVolunteer = location.pathname.startsWith('/volunteer')
 
     // Define links based on role
     const getLinks = () => {
@@ -77,7 +91,7 @@ const DashboardLayout = () => {
                 },
                 {
                     label: "My Donations",
-                    href: "/donor/donations", // Ideally these would exist
+                    href: "/donor/donations", 
                     icon: <UtensilsCrossed className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
                 },
                 {
@@ -90,12 +104,21 @@ const DashboardLayout = () => {
                     href: "/donor/profile",
                     icon: <UserCog className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
                 },
+                {
+                    label: "Analytics", 
+                    href: "/donor/analytics",
+                    icon: <BarChart3 className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
             ]
         }
 
         if (isNGO) {
             return [
-                ...commonLinks,
+                {
+                    label: "Home",
+                    href: "/ngo/home",
+                    icon: <Home className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
                 {
                     label: "Dashboard",
                     href: "/ngo",
@@ -116,7 +139,11 @@ const DashboardLayout = () => {
 
         if (isEvents) {
             return [
-                ...commonLinks,
+                {
+                    label: "Home",
+                    href: "/events/home",
+                    icon: <Home className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
                 {
                     label: "Dashboard",
                     href: "/events",
@@ -135,9 +162,38 @@ const DashboardLayout = () => {
             ]
         }
 
+        if (isVolunteer) {
+            return [
+                {
+                    label: "Home",
+                    href: "/volunteer/home",
+                    icon: <Home className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
+                {
+                    label: "Missions",
+                    href: "/volunteer/missions",
+                    icon: <LayoutDashboard className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
+                {
+                    label: "Leaderboard",
+                    href: "/volunteer/leaderboard",
+                    icon: <Trophy className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
+                {
+                    label: "Profile",
+                    href: "/volunteer/profile",
+                    icon: <UserCog className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
+            ]
+        }
+
         if (isAdmin) {
             return [
-                ...commonLinks,
+                {
+                    label: "Home",
+                    href: "/admin/home",
+                    icon: <Home className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
                 {
                     label: "Overview",
                     href: "/admin",
@@ -172,9 +228,33 @@ const DashboardLayout = () => {
                             {links.map((link, idx) => (
                                 <SidebarLink key={idx} link={link} />
                             ))}
+                            
+
                         </div>
                     </div>
                     <div>
+                        {/* Compact Verification Banner for Sidebar */}
+                        {user && !user.isVerified && !location.pathname.includes('/profile') && (
+                            <div className="mb-4">
+                                <Link
+                                    to={isNGO ? "/ngo/profile" : (isDonor ? "/donor/profile" : (isEvents ? "/events/profile" : "/volunteer/profile"))}
+                                    className="flex items-center gap-3 p-2 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 transition-all hover:-translate-y-0.5 group/verify relative overflow-hidden"
+                                >
+                                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                                    <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-white/20 backdrop-blur-sm shrink-0 z-10">
+                                        <AlertCircle className="h-5 w-5 text-white animate-pulse" />
+                                    </div>
+                                    <motion.div 
+                                        initial={false}
+                                        animate={{ opacity: open ? 1 : 0, display: open ? 'block' : 'none' }}
+                                        className="whitespace-nowrap z-10"
+                                    >
+                                        <p className="font-black text-xs uppercase tracking-wider">Unverified</p>
+                                        <p className="text-[10px] font-medium text-orange-100 uppercase tracking-widest mt-0.5">Click to unlock</p>
+                                    </motion.div>
+                                </Link>
+                            </div>
+                        )}
                         <div className="mt-2 border-t border-neutral-200 dark:border-neutral-700 pt-2">
                             <SidebarLink
                                 link={{
@@ -192,7 +272,13 @@ const DashboardLayout = () => {
             </Sidebar>
 
             {/* Main Content Area */}
-            <div className="flex flex-1 relative overflow-y-auto bg-[#fafafa] dark:bg-neutral-900 p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700">
+            <div 
+                className={cn(
+                    "flex flex-1 relative overflow-y-auto p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 shadow-[inset_0px_4px_20px_rgba(0,0,0,0.05)]",
+                    (isVolunteer || isDonor || isNGO) ? "bg-cover bg-center bg-fixed" : "bg-[#fafafa] dark:bg-neutral-900"
+                )}
+                style={(isVolunteer || isDonor || isNGO) ? { backgroundImage: 'radial-gradient(circle at top right, rgba(255, 255, 255, 0.85) 0, rgba(255, 255, 255, 0.7) 40%, rgba(255, 255, 255, 0.9) 100%), url("/food-background.png")' } : undefined}
+            >
                 {/* Decorative Ambient Background */}
                 <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden rounded-tl-2xl">
                     {/* Grid Pattern */}
@@ -205,7 +291,38 @@ const DashboardLayout = () => {
                 </div>
 
                 <div className="w-full h-full relative z-10">
+
                     <Outlet />
+                </div>
+
+
+                {/* AI Chat Assistant FAB */}
+                <div className="fixed bottom-6 right-6 z-[60] flex flex-col items-end gap-4">
+                    <button
+                        onClick={() => setIsChatOpen(!isChatOpen)}
+                        className={cn(
+                            "flex items-center gap-2 px-4 py-3 rounded-2xl shadow-2xl transition-all duration-300 group",
+                            isChatOpen 
+                                ? "bg-slate-900 border border-white/10 text-white scale-90" 
+                                : "bg-orange-500 text-white hover:bg-orange-600 hover:scale-110 active:scale-95 shadow-orange-500/30"
+                        )}
+                    >
+                        <div className="relative">
+                           <MessageSquare className="w-6 h-6" />
+                           {!isChatOpen && (
+                             <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                             </span>
+                           )}
+                        </div>
+                        <span className="font-bold text-sm">ResQ AI</span>
+                    </button>
+                    
+                    <ChatWidget 
+                        isOpen={isChatOpen} 
+                        onToggle={() => setIsChatOpen(false)} 
+                    />
                 </div>
             </div>
         </div>

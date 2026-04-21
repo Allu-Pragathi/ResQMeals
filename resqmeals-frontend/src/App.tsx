@@ -12,53 +12,57 @@ import DashboardLayout from './layouts/DashboardLayout'
 
 import ProtectedRoute from './components/ProtectedRoute'
 
+import ErrorBoundary from './components/ErrorBoundary'
+
 function App() {
   return (
-    <Routes>
-      {/* Marketing / Public Routes */}
-      <Route element={<MarketingLayout />}>
-        <Route path="/" element={<Landing />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/features" element={<ResQFeatures />} />
-      </Route>
+    <ErrorBoundary>
+      <Routes>
+        {/* Marketing / Public Routes */}
+        <Route element={<MarketingLayout />}>
+          <Route path="/" element={<Landing />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/features" element={<ResQFeatures />} />
+        </Route>
 
-      {/* App / Dashboard Routes */}
-      <Route element={<DashboardLayout />}>
-        <Route
-          path="/donor/*"
-          element={
-            <ProtectedRoute allowedRoles={['Donor']}>
-              <DonorDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/ngo/*"
-          element={
-            <ProtectedRoute allowedRoles={['NGO']}>
-              <NGODashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/volunteer/*"
-          element={
-            <ProtectedRoute allowedRoles={['Volunteer']}>
-              <VolunteerDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/events/*"
-          element={
-            <ProtectedRoute allowedRoles={['Events']}>
-              <EventsDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/admin/*" element={<AdminDashboard />} />
-      </Route>
-    </Routes>
+        {/* App / Dashboard Routes */}
+        <Route element={<DashboardLayout />}>
+          <Route
+            path="/donor/*"
+            element={
+              <ProtectedRoute allowedRoles={['Donor']}>
+                <DonorDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ngo/*"
+            element={
+              <ProtectedRoute allowedRoles={['NGO']}>
+                <NGODashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/volunteer/*"
+            element={
+              <ProtectedRoute allowedRoles={['Volunteer']}>
+                <VolunteerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/events/*"
+            element={
+              <ProtectedRoute allowedRoles={['Events']}>
+                <EventsDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/admin/*" element={<AdminDashboard />} />
+        </Route>
+      </Routes>
+    </ErrorBoundary>
   )
 }
 

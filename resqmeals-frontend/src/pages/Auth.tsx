@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Eye, EyeOff, Mail, Lock, ArrowRight, AlertCircle, User, MapPin } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, ArrowRight, AlertCircle, User, MapPin, Phone } from 'lucide-react'
 import api from '../lib/api'
 import RoleSelector from '../components/RoleSelector'
 
@@ -14,14 +14,18 @@ const Auth = () => {
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [address, setAddress] = useState('')
+  const [phone, setPhone] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isOtpMode, setIsOtpMode] = useState(false)
+  const [otpCode, setOtpCode] = useState('')
 
   const toggleAuthMode = () => {
     setIsLogin(!isLogin)
     setError('')
     setPassword('')
     setRole('Donor')
+    setIsOtpMode(false)
   }
 
   const handleForgotPassword = () => {
@@ -46,7 +50,6 @@ const Auth = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          // In a real app, reverse geocode here. For now, use coords.
           setAddress(`Lat: ${position.coords.latitude.toFixed(4)}, Long: ${position.coords.longitude.toFixed(4)}`)
         },
         () => {
@@ -55,6 +58,24 @@ const Auth = () => {
       )
     } else {
       setError('Geolocation is not supported by your browser.')
+    }
+  }
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setIsLoading(true)
+
+    try {
+      const res = await api.post('/auth/verify-otp', { email, code: otpCode })
+      const { token, user } = res.data
+      localStorage.setItem('resqmeals_token', token)
+      localStorage.setItem('resqmeals_current_user', JSON.stringify(user))
+      navigate(`/${user.role.toLowerCase()}/home`)
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Verification failed')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -71,53 +92,55 @@ const Auth = () => {
 
     try {
       if (isLogin) {
-        // Live Backend Login Logic
-        const response = await api.post('/auth/login', {
-          email,
-          password
-        })
-
+        const response = await api.post('/auth/login', { email, password })
         const { token, user } = response.data
-
-        // Save live token and user to local storage (replacing mock data)
         localStorage.setItem('resqmeals_token', token)
         localStorage.setItem('resqmeals_current_user', JSON.stringify(user))
-
-        navigate(`/${user.role.toLowerCase()}`)
+        navigate(`/${user.role.toLowerCase()}/home`)
       } else {
-        // Live Backend Signup Logic
         if (strength < 3) {
           setError('Please choose a stronger password')
           setIsLoading(false)
           return
         }
 
-        const response = await api.post('/auth/register', {
+        const res = await api.post('/auth/register', {
           email,
           password,
           role: role.toUpperCase(),
           name,
-          address
+          address,
+          phone
         })
 
-        const { token, user } = response.data
-
-        // Save live token and user to local storage
-        localStorage.setItem('resqmeals_token', token)
-        localStorage.setItem('resqmeals_current_user', JSON.stringify(user))
-
-        navigate(`/${user.role.toLowerCase()}`)
+        if (res.data.token && res.data.user) {
+          localStorage.setItem('resqmeals_token', res.data.token)
+          localStorage.setItem('resqmeals_current_user', JSON.stringify(res.data.user))
+          alert('Welcome to ResQMeals! Signup successful.')
+          navigate(`/${res.data.user.role.toLowerCase()}/home`)
+        } else {
+          setIsLogin(true)
+          alert('Registration successful! Please login.')
+        }
       }
     } catch (err: any) {
-      if (err.response && err.response.data && err.response.data.error) {
-        setError(err.response.data.error)
-      } else {
-        setError('A network error occurred. Please try again.')
-      }
+      setError(err.response?.data?.error || 'A network error occurred. Please try again.')
     } finally {
       setIsLoading(false)
     }
   }
+
+  const handleResendOtp = async () => {
+    try {
+      setIsLoading(true);
+      await api.post('/auth/resend-otp', { email });
+      alert('A new verification code has been sent!');
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to resend OTP.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -161,170 +184,234 @@ const Auth = () => {
         <div className="w-full max-w-md space-y-8">
           <div className="text-center lg:text-left">
             <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-              {isLogin ? 'Welcome back' : 'Create an account'}
+              {isOtpMode ? 'Check your inbox' : isLogin ? 'Welcome back' : 'Create an account'}
             </h2>
             <p className="mt-2 text-sm text-slate-600">
-              {isLogin ? 'Enter your details to access your dashboard' : 'Join us to start your journey'}
+              {isOtpMode ? `Enter the 6-digit code sent to ${email}` : isLogin ? 'Enter your details to access your dashboard' : 'Join us to start your journey'}
             </p>
           </div>
 
-
-          {/* Role Selector */}
-          {!isLogin && (
-            <div className="bg-slate-50 p-1 rounded-xl">
-              <RoleSelector value={role} onChange={setRole} />
-            </div>
-          )}
-
-          <form className="space-y-5" onSubmit={handleSubmit}>
-            {error && (
-              <div className="p-4 rounded-xl bg-red-50 text-red-600 text-sm flex items-center gap-2 animate-shake">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                {error}
-              </div>
-            )}
-
-            <div className="space-y-4">
-              {!isLogin && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-700">Full Name</label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3.5 w-5 h-5 text-slate-400" />
-                    <input
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all placeholder:text-slate-400"
-                      placeholder={role === 'NGO' ? 'Organization Name' : 'John Doe'}
-                      type="text"
-                      required={!isLogin}
-                    />
-                  </div>
+          {isOtpMode ? (
+            <form className="space-y-6" onSubmit={handleVerifyOtp}>
+              {error && (
+                <div className="p-4 rounded-xl bg-red-50 text-red-600 text-sm flex items-center gap-2 animate-shake">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  {error}
                 </div>
               )}
-
               <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">Email Address</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3.5 w-5 h-5 text-slate-400" />
-                  <input
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all placeholder:text-slate-400"
-                    placeholder="name@example.com"
-                    type="email"
-                    required
-                  />
-                </div>
+                <label className="text-sm font-medium text-slate-700 text-center block uppercase tracking-widest">Verification Code</label>
+                <input
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  className="w-full text-center text-4xl font-black tracking-[1em] py-5 rounded-2xl border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all placeholder:text-slate-200"
+                  placeholder="000000"
+                  maxLength={6}
+                  required
+                />
               </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3.5 w-5 h-5 text-slate-400" />
-                  <input
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-12 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all placeholder:text-slate-400"
-                    placeholder="••••••••"
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3.5 text-slate-400 hover:text-slate-600 focus:outline-none"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-              </div>
-
-              {!isLogin && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-700">Address</label>
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <MapPin className="absolute left-3 top-3.5 w-5 h-5 text-slate-400" />
-                      <input
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all placeholder:text-slate-400"
-                        placeholder="City, Region"
-                        type="text"
-                        required={!isLogin}
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={getLocation}
-                      className="p-3 rounded-xl bg-slate-100 text-slate-600 hover:bg-orange-50 hover:text-orange-600 transition-colors"
-                      title="Use Current Location"
-                    >
-                      <MapPin className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <AnimatePresence>
-              {!isLogin && password && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="space-y-1"
-                >
-                  <div className="flex gap-1 h-1.5 mt-1">
-                    {[...Array(5)].map((_, i) => (
-                      <div
-                        key={i}
-                        className={`h-full rounded-full flex-1 transition-all duration-300 ${i < strength
-                          ? strength < 3 ? 'bg-red-400' : strength < 4 ? 'bg-yellow-400' : 'bg-green-500'
-                          : 'bg-slate-200'
-                          }`}
-                      />
-                    ))}
-                  </div>
-                  <p className="text-xs text-slate-500 text-right font-medium">
-                    {strength < 3 ? 'Weak' : strength < 4 ? 'Medium' : 'Strong'}
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input id="remember-me" name="remember-me" type="checkbox" className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-600">Remember me</label>
-              </div>
-
-              {isLogin && (
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-4 bg-primary text-white rounded-xl font-bold shadow-lg hover:bg-primaryDark transition-all active:scale-95 disabled:opacity-50"
+              >
+                {isLoading ? 'Verifying...' : 'Verify & Continue'}
+              </button>
+              <div className="flex flex-col gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={handleForgotPassword}
-                  className="text-sm font-semibold text-primary hover:text-primaryDark hover:underline"
+                  onClick={handleResendOtp}
+                  disabled={isLoading}
+                  className="w-full text-sm font-bold text-primary hover:text-primaryDark disabled:opacity-50"
                 >
-                  Forgot password?
+                  Resend Code
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setIsOtpMode(false)}
+                  className="w-full text-sm font-semibold text-slate-400 hover:text-slate-600"
+                >
+                  Go Back
+                </button>
+              </div>
+            </form>
+          ) : (
+            <>
+              {/* Role Selector */}
+              {!isLogin && (
+                <div className="bg-slate-50 p-1 rounded-xl">
+                  <RoleSelector value={role} onChange={setRole} />
+                </div>
               )}
-            </div>
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-bold text-white shadow-lg shadow-primary/25 transition-all hover:bg-primaryDark hover:shadow-primary/40 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              {isLoading ? (
-                'Processing...'
-              ) : (
-                <>
-                  {isLogin ? 'Sign In' : 'Create Account'}
-                  <ArrowRight className="w-5 h-5" />
-                </>
-              )}
-            </button>
-          </form>
+              <form className="space-y-5" onSubmit={handleSubmit}>
+                {error && (
+                  <div className="p-4 rounded-xl bg-red-50 text-red-600 text-sm flex items-center gap-2 animate-shake">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    {error}
+                  </div>
+                )}
+
+                <div className="space-y-4">
+                  {!isLogin && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-700">Full Name</label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3.5 w-5 h-5 text-slate-400" />
+                        <input
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all placeholder:text-slate-400"
+                          placeholder={role === 'NGO' ? 'Organization Name' : 'John Doe'}
+                          type="text"
+                          required={!isLogin}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">Email Address</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3.5 w-5 h-5 text-slate-400" />
+                      <input
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all placeholder:text-slate-400"
+                        placeholder="name@example.com"
+                        type="email"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {!isLogin && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-700">Phone Number</label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-3.5 w-5 h-5 text-slate-400" />
+                        <input
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all placeholder:text-slate-400"
+                          placeholder="+91 98765 43210"
+                          type="tel"
+                          required={!isLogin}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">Password</label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3.5 w-5 h-5 text-slate-400" />
+                      <input
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full pl-10 pr-12 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all placeholder:text-slate-400"
+                        placeholder="••••••••"
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3.5 text-slate-400 hover:text-slate-600 focus:outline-none"
+                      >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {!isLogin && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-700">Address</label>
+                      <div className="flex gap-2">
+                        <div className="relative flex-1">
+                          <MapPin className="absolute left-3 top-3.5 w-5 h-5 text-slate-400" />
+                          <input
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all placeholder:text-slate-400"
+                            placeholder="City, Region"
+                            type="text"
+                            required={!isLogin}
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={getLocation}
+                          className="p-3 rounded-xl bg-slate-100 text-slate-600 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                          title="Use Current Location"
+                        >
+                          <MapPin className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <AnimatePresence>
+                  {!isLogin && password && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="space-y-1"
+                    >
+                      <div className="flex gap-1 h-1.5 mt-1">
+                        {[...Array(5)].map((_, i) => (
+                          <div
+                            key={i}
+                            className={`h-full rounded-full flex-1 transition-all duration-300 ${i < strength
+                              ? strength < 3 ? 'bg-red-400' : strength < 4 ? 'bg-yellow-400' : 'bg-green-500'
+                              : 'bg-slate-200'
+                              }`}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-xs text-slate-500 text-right font-medium">
+                        {strength < 3 ? 'Weak' : strength < 4 ? 'Medium' : 'Strong'}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <input id="remember-me" name="remember-me" type="checkbox" className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                    <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-600">Remember me</label>
+                  </div>
+
+                  {isLogin && (
+                    <button
+                      type="button"
+                      onClick={handleForgotPassword}
+                      className="text-sm font-semibold text-primary hover:text-primaryDark hover:underline"
+                    >
+                      Forgot password?
+                    </button>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-bold text-white shadow-lg shadow-primary/25 transition-all hover:bg-primaryDark hover:shadow-primary/40 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? (
+                    'Processing...'
+                  ) : (
+                    <>
+                      {isLogin ? 'Sign In' : 'Create Account'}
+                      <ArrowRight className="w-5 h-5" />
+                    </>
+                  )}
+                </button>
+              </form>
+            </>
+          )}
 
           <div className="text-center">
             <p className="text-sm text-slate-600 mb-2">
