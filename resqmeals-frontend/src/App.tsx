@@ -13,12 +13,14 @@ import DashboardLayout from './layouts/DashboardLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 
 import ErrorBoundary from './components/ErrorBoundary'
+import { SocketProvider } from './contexts/SocketContext'
 
 function App() {
   return (
     <ErrorBoundary>
-      <Routes>
-        {/* Marketing / Public Routes */}
+      <SocketProvider>
+        <Routes>
+          {/* Marketing / Public Routes */}
         <Route element={<MarketingLayout />}>
           <Route path="/" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
@@ -61,7 +63,8 @@ function App() {
           />
           <Route path="/admin/*" element={<AdminDashboard />} />
         </Route>
-      </Routes>
+        </Routes>
+      </SocketProvider>
     </ErrorBoundary>
   )
 }

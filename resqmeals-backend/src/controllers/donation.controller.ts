@@ -4,6 +4,7 @@ import { AuthRequest } from '../middleware/auth.middleware';
 import { geocodeAddress } from '../utils/geocoder';
 import { sendDonationNotification, sendPickupOtpEmail } from '../utils/mailer';
 import { MLService } from '../services/ml.service';
+import { getIO } from '../socket';
 
 const prisma = new PrismaClient();
 
@@ -194,6 +195,12 @@ export const verifyPickup = async (req: AuthRequest, res: Response): Promise<voi
             }
         });
 
+        try {
+            const io = getIO();
+            io.emit('status:updated', { id: updated.id, status: updated.status });
+            io.to(`mission_${updated.id}`).emit('pickup:completed', { id: updated.id });
+        } catch(e) { console.error('Socket emit error:', e); }
+
         res.status(200).json({ message: 'Pickup verified successfully!', donation: updated });
     } catch (err) {
         console.error('Verify pickup error:', err);
@@ -315,6 +322,12 @@ export const acceptDonation = async (req: AuthRequest, res: Response): Promise<v
             return d;
         });
 
+        try {
+            const io = getIO();
+            io.emit('status:updated', { id: updatedDonation.id, status: updatedDonation.status });
+            io.to(`mission_${updatedDonation.id}`).emit('ngo:accepted', { id: updatedDonation.id, ngoId: req.user!.userId });
+        } catch(e) { console.error('Socket emit error:', e); }
+
         res.status(200).json({ message: 'Donation accepted successfully', donation: updatedDonation });
     } catch (error) {
         console.error('Error accepting donation:', error);
@@ -348,6 +361,14 @@ export const updateDonationStatus = async (req: AuthRequest, res: Response): Pro
             where: { id },
             data: { status },
         });
+
+        try {
+            const io = getIO();
+            io.emit('status:updated', { id: updatedDonation.id, status: updatedDonation.status });
+            if (status === 'Delivered') {
+                io.to(`mission_${updatedDonation.id}`).emit('delivery:completed', { id: updatedDonation.id });
+            }
+        } catch(e) { console.error('Socket emit error:', e); }
 
         res.status(200).json({ message: `Donation status updated to ${status}`, donation: updatedDonation });
     } catch (error) {

@@ -2,8 +2,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express, { Request, Response } from 'express';
+import http from 'http';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
+import { initializeSocket } from './socket';
 import authRoutes from './routes/auth.routes';
 import donationRoutes from './routes/donation.routes';
 import chatRoutes from './routes/chat.routes';
@@ -29,11 +31,16 @@ app.use('/api/donations', donationRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/verify', verificationRoutes);
 
+const server = http.createServer(app);
+
+// Initialize Socket.io
+initializeSocket(server);
+
 // Basic health check route
 app.get('/api/health', (req: Request, res: Response) => {
     res.json({ status: 'ok', message: 'ResQMeals API is running' });
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

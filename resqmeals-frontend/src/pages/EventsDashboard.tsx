@@ -6,7 +6,10 @@ import {
   Calendar, MapPin, Utensils, Users, Clock, 
   TrendingUp, Award, Building2, Mail, Phone,
   Loader2, Plus, History, Heart, ShieldCheck,
-  Gift, PartyPopper, Home as HouseIcon, Briefcase, Bot
+  Gift, PartyPopper, Home as HouseIcon, Briefcase, Bot,
+  AlertTriangle, Activity, Zap, CheckCircle2, Navigation, Truck,
+  PieChart, Leaf, Radio, ChevronRight, BarChart3, ThermometerSun,
+  Map as MapIcon, ArrowRight, AlertCircle, Trophy
 } from 'lucide-react'
 import ProfileVerificationCenter from '../components/ProfileVerificationCenter'
 import VerificationGate from '../components/VerificationGate'
@@ -56,7 +59,9 @@ const EventsDashboard = () => {
     const isProfile = location.pathname.includes('profile')
     const isSchedule = location.pathname.includes('schedule')
     const isHome = location.pathname.includes('home')
-    const isDashboard = !isProfile && !isSchedule && !isHome
+    const isControl = location.pathname.includes('control')
+    const isAnalytics = location.pathname.includes('analytics')
+    const isDashboard = !isProfile && !isSchedule && !isHome && !isControl && !isAnalytics
 
     const eventTemplates = [
         {
@@ -228,12 +233,16 @@ const EventsDashboard = () => {
                             {isHome && `Welcome Partner, ${user?.name || 'Organizer'}!`}
                             {isDashboard && 'Event Performance Hub'}
                             {isSchedule && 'Schedule Mass Rescue'}
+                            {isControl && 'Active Event Control Center'}
+                            {isAnalytics && 'Post-Event Impact Analytics'}
                             {isProfile && 'Partner Details'}
                         </h1>
                         <p className="text-slate-500 mt-1 max-w-xl">
                             {isHome && 'Coordinate the rescue of hundreds of portions in minutes.'}
                             {isDashboard && 'Overview of your recent events and cumulative impact.'}
                             {isSchedule && 'Coordinate the rescue of large-scale event surplus with our logistics team.'}
+                            {isControl && 'Real-time operational control for managing ongoing large-scale rescue events.'}
+                            {isAnalytics && 'Data-driven insights to evaluate and improve mass rescue operations.'}
                             {isProfile && 'Manage your event firm and contact registration.'}
                         </p>
                     </div>
@@ -259,308 +268,472 @@ const EventsDashboard = () => {
 
                 {/* HOME VIEW */}
                 {isHome && (
-                    <section className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
-                        {/* Event Hero */}
-                        <div className="bg-gradient-to-br from-orange-600 to-orange-500 rounded-[3rem] p-10 md:p-14 text-white shadow-2xl relative overflow-hidden group">
-                           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                              <div className="space-y-8">
-                                 <span className="inline-flex items-center rounded-full bg-white/20 px-4 py-1.5 text-xs font-black text-white mb-2 backdrop-blur-md border border-white/20 uppercase tracking-widest">
-                                    Mass Rescue Command Center
-                                 </span>
-                                 <h2 className="text-5xl font-black mb-6 tracking-tight leading-[1.1]">
-                                    Your Large Scale <br /> Impact, Simplified.
-                                 </h2>
-                                 <p className="text-orange-50 max-w-lg text-lg leading-relaxed font-medium">
-                                    Coordinate the rescue of hundreds of portions in minutes. Our logistics team is standing by to mobilize for your current event surplus.
-                                 </p>
-                                 <div className="flex flex-wrap gap-4 pt-4">
-                                    <button
-                                       onClick={() => navigate('/events/schedule')}
-                                       className="bg-white text-orange-600 font-black px-10 py-5 rounded-[2rem] shadow-xl hover:bg-orange-50 transition-all hover:scale-105 active:scale-95 flex items-center gap-3 group"
-                                    >
-                                       Schedule Bulk Handover
-                                       <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
-                                    </button>
-                                    <button
-                                       onClick={() => navigate('/events')}
-                                       className="bg-white/10 text-white font-black px-10 py-5 rounded-[2rem] shadow-md hover:bg-white/20 transition-all border border-white/20 backdrop-blur-md hover:scale-105 active:scale-95 flex items-center gap-3"
-                                    >
-                                       <TrendingUp className="w-5 h-5" />
-                                       Impact Dashboard
-                                    </button>
-                                 </div>
-                              </div>
-                              <div className="hidden lg:flex justify-end pr-8">
-                                 <div className="relative">
-                                    <div className="h-64 w-64 bg-white/10 rounded-[4rem] backdrop-blur-xl border border-white/20 flex items-center justify-center rotate-6 group-hover:rotate-12 transition-transform duration-700">
-                                       <PartyPopper className="w-32 h-32 opacity-80" />
-                                    </div>
-                                    <div className="absolute -bottom-6 -left-6 h-32 w-32 bg-orange-400 rounded-3xl backdrop-blur-md border border-white/30 flex items-center justify-center -rotate-12 shadow-2xl">
-                                       <Award className="w-16 h-16 text-white" />
-                                    </div>
-                                 </div>
-                              </div>
-                           </div>
-                           <div className="absolute top-0 right-0 -mt-20 -mr-20 bg-white/10 w-[40rem] h-[40rem] rounded-full blur-[120px] pointer-events-none"></div>
-                        </div>
+                  <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                    {/* SECTION 1: HERO (ACTION-DRIVEN) */}
+                    <div className="bg-gradient-to-r from-orange-600 to-orange-500 rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden">
+                       <div className="relative z-10">
+                          <span className="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-white mb-4 backdrop-blur-md border border-white/10 uppercase tracking-widest">
+                            Command Center • {user?.name || 'Event Partner'}
+                          </span>
+                          <h2 className="text-4xl font-black mb-4 tracking-tight leading-tight">
+                            Mass Rescue Command Center
+                          </h2>
+                          <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                             <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl backdrop-blur-md border border-white/20">
+                                <span className="font-semibold text-sm">Focus on large-scale food redistribution</span>
+                             </div>
+                          </div>
+                          <div className="flex gap-4 flex-wrap">
+                             <button onClick={() => navigate('/events/schedule')} className="bg-white text-orange-700 font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-orange-50 transition-all flex items-center gap-2">
+                                <Plus className="h-4 w-4" /> Start New Event
+                             </button>
+                             <button onClick={() => navigate('/events')} className="bg-white/10 text-white font-bold px-6 py-3 rounded-xl border border-white/20 backdrop-blur-md hover:bg-white/20 transition-all flex items-center gap-2">
+                                <Activity className="h-4 w-4" /> Manage Active Event
+                             </button>
+                          </div>
+                       </div>
+                       <div className="absolute top-0 right-0 -mt-20 -mr-20 bg-white/10 w-96 h-96 rounded-full blur-[100px]"></div>
+                       <div className="absolute bottom-10 right-10 opacity-20 hidden md:block">
+                          <MapIcon className="w-64 h-64" />
+                       </div>
+                    </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-                           {/* Quick Setup Card */}
-                           <div className="md:col-span-8 bg-white rounded-[3rem] p-10 border border-slate-100 shadow-sm relative overflow-hidden group">
-                              <div className="flex items-center justify-between mb-10">
-                                 <div>
-                                    <h3 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-                                       <ShieldCheck className="h-7 w-7 text-emerald-500" /> Event Sustainability Pulse
-                                    </h3>
-                                    <p className="text-sm text-slate-500 mt-2">Historical efficiency in managing large event surpluses.</p>
-                                 </div>
-                                 <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100 shadow-sm shadow-emerald-50 tracking-tighter uppercase whitespace-nowrap">Elite Rating • 4.95/5</span>
-                              </div>
-                              
-                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                                  <div className="p-8 rounded-[2.5rem] bg-orange-50/50 border border-orange-100 group-hover:bg-white transition-all duration-500 overflow-hidden relative">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <p className="text-[11px] font-black text-orange-400 uppercase tracking-widest">ResQ Forecast</p>
-                                        <Bot className="w-4 h-4 text-orange-400 opacity-50" />
-                                    </div>
-                                    <div className="flex items-end gap-1.5 h-12 mb-4">
-                                        {isAiLoading ? (
-                                            <div className="flex flex-1 items-center justify-center"><Loader2 className="w-4 h-4 animate-spin text-orange-300" /></div>
-                                        ) : (forecast.length > 0 ? forecast : [3, 5, 4, 8, 2, 6, 4]).map((f: any, i: number) => (
-                                            <div key={i} className="flex-1 bg-orange-200 rounded-sm hover:bg-orange-400 transition-colors" style={{ height: `${(typeof f === 'number' ? f : f.predictedVolume) * 10}%` }}></div>
-                                        ))}
-                                    </div>
-                                    <p className="text-[10px] font-bold text-slate-500 mt-1">Predicted Surplus: {forecast.length > 0 ? forecast[0].predictedVolume : '8'} portions</p>
-                                  </div>
-                                  <div className="p-8 rounded-[2.5rem] bg-emerald-50/50 border border-emerald-100 group-hover:bg-white transition-all duration-500">
-                                     <p className="text-[11px] font-black text-emerald-400 uppercase tracking-widest mb-3">Success Rate</p>
-                                     <p className="text-4xl font-black text-slate-900">99%</p>
-                                     <div className="h-1 w-12 bg-emerald-200 mt-4 rounded-full"></div>
-                                  </div>
-                                  <div className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 group-hover:bg-white transition-all duration-500">
-                                     <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Impact Points</p>
-                                     <p className="text-4xl font-black text-slate-900">48k</p>
-                                     <div className="h-1 w-12 bg-slate-200 mt-4 rounded-full"></div>
-                                  </div>
-                              </div>
-                           </div>
+                    {/* ROW 1 */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                       <div className="lg:col-span-2 flex flex-col gap-8">
+                          {/* KPI CARDS (Like NGO Performance Metrics) */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-4 opacity-5"><Calendar className="h-16 w-16" /></div>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Total Events</p>
+                                <h4 className="text-3xl font-black text-slate-900 mb-1">{donations.length}</h4>
+                                <p className="text-xs font-semibold text-slate-500 flex items-center gap-1">Managed to date</p>
+                             </div>
+                             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-4 opacity-5"><Utensils className="h-16 w-16" /></div>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Meals Rescued</p>
+                                <h4 className="text-3xl font-black text-slate-900 mb-1">1,200</h4>
+                                <p className="text-xs font-semibold text-emerald-600 flex items-center gap-1"><TrendingUp className="h-3 w-3" /> +150 this month</p>
+                             </div>
+                             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-4 opacity-5"><Building2 className="h-16 w-16" /></div>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Active NGOs</p>
+                                <h4 className="text-3xl font-black text-slate-900 mb-1">8</h4>
+                                <p className="text-xs font-semibold text-slate-500 flex items-center gap-1">Available nearby</p>
+                             </div>
+                             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-4 opacity-5"><Users className="h-16 w-16" /></div>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Volunteers</p>
+                                <h4 className="text-3xl font-black text-slate-900 mb-1">24</h4>
+                                <p className="text-xs font-semibold text-emerald-600 flex items-center gap-1">Ready for dispatch</p>
+                             </div>
+                          </div>
 
-                           {/* Protocol Alert Section */}
-                           <div className="md:col-span-4 bg-slate-950 rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between group">
-                              <div>
-                                 <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
-                                    <HouseIcon className="h-5 w-5 text-orange-400" /> FastTrack Logistics
-                                 </h3>
-                                 <div className="space-y-6">
-                                    <div className="flex gap-4">
-                                       <div className="h-10 w-10 shrink-0 bg-white/10 rounded-xl flex items-center justify-center text-orange-400 border border-white/10">
-                                          <Users className="w-5 h-5" />
-                                       </div>
-                                       <div>
-                                          <p className="text-sm font-bold">Mass Deployment Mode</p>
-                                          <p className="text-xs text-slate-400 mt-1 leading-relaxed">System automatically notifies 5 nearby NGOs for events with 500+ portions.</p>
-                                       </div>
-                                    </div>
-                                    <div className="flex gap-4 opacity-60 group-hover:opacity-100 transition-opacity">
-                                       <div className="h-10 w-10 shrink-0 bg-white/10 rounded-xl flex items-center justify-center text-emerald-400 border border-white/10">
-                                          <Clock className="w-5 h-5" />
-                                       </div>
-                                       <div>
-                                          <p className="text-sm font-bold">Cold-Chain Handover</p>
-                                          <p className="text-xs text-slate-400 mt-1 leading-relaxed">Priority pickup and temperature verification guaranteed within 45m.</p>
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                              <div className="mt-10">
-                                 <button className="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all">Download Venue Protocol</button>
-                              </div>
-                              <div className="absolute -bottom-10 -right-10 bg-orange-600/10 w-40 h-40 rounded-full blur-3xl"></div>
-                           </div>
+                          {/* ACTIVE EVENT PANEL */}
+                          <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm relative overflow-hidden flex-1">
+                             <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                   <Activity className="h-5 w-5 text-orange-500" /> Current Event Status
+                                </h3>
+                                <span className="text-xs font-bold bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full border border-emerald-100 animate-pulse">LIVE</span>
+                             </div>
+                             <div className="space-y-4">
+                                <div className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-2xl border border-slate-100 bg-slate-50 transition-colors">
+                                   <div className="flex gap-4 items-center w-full">
+                                      <div className="h-12 w-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
+                                         <PartyPopper className="h-6 w-6" />
+                                      </div>
+                                      <div className="flex-1">
+                                         <div className="flex items-center justify-between mb-1">
+                                            <h4 className="font-bold text-slate-900 text-lg">Grand Palace Wedding Rescue</h4>
+                                            <span className="text-xs font-bold text-slate-500">65% Complete</span>
+                                         </div>
+                                         <div className="w-full bg-slate-200 rounded-full h-2 mb-2">
+                                            <div className="bg-emerald-500 h-2 rounded-full w-[65%] shadow-sm"></div>
+                                         </div>
+                                         <div className="text-sm text-slate-500 flex items-center gap-3">
+                                            <span className="flex items-center gap-1 font-medium"><Building2 className="h-4 w-4 text-slate-400" /> 4 NGOs</span>
+                                            <span className="flex items-center gap-1 font-medium"><Users className="h-4 w-4 text-slate-400" /> 12 Volunteers</span>
+                                         </div>
+                                      </div>
+                                   </div>
+                                </div>
+                             </div>
+                          </div>
+                       </div>
 
-                           {/* Featured NGO Highlight Section */}
-                           <div className="md:col-span-12">
-                              <div className="flex items-center justify-between mb-8 px-4">
-                                 <div>
-                                    <h3 className="text-2xl font-black text-slate-900 tracking-tight">Top Verified Rescue Partners</h3>
-                                    <p className="text-sm text-slate-500 mt-1">NGOs specializing in large-scale event handling.</p>
-                                 </div>
-                                 <button className="text-[10px] font-black uppercase tracking-widest text-orange-600 hover:bg-orange-50 px-6 py-3 rounded-xl border border-orange-100 transition-all">Browse Directory</button>
-                              </div>
-                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                                 {[
-                                    { name: 'Mumbai Roti Bank', missions: 128, rating: 4.9, icon: Building2 },
-                                    { name: 'Feeding India', missions: 450, rating: 5.0, icon: Heart },
-                                    { name: 'Uday Foundation', missions: 84, rating: 4.8, icon: Award },
-                                    { name: 'ResQ Global', missions: 215, rating: 4.9, icon: ShieldCheck }
-                                 ].map((ngo, i) => (
-                                    <div key={i} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all group">
-                                       <div className="h-14 w-14 bg-slate-50 rounded-2xl flex items-center justify-center text-orange-500 mb-6 group-hover:bg-orange-600 group-hover:text-white transition-all shadow-sm">
-                                          <ngo.icon className="w-7 h-7" />
-                                       </div>
-                                       <h4 className="font-extrabold text-slate-900 text-lg mb-2">{ngo.name}</h4>
-                                       <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-50">
-                                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{ngo.missions} Rescues</p>
-                                          <span className="flex items-center gap-1 text-[10px] font-black text-emerald-600">★ {ngo.rating}</span>
-                                       </div>
-                                    </div>
-                                 ))}
-                              </div>
-                           </div>
-                        </div>
-                    </section>
+                       <div className="flex flex-col gap-8">
+                          {/* LOGISTICS PERFORMANCE (Like NGO System Flow or Quick Actions) */}
+                          <div className="bg-slate-900 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+                             <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl"></div>
+                             <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+                                <TrendingUp className="h-5 w-5 text-orange-400" /> Logistics Performance
+                             </h3>
+                             <div className="space-y-4 relative z-10">
+                                <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/10">
+                                   <div className="flex items-center gap-3">
+                                      <div className="h-8 w-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center"><Clock className="h-4 w-4" /></div>
+                                      <span className="text-sm font-medium">Avg Pickup Time</span>
+                                   </div>
+                                   <span className="font-bold text-xl text-emerald-400">14m</span>
+                                </div>
+                                <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/10">
+                                   <div className="flex items-center gap-3">
+                                      <div className="h-8 w-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center"><Activity className="h-4 w-4" /></div>
+                                      <span className="text-sm font-medium">Dist. Efficiency</span>
+                                   </div>
+                                   <span className="font-bold text-xl text-emerald-400">92%</span>
+                                </div>
+                                <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/10">
+                                   <div className="flex items-center gap-3">
+                                      <div className="h-8 w-8 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center"><Award className="h-4 w-4" /></div>
+                                      <span className="text-sm font-medium">Success Rate</span>
+                                   </div>
+                                   <span className="font-bold text-xl text-emerald-400">98%</span>
+                                </div>
+                             </div>
+                          </div>
+
+                          {/* LIVE ALERTS PANEL */}
+                          <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex-1">
+                             <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest flex items-center gap-2">
+                                <AlertCircle className="h-4 w-4 text-rose-500" /> Live Alerts
+                             </h3>
+                             <div className="space-y-3">
+                                <div className="p-3 rounded-xl bg-red-50 border border-red-100 flex flex-col gap-2">
+                                   <div className="flex items-start justify-between">
+                                      <span className="text-sm font-bold text-red-900 flex items-center gap-2"><Clock className="h-4 w-4 text-red-500" /> Food Expiry Warning</span>
+                                   </div>
+                                   <p className="text-xs text-red-700">Course 1 items expiring in 30 mins.</p>
+                                </div>
+                                <div className="p-3 rounded-xl bg-amber-50 border border-amber-100 flex flex-col gap-2">
+                                   <div className="flex items-start justify-between">
+                                      <span className="text-sm font-bold text-amber-900 flex items-center gap-2"><Truck className="h-4 w-4 text-amber-500" /> NGO Delays Detected</span>
+                                   </div>
+                                   <p className="text-xs text-amber-700">Feeding India truck delayed by traffic.</p>
+                                </div>
+                                <div className="p-3 rounded-xl bg-rose-50 border border-rose-100 flex flex-col gap-2">
+                                   <div className="flex items-start justify-between">
+                                      <span className="text-sm font-bold text-rose-900 flex items-center gap-2"><Users className="h-4 w-4 text-rose-500" /> Volunteer Shortages</span>
+                                   </div>
+                                   <p className="text-xs text-rose-700">High demand zone. Only 2 active volunteers in vicinity.</p>
+                                </div>
+                             </div>
+                          </div>
+                       </div>
+                    </div>
+
+                    {/* ROW 2 */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                       <div className="lg:col-span-2">
+                          {/* NGO PARTNERS SECTION */}
+                          <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm h-full">
+                             <div className="flex items-center justify-between mb-8">
+                                <div>
+                                   <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                      <Building2 className="h-5 w-5 text-orange-500" /> Verified Rescue Partners
+                                   </h3>
+                                   <p className="text-sm text-slate-500 mt-1">Available NGOs for mass operations</p>
+                                </div>
+                             </div>
+                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                {[
+                                   { name: 'Mumbai Roti Bank', capacity: 'High Capacity', dist: '1.2 km', avail: 'Available Now', icon: Building2 },
+                                   { name: 'Feeding India', capacity: 'Medium Capacity', dist: '2.5 km', avail: 'Busy (ETA 20m)', icon: Heart },
+                                   { name: 'Uday Foundation', capacity: 'High Capacity', dist: '3.0 km', avail: 'Available Now', icon: Award },
+                                   { name: 'ResQ Global', capacity: 'Large Vehicles', dist: '4.5 km', avail: 'Available Now', icon: Truck }
+                                ].map((ngo, i) => (
+                                   <div key={i} className="flex flex-col p-5 rounded-2xl border border-slate-100 bg-slate-50 hover:bg-white hover:border-orange-200 transition-all hover:shadow-sm">
+                                      <div className="h-12 w-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center mb-4">
+                                         <ngo.icon className="h-6 w-6" />
+                                      </div>
+                                      <h4 className="font-bold text-slate-900 mb-2">{ngo.name}</h4>
+                                      <div className="space-y-1 mt-auto">
+                                         <p className="text-xs font-semibold text-slate-600 flex items-center gap-2"><Truck className="h-3 w-3" /> {ngo.capacity}</p>
+                                         <p className="text-xs font-semibold text-slate-600 flex items-center gap-2"><MapPin className="h-3 w-3" /> {ngo.dist}</p>
+                                         <p className={`text-[10px] font-bold uppercase tracking-wider mt-2 ${ngo.avail.includes('Busy') ? 'text-amber-500' : 'text-emerald-500'}`}>
+                                            {ngo.avail}
+                                         </p>
+                                      </div>
+                                   </div>
+                                ))}
+                             </div>
+                          </div>
+                       </div>
+
+                       <div className="flex flex-col gap-8">
+                          {/* EVENT READINESS PANEL (Like Volunteer Status) */}
+                          <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+                             <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest flex items-center gap-2">
+                                <Navigation className="h-4 w-4 text-orange-500" /> Readiness Panel
+                             </h3>
+                             <div className="space-y-3">
+                                <div className="flex justify-between items-center text-sm">
+                                   <span className="flex items-center gap-2 text-slate-600"><div className="h-2 w-2 rounded-full bg-emerald-500"></div> NGOs Available</span>
+                                   <span className="font-bold text-slate-900">8</span>
+                                </div>
+                                <div className="flex justify-between items-center text-sm">
+                                   <span className="flex items-center gap-2 text-slate-600"><div className="h-2 w-2 rounded-full bg-blue-500"></div> Volunteers Ready</span>
+                                   <span className="font-bold text-slate-900">24</span>
+                                </div>
+                                <div className="flex justify-between items-center text-sm">
+                                   <span className="flex items-center gap-2 text-slate-600"><div className="h-2 w-2 rounded-full bg-amber-500"></div> Est. Response Time</span>
+                                   <span className="font-bold text-slate-900">8 mins</span>
+                                </div>
+                             </div>
+                          </div>
+                       </div>
+                    </div>
+                  </div>
                 )}
 
 
                 {/* DASHBOARD VIEW */}
                 {isDashboard && (
-                    <>
-                        <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                            <StatCard
-                                icon={Calendar}
-                                label="Total Events"
-                                value={donations.length}
-                                subtext="Contributions to Date"
-                                color="bg-orange-500"
-                            />
-                            <StatCard
-                                icon={Utensils}
-                                label="Meals Rescued"
-                                value={donations.reduce((acc, d) => acc + (parseInt(d.quantity) || 0), 0)}
-                                subtext="Total Servings"
-                                color="bg-orange-500"
-                            />
-                            <StatCard
-                                icon={Users}
-                                label="People Impacted"
-                                value={donations.reduce((acc, d) => acc + (parseInt(d.quantity) || 0), 0) * 1.2}
-                                subtext="Estimated Reach"
-                                color="bg-emerald-500"
-                            />
-                            <StatCard
-                                icon={Award}
-                                label="Rescue Tier"
-                                value="Platinum"
-                                subtext="Elite Contributor"
-                                color="bg-orange-500"
-                            />
-                        </section>
-
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                            {/* Main Feed */}
-                            <div className="lg:col-span-2 space-y-6">
-                                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                                    <div className="flex items-center justify-between mb-6">
-                                        <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                            <History className="h-5 w-5 text-orange-500" /> Event History
-                                        </h2>
-                                        <button className="text-xs font-bold text-orange-600 hover:underline">View All</button>
-                                    </div>
-                                    <div className="space-y-4">
-                                        {isLoading ? (
-                                            <div className="flex justify-center py-20">
-                                                <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
-                                            </div>
-                                        ) : donations.length === 0 ? (
-                                            <div className="text-center py-16 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
-                                                <Calendar className="h-10 w-10 text-slate-300 mx-auto mb-3" />
-                                                <p className="text-slate-500 font-medium">No events recorded yet.</p>
-                                                <button 
-                                                    onClick={() => navigate('/events/schedule')}
-                                                    className="mt-4 text-sm font-bold text-orange-600"
-                                                >
-                                                    Start your first rescue →
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            donations.slice(0, 5).map((donation) => (
-                                                <div key={donation.id} className="group relative flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100 transition-all hover:bg-white hover:shadow-md hover:border-orange-100">
-                                                    <div className="flex gap-4">
-                                                        <div className="h-12 w-12 bg-white rounded-xl flex items-center justify-center text-orange-600 shadow-sm group-hover:bg-orange-600 group-hover:text-white transition-colors">
-                                                            <Calendar className="h-6 w-6" />
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm font-bold text-slate-900">{donation.foodType}</p>
-                                                            <div className="flex items-center gap-2 mt-1">
-                                                                <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
-                                                                    <MapPin className="h-3 w-3" /> {donation.location}
-                                                                </span>
-                                                                <span className="text-[10px] text-slate-300">•</span>
-                                                                <span className="text-[10px] font-bold text-slate-400 capitalize">{donation.quantity}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <StatusBadge status={donation.status} />
-                                                </div>
-                                            ))
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Impact Visualization */}
-                                <div className="bg-orange-950 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden group">
-                                    <div className="absolute -top-12 -right-12 h-64 w-64 bg-orange-500/10 rounded-full blur-3xl transition-all group-hover:bg-orange-500/20"></div>
-                                    <h3 className="text-xl font-bold mb-1 flex items-center gap-2">
-                                        <TrendingUp className="h-5 w-5 text-orange-400" /> Community Contribution
-                                    </h3>
-                                    <p className="text-orange-300/80 text-sm mb-8">Your events have saved over <span className="text-white font-bold">1.2 tons</span> of food this month.</p>
-                                    
-                                    <div className="grid grid-cols-7 gap-3 items-end h-32 px-4">
-                                        {[60, 40, 85, 30, 95, 55, 75].map((h, i) => (
-                                            <div key={i} className="relative group/bar flex flex-col items-center gap-2">
-                                                <div className="w-full bg-orange-500/40 rounded-t-lg transition-all hover:bg-orange-400 hover:scale-110" style={{ height: `${h}%` }}></div>
-                                                <span className="text-[9px] font-bold text-orange-500 uppercase">W{i+1}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Sidebar Info */}
-                            <div className="space-y-6">
-                                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                                    <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-                                        <Heart className="h-5 w-5 text-rose-500" /> Featured NGOs
-                                    </h3>
-                                    <div className="space-y-4">
-                                        {['Mumbai Roti Bank', 'Feeding India', 'Uday Foundation'].map((ngo, i) => (
-                                            <div key={i} className="flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-slate-100 hover:bg-slate-50 transition-all cursor-pointer">
-                                                <div className="h-8 w-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-600 text-[10px] font-bold">{ngo[0]}</div>
-                                                <div>
-                                                    <p className="text-xs font-bold text-slate-900">{ngo}</p>
-                                                    <p className="text-[9px] text-slate-500">Verified Rescue Partner</p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <button className="w-full mt-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-orange-600 transition-colors">See all partners →</button>
-                                </div>
-
-                                <div className="bg-gradient-to-br from-orange-600 to-orange-800 rounded-3xl p-6 text-white text-center shadow-lg relative overflow-hidden group">
-                                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
-                                    <ShieldCheck className="h-10 w-10 text-orange-400 mx-auto mb-3 relative z-10" />
-                                    <h4 className="font-bold mb-1 relative z-10">Sustainable Partner</h4>
-                                    <p className="text-[10px] text-orange-100/70 mb-4 relative z-10 leading-relaxed">Your organization is recognized for excellence in sustainability and food waste management.</p>
-                                    <button className="w-full py-2 bg-white text-orange-900 rounded-xl text-xs font-bold hover:bg-slate-100 transition-colors relative z-10 shadow-sm">View E-Badge</button>
-                                </div>
-                            </div>
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                        {/* 1. KPI CARDS */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                            <StatCard icon={Calendar} label="Total Events" value={donations.length} subtext="Contributions to Date" color="bg-orange-500" />
+                            <StatCard icon={Utensils} label="Meals Rescued" value={donations.reduce((acc, d) => acc + (parseInt(d.quantity) || 0), 0) || 1200} subtext="Total Servings" color="bg-orange-500" />
+                            <StatCard icon={Users} label="People Impacted" value={(donations.reduce((acc, d) => acc + (parseInt(d.quantity) || 0), 0) || 1200) * 1.2} subtext="Estimated Reach" color="bg-emerald-500" />
+                            <StatCard icon={Building2} label="Active NGOs" value="8" subtext="Available Nearby" color="bg-blue-500" />
+                            <StatCard icon={Users} label="Volunteers" value="24" subtext="Currently Assigned" color="bg-indigo-500" />
                         </div>
-                    </>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                           <div className="lg:col-span-8 space-y-6">
+                              {/* 2. LIVE EVENT PERFORMANCE PANEL */}
+                              <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm relative overflow-hidden">
+                                 <div className="flex items-center justify-between mb-6">
+                                    <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                       <Activity className="h-5 w-5 text-orange-500" /> Live Event Performance
+                                    </h3>
+                                    <span className="text-xs font-bold bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full border border-emerald-100 animate-pulse">LIVE</span>
+                                 </div>
+                                 <div className="space-y-4">
+                                    <div className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-xl border border-slate-100 bg-slate-50 transition-colors">
+                                       <div className="flex gap-4 items-center w-full">
+                                          <div className="h-10 w-10 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
+                                             <PartyPopper className="h-5 w-5" />
+                                          </div>
+                                          <div className="flex-1">
+                                             <div className="flex items-center justify-between mb-1">
+                                                <h4 className="font-bold text-slate-900 text-sm">Grand Palace Wedding Rescue</h4>
+                                                <span className="text-xs font-bold text-slate-500">65% Complete</span>
+                                             </div>
+                                             <div className="w-full bg-slate-200 rounded-full h-1.5 mb-2">
+                                                <div className="bg-emerald-500 h-1.5 rounded-full w-[65%] shadow-sm"></div>
+                                             </div>
+                                             <div className="flex items-center gap-4 text-xs font-medium text-slate-500">
+                                                <span className="flex items-center gap-1"><Building2 className="h-3 w-3 text-slate-400" /> 4 NGOs Active</span>
+                                                <span className="flex items-center gap-1"><Clock className="h-3 w-3 text-amber-500" /> 2 Pending Pickups</span>
+                                                <span className="flex items-center gap-1"><AlertTriangle className="h-3 w-3 text-rose-500" /> 1 Delayed</span>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+
+                              {/* 3. EVENT TIMELINE TRACKER */}
+                              <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                                 <h3 className="text-sm font-bold text-slate-900 mb-6 uppercase tracking-widest text-center">Event Timeline Tracker</h3>
+                                 <div className="flex items-center justify-between relative px-2 sm:px-8">
+                                    <div className="absolute left-8 right-8 top-1/2 -translate-y-1/2 h-1 bg-slate-100 rounded-full z-0"></div>
+                                    {[
+                                       { status: 'Created', count: '✓', color: 'bg-emerald-100 text-emerald-600 border-emerald-200' },
+                                       { status: 'Assigned', count: '✓', color: 'bg-emerald-100 text-emerald-600 border-emerald-200' },
+                                       { status: 'Pickup', count: '3', color: 'bg-orange-100 text-orange-600 border-orange-400 ring-4 ring-orange-50' },
+                                       { status: 'Distribution', count: '0', color: 'bg-slate-100 text-slate-400 border-slate-200' },
+                                       { status: 'Completed', count: '0', color: 'bg-slate-100 text-slate-400 border-slate-200' }
+                                    ].map((step, i) => (
+                                       <div key={i} className="relative z-10 flex flex-col items-center gap-2 bg-white px-1 sm:px-2">
+                                          <div className={`h-8 w-8 rounded-full flex items-center justify-center font-bold text-xs shadow-sm border-2 ${step.color}`}>
+                                             {step.count}
+                                          </div>
+                                          <span className={`text-[10px] font-bold hidden sm:block uppercase tracking-wider ${step.color.includes('orange') ? 'text-orange-600' : 'text-slate-500'}`}>{step.status}</span>
+                                       </div>
+                                    ))}
+                                 </div>
+                              </div>
+
+                              {/* 7. EVENT HISTORY & 4. NGO PERFORMANCE RANKING */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                 <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                                    <div className="flex items-center justify-between mb-4">
+                                       <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                                          <History className="h-4 w-4 text-blue-500" /> Event History
+                                       </h3>
+                                       <button className="text-[10px] font-bold text-orange-600 hover:underline">View All</button>
+                                    </div>
+                                    <div className="space-y-3">
+                                       {donations.slice(0, 3).map((donation) => (
+                                          <div key={donation.id} className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex flex-col gap-2 hover:bg-white hover:border-orange-100 transition-colors cursor-pointer group">
+                                             <div className="flex justify-between items-center">
+                                                <span className="text-sm font-bold text-slate-900 group-hover:text-orange-600 transition-colors">{donation.foodType}</span>
+                                                <StatusBadge status={donation.status} />
+                                             </div>
+                                             <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                                <span>{donation.quantity}</span> • <span>{donation.location}</span>
+                                             </div>
+                                          </div>
+                                       ))}
+                                       {donations.length === 0 && (
+                                          <p className="text-xs text-slate-500 text-center py-4 bg-slate-50 rounded-lg">No past events found.</p>
+                                       )}
+                                    </div>
+                                 </div>
+
+                                 <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                                    <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest flex items-center gap-2">
+                                       <Award className="h-4 w-4 text-emerald-500" /> NGO Performance
+                                    </h3>
+                                    <div className="space-y-4">
+                                       {[
+                                          { name: 'Feeding India', rate: '99%', time: '12m', color: 'bg-emerald-500' },
+                                          { name: 'Mumbai Roti Bank', rate: '96%', time: '15m', color: 'bg-blue-500' },
+                                          { name: 'ResQ Global', rate: '92%', time: '18m', color: 'bg-amber-500' }
+                                       ].map((ngo, i) => (
+                                          <div key={i} className="flex gap-3 items-center">
+                                             <div className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-600 font-bold text-xs border border-slate-100 shrink-0">#{i+1}</div>
+                                             <div className="flex-1">
+                                                <div className="flex justify-between items-center mb-1">
+                                                   <p className="text-sm font-bold text-slate-900">{ngo.name}</p>
+                                                   <span className="text-[10px] font-black bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">{ngo.time} avg</span>
+                                                </div>
+                                                <div className="w-full bg-slate-100 rounded-full h-1.5">
+                                                   <div className={`h-1.5 rounded-full ${ngo.color}`} style={{ width: ngo.rate }}></div>
+                                                </div>
+                                             </div>
+                                          </div>
+                                       ))}
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+
+                           <div className="lg:col-span-4 space-y-6">
+                              {/* 8. IMPACT TREND GRAPH / EVENT TYPE ANALYSIS */}
+                              <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden group">
+                                 <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl"></div>
+                                 <h3 className="text-sm font-bold mb-4 uppercase tracking-widest flex items-center gap-2">
+                                    <PieChart className="h-4 w-4 text-orange-400" /> Event Type Analysis
+                                 </h3>
+                                 <div className="space-y-3 relative z-10">
+                                    <div className="flex items-center gap-3 p-2.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                                       <div className="h-8 w-8 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center"><PartyPopper className="h-4 w-4" /></div>
+                                       <div className="flex-1">
+                                          <div className="flex justify-between items-center mb-1">
+                                             <p className="text-xs font-bold text-slate-200">Weddings</p>
+                                             <span className="text-xs font-black text-white">45%</span>
+                                          </div>
+                                          <div className="h-1 w-full bg-slate-800 rounded-full"><div className="h-full bg-rose-500 rounded-full w-[45%]"></div></div>
+                                       </div>
+                                    </div>
+                                    <div className="flex items-center gap-3 p-2.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                                       <div className="h-8 w-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center"><Briefcase className="h-4 w-4" /></div>
+                                       <div className="flex-1">
+                                          <div className="flex justify-between items-center mb-1">
+                                             <p className="text-xs font-bold text-slate-200">Corporate</p>
+                                             <span className="text-xs font-black text-white">30%</span>
+                                          </div>
+                                          <div className="h-1 w-full bg-slate-800 rounded-full"><div className="h-full bg-blue-500 rounded-full w-[30%]"></div></div>
+                                       </div>
+                                    </div>
+                                    <div className="flex items-center gap-3 p-2.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                                       <div className="h-8 w-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center"><Calendar className="h-4 w-4" /></div>
+                                       <div className="flex-1">
+                                          <div className="flex justify-between items-center mb-1">
+                                             <p className="text-xs font-bold text-slate-200">Festivals</p>
+                                             <span className="text-xs font-black text-white">25%</span>
+                                          </div>
+                                          <div className="h-1 w-full bg-slate-800 rounded-full"><div className="h-full bg-emerald-500 rounded-full w-[25%]"></div></div>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+
+                              {/* 6. BOTTLENECK DETECTION PANEL */}
+                              <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                                 <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest flex items-center gap-2">
+                                    <AlertTriangle className="h-4 w-4 text-red-500" /> Bottleneck Detection
+                                 </h3>
+                                 <div className="space-y-2">
+                                    <div className="p-3 rounded-xl border-l-4 border-red-500 bg-red-50 text-red-900 text-xs font-bold flex flex-col gap-1">
+                                       <div className="flex justify-between items-center">
+                                          <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> Pickup Delay</span>
+                                          <span className="bg-white px-2 py-0.5 rounded shadow-sm border border-red-100 text-[10px]">Critical</span>
+                                       </div>
+                                       <p className="text-[10px] text-red-700 font-medium">NGO truck stuck in transit. ETA +20m.</p>
+                                    </div>
+                                    <div className="p-3 rounded-xl border-l-4 border-amber-500 bg-amber-50 text-amber-900 text-xs font-bold flex flex-col gap-1">
+                                       <div className="flex justify-between items-center">
+                                          <span className="flex items-center gap-1"><Users className="h-3 w-3" /> Vol. Shortage</span>
+                                          <span className="bg-white px-2 py-0.5 rounded shadow-sm border border-amber-100 text-[10px]">Warning</span>
+                                       </div>
+                                       <p className="text-[10px] text-amber-700 font-medium">Need 3 more volunteers at Grand Palace.</p>
+                                    </div>
+                                 </div>
+                              </div>
+
+                              {/* 5. VOLUNTEER EFFICIENCY PANEL */}
+                              <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                                 <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest flex items-center gap-2">
+                                    <TrendingUp className="h-4 w-4 text-emerald-500" /> Volunteer Efficiency
+                                 </h3>
+                                 <div className="space-y-3">
+                                    {[
+                                       { name: 'Rahul K.', deliveries: 45, rate: '100%', active: true },
+                                       { name: 'Priya S.', deliveries: 38, rate: '98%', active: true },
+                                       { name: 'Amit V.', deliveries: 34, rate: '95%', active: false }
+                                    ].map((vol, i) => (
+                                       <div key={i} className="flex items-center justify-between p-2 border border-slate-100 rounded-xl bg-slate-50 hover:bg-white transition-colors cursor-pointer">
+                                          <div className="flex items-center gap-3">
+                                             <div className="h-8 w-8 rounded-full bg-white border border-slate-200 flex items-center justify-center font-bold text-slate-600 text-xs shadow-sm">
+                                                {vol.name[0]}
+                                             </div>
+                                             <div>
+                                                <p className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                                                   {vol.name} {vol.active && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>}
+                                                </p>
+                                                <p className="text-[9px] text-slate-500 font-medium">{vol.deliveries} Deliveries</p>
+                                             </div>
+                                          </div>
+                                          <span className="text-[10px] font-black bg-emerald-50 text-emerald-600 px-2 py-1 rounded-md border border-emerald-100">{vol.rate}</span>
+                                       </div>
+                                    ))}
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                    </div>
                 )}
 
                 {/* SCHEDULE VIEW */}
                 {isSchedule && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-                        <div className="space-y-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-in fade-in slide-in-from-bottom-5 duration-700">
+                        {/* LEFT COLUMN: Input & Planning */}
+                        <div className="lg:col-span-7 space-y-6">
+                            
+                            {/* 1. Event Basic Info */}
                             <VerificationGate role="events">
-                                <div className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100">
-                                    <h2 className="text-2xl font-bold text-slate-900 mb-6">Event Rescue Form</h2>
-                                    <form onSubmit={handleSubmit} className="space-y-6">
+                                <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-6">
+                                       <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                          <Calendar className="h-5 w-5 text-orange-500" /> Event Details
+                                       </h2>
+                                       {/* 9. Event Templates (enhanced) */}
+                                       <div className="flex gap-2">
+                                          <button type="button" onClick={() => applyTemplate(eventTemplates[0])} className="text-[10px] font-bold bg-slate-100 text-slate-600 px-3 py-1.5 rounded-full hover:bg-orange-100 hover:text-orange-700 transition-colors">Wedding</button>
+                                          <button type="button" onClick={() => applyTemplate(eventTemplates[1])} className="text-[10px] font-bold bg-slate-100 text-slate-600 px-3 py-1.5 rounded-full hover:bg-orange-100 hover:text-orange-700 transition-colors">Corporate</button>
+                                       </div>
+                                    </div>
+                                    <form id="schedule-form" onSubmit={handleSubmit} className="space-y-6">
                                         <div className="space-y-4">
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Event / Food Description</label>
                                                 <div className="relative">
-                                                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                                    <PartyPopper className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                                     <input
                                                         name="foodType"
                                                         value={formData.foodType}
@@ -574,7 +747,7 @@ const EventsDashboard = () => {
 
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-1.5">
-                                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Est. Quantity</label>
+                                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Est. Quantity (Servings)</label>
                                                     <div className="relative">
                                                         <Utensils className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                                         <input
@@ -583,7 +756,7 @@ const EventsDashboard = () => {
                                                             onChange={handleInputChange}
                                                             required
                                                             className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-transparent focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/5 outline-none transition-all text-sm font-medium"
-                                                            placeholder="200 servings"
+                                                            placeholder="200"
                                                         />
                                                     </div>
                                                 </div>
@@ -618,61 +791,590 @@ const EventsDashboard = () => {
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <button
-                                            type="submit"
-                                            disabled={isSubmitting}
-                                            className="w-full py-4 bg-orange-600 text-white rounded-2xl font-bold text-sm shadow-xl shadow-orange-500/20 hover:bg-orange-700 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
-                                        >
-                                            {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Schedule Bulk Rescue'}
-                                        </button>
                                     </form>
                                 </div>
                             </VerificationGate>
 
-                            <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                                <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
-                                    <Plus className="h-4 w-4 text-orange-500" /> One-Tap Templates
-                                </h3>
-                                <div className="grid grid-cols-2 gap-4">
-                                    {eventTemplates.map((template) => (
-                                        <button
-                                            key={template.id}
-                                            onClick={() => applyTemplate(template)}
-                                            className="flex items-center gap-3 p-3 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:border-orange-200 hover:shadow-sm transition-all text-left"
-                                        >
-                                            <div className="h-8 w-8 rounded-lg bg-white flex items-center justify-center text-orange-500 shadow-sm">
-                                                <template.icon className="h-4 w-4" />
-                                            </div>
-                                            <span className="text-xs font-bold text-slate-700">{template.name}</span>
-                                        </button>
-                                    ))}
-                                </div>
+                            {/* 6. Food Type Segmentation */}
+                            <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                               <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                  <Utensils className="h-4 w-4 text-orange-500" /> Food Segmentation
+                               </h3>
+                               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                                  <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-orange-500 bg-orange-50 text-orange-700 cursor-pointer">
+                                     <PartyPopper className="h-6 w-6 mb-2" />
+                                     <span className="text-xs font-bold">Cooked Meals</span>
+                                     <input type="radio" name="foodSeg" className="hidden" defaultChecked />
+                                  </label>
+                                  <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-slate-100 bg-slate-50 text-slate-500 hover:bg-slate-100 cursor-pointer">
+                                     <Briefcase className="h-6 w-6 mb-2" />
+                                     <span className="text-xs font-bold">Packaged Items</span>
+                                     <input type="radio" name="foodSeg" className="hidden" />
+                                  </label>
+                                  <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-slate-100 bg-slate-50 text-slate-500 hover:bg-slate-100 cursor-pointer">
+                                     <Leaf className="h-6 w-6 mb-2" />
+                                     <span className="text-xs font-bold">Raw/Perishable</span>
+                                     <input type="radio" name="foodSeg" className="hidden" />
+                                  </label>
+                               </div>
+                               <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-50 border border-blue-100">
+                                  <ThermometerSun className="h-5 w-5 text-blue-500" />
+                                  <div className="flex-1">
+                                     <p className="text-xs font-bold text-blue-900">Cold Chain Required</p>
+                                     <p className="text-[10px] text-blue-700">Temperature-controlled vehicles will be prioritized.</p>
+                                  </div>
+                                  <div className="w-10 h-6 bg-blue-500 rounded-full relative shadow-inner cursor-pointer">
+                                     <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow"></div>
+                                  </div>
+                               </div>
+                            </div>
+
+                            {/* 5. Zone Distribution Planner & 10. Multi-NGO Toggle */}
+                            <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                               <div className="flex justify-between items-center mb-6">
+                                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                                     <MapIcon className="h-4 w-4 text-orange-500" /> Zone Distribution Planner
+                                  </h3>
+                                  <div className="flex items-center gap-2">
+                                     <span className="text-[10px] font-bold text-slate-500 uppercase">Multi-NGO Dispatch</span>
+                                     <div className="w-8 h-4 bg-emerald-500 rounded-full relative cursor-pointer shadow-inner">
+                                        <div className="absolute right-0.5 top-0.5 w-3 h-3 bg-white rounded-full shadow"></div>
+                                     </div>
+                                  </div>
+                               </div>
+                               <p className="text-xs text-slate-500 mb-4 leading-relaxed">For events {">"}500 meals, we automatically split distribution across multiple zones to accelerate delivery.</p>
+                               <div className="space-y-3">
+                                  <div className="flex items-center gap-4 p-3 rounded-xl border border-slate-200 bg-slate-50">
+                                     <div className="h-8 w-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-xs">Z1</div>
+                                     <div className="flex-1">
+                                        <p className="text-xs font-bold text-slate-900">North District Dropoff</p>
+                                        <p className="text-[10px] text-slate-500">Allocated: ~40% of total</p>
+                                     </div>
+                                     <span className="text-[10px] font-black bg-emerald-100 text-emerald-700 px-2 py-1 rounded">2 NGOs Ready</span>
+                                  </div>
+                                  <div className="flex items-center gap-4 p-3 rounded-xl border border-slate-200 bg-slate-50">
+                                     <div className="h-8 w-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">Z2</div>
+                                     <div className="flex-1">
+                                        <p className="text-xs font-bold text-slate-900">South Metro Area</p>
+                                        <p className="text-[10px] text-slate-500">Allocated: ~60% of total</p>
+                                     </div>
+                                     <span className="text-[10px] font-black bg-emerald-100 text-emerald-700 px-2 py-1 rounded">3 NGOs Ready</span>
+                                  </div>
+                               </div>
                             </div>
                         </div>
 
-                        <div className="space-y-8 pt-4">
-                            <div className="relative">
-                                <div className="absolute -left-6 top-0 bottom-0 w-px bg-slate-100 lg:block hidden"></div>
-                                <div className="space-y-8">
-                                    <div className="relative">
-                                        <div className="absolute -left-[31px] top-1 h-3 w-3 rounded-full bg-orange-500 ring-4 ring-white lg:block hidden"></div>
-                                        <h4 className="font-bold text-slate-900 mb-1">Mass Rescue Protocol</h4>
-                                        <p className="text-sm text-slate-500 leading-relaxed">For events exceeding 200 portions, we deploy a specialized logistics team to ensure rapid handover within 30 minutes of listing.</p>
+                        {/* RIGHT COLUMN: Intelligence & Confirmation */}
+                        <div className="lg:col-span-5 space-y-6">
+                            
+                            {/* 2. Smart Prediction Panel */}
+                            <div className="bg-slate-900 p-6 rounded-3xl shadow-xl text-white relative overflow-hidden group">
+                               <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl"></div>
+                               <h3 className="text-sm font-bold mb-4 uppercase tracking-widest flex items-center gap-2 text-slate-300">
+                                  <Bot className="h-4 w-4 text-orange-400" /> AI Forecast
+                               </h3>
+                               <div className="grid grid-cols-2 gap-4 relative z-10">
+                                  <div className="p-3 bg-white/5 rounded-xl border border-white/10">
+                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">NGOs Req.</p>
+                                     <p className="text-2xl font-bold text-white flex items-center gap-2">4 <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded uppercase">Optimal</span></p>
+                                  </div>
+                                  <div className="p-3 bg-white/5 rounded-xl border border-white/10">
+                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Est. Pickup</p>
+                                     <p className="text-2xl font-bold text-white">18m</p>
+                                  </div>
+                                  <div className="col-span-2 p-3 bg-white/5 rounded-xl border border-white/10 flex justify-between items-center">
+                                     <span className="text-xs font-bold text-slate-300">Expected Completion</span>
+                                     <span className="text-sm font-black text-emerald-400">1h 15m total</span>
+                                  </div>
+                               </div>
+                            </div>
+
+                            {/* 7. Risk & Expiry Warning */}
+                            <div className="bg-rose-50 p-5 rounded-2xl border border-rose-100 flex gap-3">
+                               <AlertCircle className="h-5 w-5 text-rose-500 shrink-0" />
+                               <div>
+                                  <h4 className="text-xs font-bold text-rose-900 mb-1">Expiry Risk Detected</h4>
+                                  <p className="text-[10px] text-rose-700 leading-relaxed">The timeline provided implies high perishability. The system will activate "Urgent Priority Dispatch" for this event.</p>
+                               </div>
+                            </div>
+
+                            {/* 3. NGO Auto-Match Preview & 4. Volunteer Requirement */}
+                            <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                               <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                  <Radio className="h-4 w-4 text-orange-500" /> Auto-Match Preview
+                               </h3>
+                               
+                               <div className="space-y-4 mb-6">
+                                  <div className="flex items-center justify-between text-xs font-bold text-slate-500 border-b border-slate-100 pb-2">
+                                     <span>Available Within 5km</span>
+                                     <span className="text-emerald-600">6 Organizations</span>
+                                  </div>
+                                  {[
+                                     { name: 'Feeding India', dist: '1.2km', avail: 'High' },
+                                     { name: 'Mumbai Roti Bank', dist: '2.5km', avail: 'High' }
+                                  ].map((ngo, i) => (
+                                     <div key={i} className="flex justify-between items-center">
+                                        <div className="flex items-center gap-2">
+                                           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                                           <span className="text-xs font-bold text-slate-900">{ngo.name}</span>
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-400">{ngo.dist}</span>
+                                     </div>
+                                  ))}
+                               </div>
+
+                               <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Resource Requirements</h4>
+                                  <div className="flex items-center justify-between mb-2">
+                                     <span className="text-xs font-bold text-slate-700 flex items-center gap-1"><Users className="h-3 w-3 text-blue-500" /> Required Volunteers</span>
+                                     <span className="text-sm font-black text-slate-900">12 Total</span>
+                                  </div>
+                                  <div className="flex gap-1 h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+                                     <div className="bg-blue-500 h-full w-[40%]" title="Pickup: 5"></div>
+                                     <div className="bg-emerald-500 h-full w-[60%]" title="Distribution: 7"></div>
+                                  </div>
+                                  <div className="flex justify-between mt-1">
+                                     <span className="text-[9px] font-bold text-blue-600">40% Loading</span>
+                                     <span className="text-[9px] font-bold text-emerald-600">60% Dropoff</span>
+                                  </div>
+                               </div>
+                            </div>
+
+                            {/* 8. Impact Preview */}
+                            <div className="bg-gradient-to-br from-emerald-600 to-emerald-500 p-6 rounded-3xl text-white shadow-lg relative overflow-hidden">
+                               <div className="absolute right-0 bottom-0 opacity-10"><Leaf className="w-32 h-32 -mr-6 -mb-6" /></div>
+                               <p className="text-[10px] font-black text-emerald-100 uppercase tracking-[0.2em] mb-2">Projected Impact</p>
+                               <div className="flex justify-between items-end relative z-10">
+                                  <div>
+                                     <p className="text-3xl font-black">240</p>
+                                     <p className="text-xs font-bold text-emerald-100 mt-0.5">People Fed</p>
+                                  </div>
+                                  <div className="text-right">
+                                     <p className="text-xl font-black">35 kg</p>
+                                     <p className="text-[10px] font-bold text-emerald-100 mt-0.5">CO₂ Saved</p>
+                                  </div>
+                               </div>
+                            </div>
+
+                            {/* 11. Final Confirmation Panel */}
+                            <button
+                               form="schedule-form"
+                               type="submit"
+                               disabled={isSubmitting}
+                               className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-orange-500/20 hover:bg-orange-700 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
+                            >
+                               {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Confirm & Dispatch Mission'}
+                               {!isSubmitting && <ArrowRight className="h-4 w-4" />}
+                            </button>
+                            <p className="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-4">
+                               Action triggers immediate SMS to matched NGOs
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* CONTROL VIEW */}
+                {isControl && (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                        {/* 1. Event Header & 9. Control Actions */}
+                        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div>
+                                <div className="flex items-center gap-3 mb-2">
+                                    <h2 className="text-2xl font-black text-slate-900">Grand Palace Wedding Rescue</h2>
+                                    <span className="text-[10px] font-black bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase tracking-widest border border-emerald-200 animate-pulse">Live</span>
+                                </div>
+                                <div className="flex flex-wrap items-center gap-4 text-xs font-bold text-slate-500">
+                                    <span className="flex items-center gap-1"><Utensils className="h-4 w-4" /> 500 Meals Total</span>
+                                    <span className="flex items-center gap-1"><Clock className="h-4 w-4" /> Started 2:30 PM</span>
+                                    <span className="flex items-center gap-1"><MapPin className="h-4 w-4" /> Loading Dock B</span>
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <button className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-slate-300">Reassign NGO</button>
+                                <button className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-slate-300">Add Volunteer</button>
+                                <button className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-slate-300">Adjust Dist.</button>
+                                <button className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-rose-300">Cancel</button>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                            <div className="lg:col-span-8 space-y-6">
+                                {/* 2. Live Progress Tracker */}
+                                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                                    <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                        <Activity className="h-4 w-4 text-orange-500" /> Live Operation Progress
+                                    </h3>
+                                    <div className="grid grid-cols-4 gap-4 mb-6">
+                                        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total</p>
+                                            <p className="text-xl font-black text-slate-900">500</p>
+                                        </div>
+                                        <div className="p-4 bg-orange-50 rounded-2xl border border-orange-100">
+                                            <p className="text-[10px] font-black text-orange-600/70 uppercase tracking-widest mb-1">Picked</p>
+                                            <p className="text-xl font-black text-orange-700">350</p>
+                                        </div>
+                                        <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                                            <p className="text-[10px] font-black text-blue-600/70 uppercase tracking-widest mb-1">Delivered</p>
+                                            <p className="text-xl font-black text-blue-700">200</p>
+                                        </div>
+                                        <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                                            <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest mb-1">Remaining</p>
+                                            <p className="text-xl font-black text-emerald-700">150</p>
+                                        </div>
                                     </div>
-                                    <div className="relative">
-                                        <div className="absolute -left-[31px] top-1 h-3 w-3 rounded-full bg-orange-500 ring-4 ring-white lg:block hidden"></div>
-                                        <h4 className="font-bold text-slate-900 mb-1">Verification Step</h4>
-                                        <p className="text-sm text-slate-500 leading-relaxed">NGO partners will verify food temperature and packaging upon arrival at the venue location.</p>
+                                    <div className="relative pt-2">
+                                        <div className="flex mb-2 items-center justify-between">
+                                            <span className="text-xs font-bold text-slate-500">Overall Completion</span>
+                                            <span className="text-xs font-black text-emerald-600">40%</span>
+                                        </div>
+                                        <div className="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-slate-100">
+                                            <div style={{ width: "40%" }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-emerald-500"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 6. Event Timeline */}
+                                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                                    <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                        <History className="h-4 w-4 text-blue-500" /> Mission Timeline
+                                    </h3>
+                                    <div className="flex items-center justify-between relative px-2 sm:px-8">
+                                        <div className="absolute left-8 right-8 top-1/2 -translate-y-1/2 h-1 bg-slate-100 rounded-full z-0"></div>
+                                        {[
+                                            { status: 'Created', time: '2:00 PM', active: true, color: 'bg-emerald-500 text-white border-emerald-500' },
+                                            { status: 'Assigned', time: '2:15 PM', active: true, color: 'bg-emerald-500 text-white border-emerald-500' },
+                                            { status: 'Pickup', time: 'In Progress', active: true, color: 'bg-orange-500 text-white border-orange-500 ring-4 ring-orange-50' },
+                                            { status: 'Distribution', time: 'Pending', active: false, color: 'bg-white text-slate-300 border-slate-200' },
+                                            { status: 'Completed', time: 'Pending', active: false, color: 'bg-white text-slate-300 border-slate-200' }
+                                        ].map((step, i) => (
+                                            <div key={i} className="relative z-10 flex flex-col items-center gap-2 bg-white px-1 sm:px-2">
+                                                <div className={`h-6 w-6 sm:h-8 sm:w-8 rounded-full flex items-center justify-center font-bold text-[10px] sm:text-xs shadow-sm border-2 ${step.color}`}>
+                                                    {step.active && step.status !== 'Pickup' ? '✓' : i + 1}
+                                                </div>
+                                                <div className="text-center">
+                                                    <span className={`text-[9px] sm:text-[10px] font-bold block uppercase tracking-wider ${step.status === 'Pickup' ? 'text-orange-600' : (step.active ? 'text-slate-900' : 'text-slate-400')}`}>{step.status}</span>
+                                                    <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 block">{step.time}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* 3. NGO Distribution Panel & 5. Zone Distribution View */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                                        <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                            <Building2 className="h-4 w-4 text-emerald-500" /> Active NGOs
+                                        </h3>
+                                        <div className="space-y-4">
+                                            {[
+                                                { name: 'Feeding India', assigned: 300, progress: 60 },
+                                                { name: 'Mumbai Roti Bank', assigned: 200, progress: 10 }
+                                            ].map((ngo, i) => (
+                                                <div key={i} className="p-3 rounded-xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm transition-all cursor-pointer">
+                                                    <div className="flex justify-between items-center mb-2">
+                                                        <span className="text-xs font-bold text-slate-900">{ngo.name}</span>
+                                                        <span className="text-[10px] font-black text-slate-500">{ngo.assigned} Meals</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-200 rounded-full h-1.5">
+                                                        <div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: `${ngo.progress}%` }}></div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                                        <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                            <MapIcon className="h-4 w-4 text-indigo-500" /> Zone Distribution
+                                        </h3>
+                                        <div className="space-y-3">
+                                            {[
+                                                { zone: 'North District', status: 'Active', color: 'text-emerald-600 bg-emerald-50 border-emerald-100' },
+                                                { zone: 'South Metro', status: 'Delayed', color: 'text-amber-600 bg-amber-50 border-amber-100' }
+                                            ].map((z, i) => (
+                                                <div key={i} className="flex justify-between items-center p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer">
+                                                    <span className="text-xs font-bold text-slate-700">{z.zone}</span>
+                                                    <span className={`text-[10px] font-black px-2 py-1 rounded-md border ${z.color}`}>{z.status}</span>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-orange-50 p-6 rounded-3xl border border-orange-100 flex gap-4">
-                                <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm text-orange-600">
-                                    <ShieldCheck className="h-6 w-6" />
+                            <div className="lg:col-span-4 space-y-6">
+                                {/* 7. Alerts & Risks */}
+                                <div className="bg-white rounded-3xl p-6 shadow-sm border border-rose-100">
+                                    <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                        <AlertTriangle className="h-4 w-4 text-rose-500" /> Live Alerts
+                                    </h3>
+                                    <div className="space-y-3">
+                                        <div className="p-3 rounded-xl border-l-4 border-amber-500 bg-amber-50 flex gap-3">
+                                            <AlertCircle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                                            <div>
+                                                <p className="text-xs font-bold text-amber-900">Traffic Delay (Z2)</p>
+                                                <p className="text-[10px] text-amber-700 mt-0.5">South Metro delivery delayed by 15 mins.</p>
+                                            </div>
+                                        </div>
+                                        <div className="p-3 rounded-xl border-l-4 border-rose-500 bg-rose-50 flex gap-3">
+                                            <ThermometerSun className="h-4 w-4 text-rose-600 shrink-0 mt-0.5" />
+                                            <div>
+                                                <p className="text-xs font-bold text-rose-900">Expiry Warning</p>
+                                                <p className="text-[10px] text-rose-700 mt-0.5">Perishables must be distributed within 1 hr.</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p className="text-xs text-orange-700 leading-relaxed">By scheduling, you confirm that the food has been handled according to official Food Safety Guidelines for mass catering.</p>
+
+                                {/* 4. Volunteer Tracking Panel */}
+                                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                                    <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                        <Users className="h-4 w-4 text-blue-500" /> Active Fleet
+                                    </h3>
+                                    <div className="space-y-3">
+                                        {[
+                                            { name: 'Rahul K.', role: 'Driver', status: 'On Route', dot: 'bg-amber-500' },
+                                            { name: 'Priya S.', role: 'Distributor', status: 'Idle', dot: 'bg-slate-300' },
+                                            { name: 'Amit V.', role: 'Driver', status: 'Delivering', dot: 'bg-emerald-500' }
+                                        ].map((v, i) => (
+                                            <div key={i} className="flex justify-between items-center p-2 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100 cursor-pointer">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-600">{v.name[0]}</div>
+                                                    <div>
+                                                        <p className="text-xs font-bold text-slate-900">{v.name}</p>
+                                                        <p className="text-[9px] text-slate-500 font-medium">{v.role}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className={`h-1.5 w-1.5 rounded-full ${v.dot}`}></div>
+                                                    <span className="text-[10px] font-bold text-slate-600">{v.status}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <button className="w-full mt-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-100 rounded-xl">View Live Map →</button>
+                                </div>
+
+                                {/* 8. Impact Tracker */}
+                                <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-6 shadow-xl relative overflow-hidden group text-white">
+                                    <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none group-hover:scale-110 transition-transform duration-700"><Zap className="w-24 h-24" /></div>
+                                    <h3 className="text-sm font-bold mb-4 flex items-center gap-2 text-slate-200">
+                                        <TrendingUp className="h-4 w-4 text-orange-400" /> Real-time Impact
+                                    </h3>
+                                    <div className="space-y-4 relative z-10">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs font-bold text-slate-400">People Fed</span>
+                                            <span className="text-lg font-black text-emerald-400">200</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs font-bold text-slate-400">Food Saved</span>
+                                            <span className="text-lg font-black text-orange-400">120 kg</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs font-bold text-slate-400">CO₂ Reduced</span>
+                                            <span className="text-lg font-black text-blue-400">18 kg</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ANALYTICS VIEW */}
+                {isAnalytics && (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                        {/* Header & 10. Export Report */}
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                            <div>
+                                <h2 className="text-xl font-black text-slate-900">Grand Palace Wedding Rescue</h2>
+                                <p className="text-xs font-bold text-slate-500">Completed on Oct 24, 2026 • 500 Meals</p>
+                            </div>
+                            <button className="px-6 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl shadow-lg hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 flex items-center gap-2">
+                                <Activity className="h-4 w-4" /> Export Full Report
+                            </button>
+                        </div>
+
+                        {/* 1. Event Impact Summary */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <StatCard icon={Utensils} label="Total Meals" value="500" subtext="Rescued" color="bg-orange-500" />
+                            <StatCard icon={Users} label="People Fed" value="480" subtext="Estimated" color="bg-blue-500" />
+                            <StatCard icon={TrendingUp} label="Food Saved" value="250 kg" subtext="Diverted" color="bg-emerald-500" />
+                            <StatCard icon={Leaf} label="CO₂ Reduced" value="38 kg" subtext="Emissions" color="bg-teal-500" />
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                            <div className="lg:col-span-8 space-y-6">
+                                {/* 2. Performance Breakdown & 5. Time Analysis */}
+                                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                                    <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                        <PieChart className="h-4 w-4 text-blue-500" /> Operational Performance
+                                    </h3>
+                                    <div className="grid grid-cols-3 gap-6">
+                                        <div className="text-center p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                                            <div className="text-2xl font-black text-emerald-600 mb-1">98%</div>
+                                            <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Completion Rate</div>
+                                        </div>
+                                        <div className="text-center p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                                            <div className="text-2xl font-black text-blue-600 mb-1">12m</div>
+                                            <div className="text-[10px] font-bold text-blue-800 uppercase tracking-wider">Avg Pickup Time</div>
+                                        </div>
+                                        <div className="text-center p-4 bg-orange-50 rounded-2xl border border-orange-100">
+                                            <div className="text-2xl font-black text-orange-600 mb-1">45m</div>
+                                            <div className="text-[10px] font-bold text-orange-800 uppercase tracking-wider">Avg Delivery Time</div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-6 pt-6 border-t border-slate-100 grid grid-cols-2 gap-6">
+                                        <div>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Average Delay</p>
+                                            <p className="text-sm font-bold text-slate-900">8 minutes</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Peak Delay Time</p>
+                                            <p className="text-sm font-bold text-amber-600">3:15 PM - 3:30 PM (Traffic)</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 3. NGO Performance Analysis & 6. Zone Performance */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                                        <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                            <Building2 className="h-4 w-4 text-indigo-500" /> NGO Success Rates
+                                        </h3>
+                                        <div className="space-y-4">
+                                            {[
+                                                { name: 'Feeding India', rate: '100%', meals: 300, color: 'bg-emerald-500' },
+                                                { name: 'Mumbai Roti Bank', rate: '95%', meals: 200, color: 'bg-emerald-400' }
+                                            ].map((ngo, i) => (
+                                                <div key={i} className="flex flex-col gap-2">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-xs font-bold text-slate-700">{ngo.name} <span className="text-slate-400 font-normal">({ngo.meals}m)</span></span>
+                                                        <span className="text-xs font-black text-slate-900">{ngo.rate}</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-100 rounded-full h-1.5">
+                                                        <div className={`${ngo.color} h-1.5 rounded-full`} style={{ width: ngo.rate }}></div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                                        <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                            <MapIcon className="h-4 w-4 text-purple-500" /> Zone Completion
+                                        </h3>
+                                        <div className="space-y-4">
+                                            {[
+                                                { name: 'North District', completion: '100%', color: 'bg-emerald-500' },
+                                                { name: 'South Metro', completion: '85%', color: 'bg-amber-400' }
+                                            ].map((zone, i) => (
+                                                <div key={i} className="flex flex-col gap-2">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-xs font-bold text-slate-700">{zone.name}</span>
+                                                        <span className="text-xs font-black text-slate-900">{zone.completion}</span>
+                                                    </div>
+                                                    <div className="w-full bg-slate-100 rounded-full h-1.5">
+                                                        <div className={`${zone.color} h-1.5 rounded-full`} style={{ width: zone.completion }}></div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 9. Event Type Comparison */}
+                                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                                    <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                        <BarChart3 className="h-4 w-4 text-teal-500" /> Category Benchmarking
+                                    </h3>
+                                    <p className="text-xs text-slate-500 mb-4">How this wedding compares to other event types (avg. meals rescued).</p>
+                                    <div className="flex items-end gap-2 h-32 mt-4">
+                                        {[
+                                            { type: 'Corporate', height: '40%', value: 120, color: 'bg-slate-200' },
+                                            { type: 'Birthday', height: '30%', value: 50, color: 'bg-slate-200' },
+                                            { type: 'Wedding (This)', height: '95%', value: 500, color: 'bg-orange-500' },
+                                            { type: 'Concert', height: '60%', value: 300, color: 'bg-slate-200' }
+                                        ].map((bar, i) => (
+                                            <div key={i} className="flex-1 flex flex-col items-center justify-end group">
+                                                <span className="text-[10px] font-bold text-slate-400 mb-2 opacity-0 group-hover:opacity-100 transition-opacity">{bar.value}m</span>
+                                                <div className={`w-full max-w-[40px] rounded-t-lg ${bar.color} transition-all duration-500`} style={{ height: bar.height }}></div>
+                                                <span className="text-[9px] font-bold text-slate-500 mt-2 rotate-45 sm:rotate-0 origin-left">{bar.type}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="lg:col-span-4 space-y-6">
+                                {/* 8. Recommendation Engine */}
+                                <div className="bg-gradient-to-br from-emerald-900 to-emerald-800 rounded-3xl p-6 shadow-xl relative overflow-hidden text-white">
+                                    <div className="absolute top-0 right-0 p-6 opacity-10"><Bot className="w-24 h-24" /></div>
+                                    <h3 className="text-sm font-bold mb-4 flex items-center gap-2 text-emerald-100 relative z-10">
+                                        <Zap className="h-4 w-4 text-yellow-400" /> AI Insights & Recommendations
+                                    </h3>
+                                    <div className="space-y-4 relative z-10">
+                                        <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
+                                            <p className="text-[10px] font-black text-emerald-300 uppercase tracking-widest mb-1">Logistics Optimization</p>
+                                            <p className="text-xs text-white leading-relaxed">For future events in South Metro, allocate 1 additional NGO. Current delays average 15 mins due to high traffic volume.</p>
+                                        </div>
+                                        <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
+                                            <p className="text-[10px] font-black text-emerald-300 uppercase tracking-widest mb-1">Cold Chain Requirement</p>
+                                            <p className="text-xs text-white leading-relaxed">80% of wedding surplus was perishable. Ensure early dispatch of refrigerated units next time.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 7. Bottleneck Insights */}
+                                <div className="bg-white rounded-3xl p-6 shadow-sm border border-rose-100">
+                                    <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                        <AlertTriangle className="h-4 w-4 text-rose-500" /> Bottleneck Report
+                                    </h3>
+                                    <div className="space-y-3">
+                                        <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                            <div className="mt-0.5"><Clock className="h-4 w-4 text-amber-500" /></div>
+                                            <div>
+                                                <p className="text-xs font-bold text-slate-900">Loading Delay</p>
+                                                <p className="text-[10px] text-slate-500 mt-0.5">Dock B was overcrowded. Resulted in 10 min idle time for 2 vehicles.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                            <div className="mt-0.5"><MapPin className="h-4 w-4 text-rose-500" /></div>
+                                            <div>
+                                                <p className="text-xs font-bold text-slate-900">Zone Misallocation</p>
+                                                <p className="text-[10px] text-slate-500 mt-0.5">South Metro received 50 excess meals initially. Re-routed manually.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 4. Volunteer Efficiency */}
+                                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                                    <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                        <Award className="h-4 w-4 text-orange-500" /> Top Volunteers
+                                    </h3>
+                                    <div className="space-y-3">
+                                        {[
+                                            { name: 'Amit V.', deliveries: 4, efficiency: '98%' },
+                                            { name: 'Priya S.', deliveries: 3, efficiency: '95%' },
+                                            { name: 'Rahul K.', deliveries: 3, efficiency: '92%' }
+                                        ].map((v, i) => (
+                                            <div key={i} className="flex justify-between items-center p-2 rounded-xl hover:bg-slate-50 transition-colors">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="h-8 w-8 rounded-full bg-orange-100 flex items-center justify-center text-xs font-bold text-orange-600">#{i + 1}</div>
+                                                    <div>
+                                                        <p className="text-xs font-bold text-slate-900">{v.name}</p>
+                                                        <p className="text-[9px] text-slate-500 font-medium">{v.deliveries} Deliveries</p>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <span className="text-xs font-black text-slate-700">{v.efficiency}</span>
+                                                    <p className="text-[8px] font-bold text-slate-400 uppercase">Efficiency</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

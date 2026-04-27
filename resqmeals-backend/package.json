@@ -25,6 +25,7 @@
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^8.0.2",
     "prisma": "^6.19.2",
+    "socket.io": "^4.8.3",
     "ts-node": "^10.9.2",
     "twilio": "^5.13.1",
     "typescript": "^5.9.3"

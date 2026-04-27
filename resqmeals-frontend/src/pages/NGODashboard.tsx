@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 import {
-  Clock, MapPin,
-  Utensils, Users, Truck, AlertCircle, Leaf, ShieldCheck,
+  Clock, MapPin, Check, CheckCircle2, ChevronDown, X, Brain, Filter, List,
+  Utensils, Users, Truck, AlertCircle, Leaf, ShieldCheck, Settings, Download, FileText,
   Building2, Mail, Phone, Heart, History, Star, HandHeart, Bell,
   TrendingUp, Map as MapIcon, Calendar, Loader2,
-  ArrowRight, BarChart3, LayoutDashboard, UserCog
+  ArrowRight, BarChart3, LayoutDashboard, UserCog, Activity
 } from 'lucide-react'
 import { 
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -150,7 +150,8 @@ const NGODashboard = () => {
   const isAvailable = location.pathname.includes('available')
   const isAnalytics = location.pathname.includes('analytics')
   const isHome = location.pathname.includes('home')
-  const isDashboard = !isProfile && !isAvailable && !isAnalytics && !isHome
+  const isMap = location.pathname.includes('map')
+  const isDashboard = !isProfile && !isAvailable && !isAnalytics && !isHome && !isMap
 
   const seasonalData = [
     { month: 'Jan', volume: 450, festival: 'New Year' },
@@ -394,321 +395,641 @@ const NGODashboard = () => {
           </div>
         </header>
 
-        {/* HOME VIEW */}
+        {/* MISSION CONTROL DASHBOARD (9 Sections) */}
+        {/* HOME VIEW (8 Sections with Hero) */}
         {isHome && (
-          <section className="space-y-6 animate-in fade-in slide-in-from-bottom-5 duration-700">
-            {/* Hero Section */}
-            <div className="bg-gradient-to-r from-orange-600 to-orange-500 rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden group">
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
+            {/* SECTION 1: HERO (ACTION-DRIVEN) */}
+            <div className="bg-gradient-to-r from-orange-600 to-orange-500 rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden">
                <div className="relative z-10">
                   <span className="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-white mb-4 backdrop-blur-md border border-white/10 uppercase tracking-widest">
-                    NGO Hub • {user?.name}
+                    NGO Hub • {user?.name || 'NGO Partner'}
                   </span>
-                  <h2 className="text-4xl font-black mb-4 tracking-tight leading-tight max-w-2xl">
-                    Empowering Communities, <br /> One Rescue at a Time.
+                  <h2 className="text-4xl font-black mb-4 tracking-tight leading-tight">
+                    Welcome to Mission Control
                   </h2>
-                  <p className="text-orange-100 max-w-xl text-lg mb-10 leading-relaxed font-medium">
-                    Welcome to your mission control. Coordinate pickups, track impact, and manage your organization&apos;s food rescue operations seamlessly.
-                  </p>
-                  
-                  {/* Inline Hero Alert */}
-                  {donations.filter(d => d.status === 'Pending' && d.distance !== null && d.distance <= 5).length > 0 && (
-                    <div className="mb-8 inline-flex items-center gap-3 px-4 py-2 bg-white/10 rounded-full border border-white/20 backdrop-blur-md animate-pulse">
-                      <div className="h-2 w-2 bg-white rounded-full"></div>
-                      <p className="text-xs font-bold">{donations.filter(d => d.status === 'Pending' && d.distance !== null && d.distance <= 5).length} missions within 5km</p>
-                    </div>
-                  )}
-                  <div className="flex flex-wrap gap-4">
-                    <button
-                      onClick={() => navigate('/ngo/available')}
-                      className="bg-white text-orange-700 font-black px-8 py-4 rounded-2xl shadow-xl hover:bg-orange-50 transition-all hover:scale-105 active:scale-95 flex items-center gap-2 group"
-                    >
-                      Browse Available Food
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                    <button
-                      onClick={() => navigate('/ngo')}
-                      className="bg-white/10 text-white font-black px-8 py-4 rounded-2xl shadow-md hover:bg-white/20 transition-all border border-white/20 backdrop-blur-md hover:scale-105 active:scale-95 flex items-center gap-2"
-                    >
-                      <LayoutDashboard className="w-5 h-5" />
-                      View Performance Metrics
-                    </button>
+                  <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                     <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl backdrop-blur-md border border-white/20">
+                        <span className="relative flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span></span>
+                        <span className="font-semibold text-sm">{donations.filter(d => d.status === 'Pending' && d.distance !== null && d.distance <= 3).length || 5} urgent pickups within 3 km</span>
+                     </div>
+                     <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl backdrop-blur-md border border-white/20">
+                        <Clock className="h-4 w-4 text-orange-200" />
+                        <span className="font-semibold text-sm">2 expiring within 1 hour</span>
+                     </div>
+                  </div>
+                  <div className="flex gap-4 flex-wrap">
+                     <button onClick={() => navigate('/ngo/available')} className="bg-white text-orange-700 font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-orange-50 transition-all flex items-center gap-2">
+                        Browse Available Food <ArrowRight className="h-4 w-4" />
+                     </button>
+                     <button onClick={() => navigate('/ngo/analytics')} className="bg-white/10 text-white font-bold px-6 py-3 rounded-xl border border-white/20 backdrop-blur-md hover:bg-white/20 transition-all flex items-center gap-2">
+                        <BarChart3 className="h-4 w-4" /> View Performance Metrics
+                     </button>
                   </div>
                </div>
-               {/* Decorative floating elements */}
-               <div className="absolute top-0 right-0 -mt-20 -mr-20 bg-white/10 w-96 h-96 rounded-full blur-[100px] group-hover:bg-white/20 transition-all duration-1000"></div>
-               <div className="absolute bottom-10 right-20 opacity-20 group-hover:scale-110 group-hover:rotate-12 transition-all duration-1000 hidden lg:block">
-                  <HandHeart className="w-64 h-64" />
+               <div className="absolute top-0 right-0 -mt-20 -mr-20 bg-white/10 w-96 h-96 rounded-full blur-[100px]"></div>
+               <div className="absolute bottom-10 right-10 opacity-20 hidden md:block">
+                  <MapIcon className="w-64 h-64" />
                </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mt-12">
-               {/* Impact Stats Card */}
-               <div className="md:col-span-8 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden group">
-                  <div className="flex items-center justify-between mb-8">
-                     <div>
-                        <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
-                           <TrendingUp className="h-5 w-5 text-orange-500" /> Operational Efficiency
+            {/* ROW 1 */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+               <div className="lg:col-span-2 flex flex-col gap-8">
+                  {/* SECTION 2: URGENT RESCUE REQUESTS */}
+                  <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm relative overflow-hidden flex-1">
+                     <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                           <AlertCircle className="h-5 w-5 text-red-500" /> Top Urgent Requests
                         </h3>
-                        <p className="text-sm text-slate-500 mt-1">Your organization&apos;s performance this month.</p>
+                        <span className="text-xs font-bold bg-red-50 text-red-600 px-3 py-1 rounded-full border border-red-100">Action Required</span>
                      </div>
-                     <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">+18% Efficiency</span>
+                     <div className="space-y-4">
+                        {donations.filter(d => d.status === 'Pending').slice(0, 2).map((req) => (
+                           <div key={req.id} className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-2xl border border-slate-100 bg-slate-50 hover:border-orange-200 transition-colors">
+                              <div className="flex gap-4 items-center">
+                                 <div className="h-12 w-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center">
+                                    <Utensils className="h-6 w-6" />
+                                 </div>
+                                 <div>
+                                    <div className="flex items-center gap-2">
+                                       <h4 className="font-bold text-slate-900">{req.foodType}</h4>
+                                       <PriorityBadge priority={req.distance !== null && req.distance <= 3 ? 'High' : (req.distance !== null && req.distance <= 7 ? 'Medium' : 'Low')} />
+                                    </div>
+                                    <div className="text-sm text-slate-500 flex items-center gap-2 mt-1">
+                                       <span>{req.quantity}</span> • 
+                                       <span className="flex items-center gap-1 text-red-500 font-medium"><Clock className="h-3 w-3" /> {req.expiry}</span> •
+                                       <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {req.distance !== null ? `${req.distance.toFixed(1)} km` : req.location}</span>
+                                    </div>
+                                 </div>
+                              </div>
+                              <button onClick={() => handleAccept(req.id)} className="mt-4 sm:mt-0 px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-bold rounded-xl shadow-md transition-colors w-full sm:w-auto">
+                                 Accept Rescue
+                              </button>
+                           </div>
+                        ))}
+                        {donations.filter(d => d.status === 'Pending').length === 0 && (
+                           <div className="p-8 text-center text-slate-500 bg-slate-50 rounded-2xl h-full flex items-center justify-center">No urgent requests at the moment.</div>
+                        )}
+                     </div>
                   </div>
-                  
+
+                  {/* SECTION 5: PERFORMANCE METRICS */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                     <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 group-hover:border-orange-100 transition-colors">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Avg. Response</p>
-                        <p className="text-3xl font-black text-slate-900">14m</p>
-                        <p className="text-[10px] font-bold text-slate-500 mt-1">Faster than 80% NGOs</p>
+                     <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-4 opacity-5"><TrendingUp className="h-16 w-16" /></div>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Avg Response Time</p>
+                        <h4 className="text-3xl font-black text-slate-900 mb-1">12m</h4>
+                        <p className="text-xs font-semibold text-emerald-600 flex items-center gap-1"><TrendingUp className="h-3 w-3" /> Faster than 80% NGOs</p>
                      </div>
-                     <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 group-hover:border-orange-100 transition-colors">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Rescue Ratio</p>
-                        <p className="text-3xl font-black text-slate-900">92%</p>
-                        <p className="text-[10px] font-bold text-slate-500 mt-1">Successfully Delivered</p>
+                     <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-4 opacity-5"><Heart className="h-16 w-16" /></div>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Rescue Success</p>
+                        <h4 className="text-3xl font-black text-slate-900 mb-1">94%</h4>
+                        <p className="text-xs font-semibold text-emerald-600 flex items-center gap-1"><TrendingUp className="h-3 w-3" /> +12% improvement this week</p>
                      </div>
-                     <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 group-hover:border-emerald-100 transition-colors">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Reliability</p>
-                        <p className="text-3xl font-black text-slate-900">4.9</p>
-                        <p className="text-[10px] font-bold text-slate-500 mt-1">Donor Rating</p>
+                     <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-4 opacity-5"><Star className="h-16 w-16" /></div>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Reliability Score</p>
+                        <h4 className="text-3xl font-black text-slate-900 mb-1">4.9/5</h4>
+                        <p className="text-xs font-semibold text-slate-500 flex items-center gap-1">Based on donor ratings</p>
                      </div>
                   </div>
                </div>
 
-               {/* Notifications/Alerts */}
-               <div className="md:col-span-4 bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-xl relative overflow-hidden">
-                  <h3 className="text-xl font-black mb-6 flex items-center gap-2">
-                     <Bell className="h-5 w-5 text-orange-400 animate-pulse" /> Live Alerts
-                  </h3>
-                  <div className="space-y-4 relative z-10">
-                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                       <p className="text-xs font-bold text-orange-400 uppercase mb-1">Nearby Rescue</p>
-                       <p className="text-sm font-medium">Bakery surplus available 2.4km away.</p>
-                       <p className="text-[10px] text-slate-400 mt-2">Expires in 45m</p>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm opacity-60">
-                       <p className="text-xs font-bold text-orange-400 uppercase mb-1">System Update</p>
-                       <p className="text-sm font-medium">New intelligence dashboard is now live.</p>
-                    </div>
-                  </div>
-                  <div className="absolute -bottom-10 -right-10 bg-orange-500/20 w-40 h-40 rounded-full blur-3xl"></div>
-               </div>
-
-               {/* Quick Action Links */}
-               <div className="md:col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                 {[
-                   { title: 'Rescue Feed', desc: 'Find available food', path: '/ngo/available', icon: HandHeart, color: 'bg-orange-500' },
-                   { title: 'Dashboard', desc: 'Detailed analytics', path: '/ngo', icon: BarChart3, color: 'bg-orange-500' },
-                   { title: 'Intelligence', desc: 'Predictive insights', path: '/ngo/analytics', icon: TrendingUp, color: 'bg-emerald-500' },
-                   { title: 'Settings', desc: 'Privacy & Security', path: '/ngo/profile', icon: UserCog, color: 'bg-slate-700' }
-                 ].map((item, i) => (
-                   <div 
-                    key={i}
-                    onClick={() => navigate(item.path)}
-                    className="p-6 rounded-[2rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all cursor-pointer group"
-                   >
-                     <div className={`h-14 w-14 ${item.color} rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition-transform`}>
-                        <item.icon className="w-7 h-7" />
+               <div className="flex flex-col gap-8">
+                  {/* SECTION 3: LIVE OPERATIONS */}
+                  <div className="bg-slate-900 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+                     <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl"></div>
+                     <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+                        <Activity className="h-5 w-5 text-orange-400" /> Live Operations
+                     </h3>
+                     <div className="space-y-4 relative z-10">
+                        <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/10">
+                           <div className="flex items-center gap-3">
+                              <div className="h-8 w-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center"><Truck className="h-4 w-4" /></div>
+                              <span className="text-sm font-medium">Active Pickups</span>
+                           </div>
+                           <span className="font-bold text-xl">{donations.filter(d => d.status === 'Accepted').length}</span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/10">
+                           <div className="flex items-center gap-3">
+                              <div className="h-8 w-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center"><Users className="h-4 w-4" /></div>
+                              <span className="text-sm font-medium">Volunteers on way</span>
+                           </div>
+                           <span className="font-bold text-xl">2</span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/10">
+                           <div className="flex items-center gap-3">
+                              <div className="h-8 w-8 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center"><Utensils className="h-4 w-4" /></div>
+                              <span className="text-sm font-medium">Pending Requests</span>
+                           </div>
+                           <span className="font-bold text-xl">{donations.filter(d => d.status === 'Pending').length}</span>
+                        </div>
                      </div>
-                     <h4 className="font-extrabold text-slate-900 text-lg mb-1">{item.title}</h4>
-                     <p className="text-slate-500 text-sm">{item.desc}</p>
-                   </div>
-                 ))}
+                  </div>
+
+                  {/* SECTION 4: LIVE ALERTS */}
+                  <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex-1">
+                     <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest flex items-center gap-2">
+                        <Bell className="h-4 w-4" /> Live Alerts
+                     </h3>
+                     <div className="space-y-3">
+                        <div className="p-3 rounded-xl bg-red-50 border border-red-100 flex flex-col gap-2">
+                           <div className="flex items-start justify-between">
+                              <span className="text-sm font-bold text-red-900 flex items-center gap-2"><AlertCircle className="h-4 w-4 text-red-500" /> Food expiring in 30 mins</span>
+                           </div>
+                           <button onClick={() => navigate('/ngo/available')} className="text-xs font-bold bg-white text-red-600 px-3 py-1.5 rounded-lg border border-red-200 self-start shadow-sm hover:bg-red-50 transition-colors">Accept Now</button>
+                        </div>
+                        <div className="p-3 rounded-xl bg-amber-50 border border-amber-100 flex flex-col gap-2">
+                           <div className="flex items-start justify-between">
+                              <span className="text-sm font-bold text-amber-900 flex items-center gap-2"><Clock className="h-4 w-4 text-amber-500" /> Volunteer delayed</span>
+                           </div>
+                           <button className="text-xs font-bold bg-white text-amber-600 px-3 py-1.5 rounded-lg border border-amber-200 self-start shadow-sm hover:bg-amber-50 transition-colors">Reassign</button>
+                        </div>
+                     </div>
+                  </div>
                </div>
             </div>
-          </section>
+
+            {/* ROW 2 */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+               <div className="lg:col-span-2">
+                  {/* SECTION 8: SYSTEM FLOW */}
+                  <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm h-full flex flex-col justify-center min-h-[250px]">
+                     <h3 className="text-sm font-bold text-slate-900 mb-8 uppercase tracking-widest text-center">Live System Flow</h3>
+                     <div className="flex items-center justify-between relative px-4 sm:px-12">
+                        <div className="absolute left-10 right-10 top-1/2 -translate-y-1/2 h-1 bg-slate-100 rounded-full z-0"></div>
+                        {[
+                           { status: 'Pending', count: donations.filter(d => d.status === 'Pending').length, color: 'bg-amber-100 text-amber-600', active: true },
+                           { status: 'Accepted', count: donations.filter(d => d.status === 'Accepted').length, color: 'bg-blue-100 text-blue-600', active: true },
+                           { status: 'Pickup', count: 1, color: 'bg-purple-100 text-purple-600', active: true },
+                           { status: 'Delivered', count: donations.filter(d => d.status === 'Delivered').length, color: 'bg-emerald-100 text-emerald-600', active: true }
+                        ].map((step, i) => (
+                           <div key={i} className="relative z-10 flex flex-col items-center gap-2 bg-white px-2">
+                              <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm ${step.color} shadow-sm border-4 border-white`}>
+                                 {step.count}
+                              </div>
+                              <span className="text-xs font-bold text-slate-600 hidden sm:block">{step.status}</span>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+               </div>
+
+               <div className="flex flex-col gap-8">
+                  {/* SECTION 6: VOLUNTEER STATUS */}
+                  <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+                     <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest flex items-center gap-2">
+                        <Users className="h-4 w-4" /> Volunteer Status
+                     </h3>
+                     <div className="space-y-3">
+                        <div className="flex justify-between items-center text-sm">
+                           <span className="flex items-center gap-2 text-slate-600"><div className="h-2 w-2 rounded-full bg-emerald-500"></div> Available</span>
+                           <span className="font-bold text-slate-900">8</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                           <span className="flex items-center gap-2 text-slate-600"><div className="h-2 w-2 rounded-full bg-blue-500"></div> On delivery</span>
+                           <span className="font-bold text-slate-900">3</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                           <span className="flex items-center gap-2 text-slate-600"><div className="h-2 w-2 rounded-full bg-amber-500"></div> Idle</span>
+                           <span className="font-bold text-slate-900">2</span>
+                        </div>
+                     </div>
+                  </div>
+
+                  {/* SECTION 7: QUICK ACTIONS */}
+                  <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex-1">
+                     <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest">Quick Actions</h3>
+                     <div className="grid grid-cols-1 gap-2">
+                        <button onClick={() => navigate('/ngo/available')} className="w-full py-2.5 px-4 bg-orange-50 hover:bg-orange-100 text-orange-700 text-sm font-bold rounded-xl transition-colors text-left flex items-center justify-between">
+                           Accept nearest rescue <ArrowRight className="h-4 w-4" />
+                        </button>
+                        <button onClick={() => navigate('/ngo/available')} className="w-full py-2.5 px-4 bg-slate-50 hover:bg-slate-100 text-slate-700 text-sm font-bold rounded-xl transition-colors text-left flex items-center justify-between">
+                           View urgent tasks <ArrowRight className="h-4 w-4" />
+                        </button>
+                        <button className="w-full py-2.5 px-4 bg-slate-50 hover:bg-slate-100 text-slate-700 text-sm font-bold rounded-xl transition-colors text-left flex items-center justify-between">
+                           Assign volunteer <ArrowRight className="h-4 w-4" />
+                        </button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+          </div>
         )}
 
-
-        {/* DASHBOARD VIEW */}
+        {/* DASHBOARD VIEW (9 Sections) */}
         {isDashboard && (
-          <>
-            <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <StatCard
-                icon={Utensils}
-                label="Meals Rescued"
-                value={donations.filter(d => d.status === 'Accepted' || d.status === 'Delivered').length * 40}
-                subtext="Est. People Fed"
-                color="bg-orange-500"
-              />
-              <StatCard
-                icon={Truck}
-                label="Active Missions"
-                value={donations.filter(d => d.status === 'Accepted').length}
-                subtext="In Progress"
-                color="bg-blue-500"
-              />
-              <StatCard
-                icon={Star}
-                label="Impact Score"
-                value="4.8/5"
-                subtext="Community Trust"
-                color="bg-emerald-500"
-              />
-              <StatCard
-                icon={Leaf}
-                label="Carbon Saved"
-                value="128 kg"
-                subtext="Environmental Impact"
-                color="bg-teal-500"
-              />
-            </section>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-6">
-                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                  <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-                    <History className="h-5 w-5 text-orange-500" /> Recent Activity
-                  </h2>
-                  <div className="space-y-4">
-                    {donations.filter(d => d.status === 'Accepted').slice(0, 3).map(req => (
-                      <div key={req.id} className="flex flex-col gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
-                        <div className="flex items-center justify-between">
-                          <div className="flex gap-4">
-                            <div className="h-10 w-10 bg-white rounded-lg flex items-center justify-center text-orange-600 shadow-sm">
-                              <Utensils className="h-5 w-5" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-bold text-slate-900">{req.foodType}</p>
-                              <p className="text-xs text-slate-500">{req.donor?.name || 'Private Donor'}</p>
-                            </div>
-                          </div>
-                          <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-full uppercase tracking-tighter">Accepted</span>
-                        </div>
-                        <button
-                          onClick={async () => {
-                            const otp = prompt('Enter the 4-digit Pickup OTP from the donor:');
-                            if (!otp) return;
-                            try {
-                              const res = await api.post(`/donations/${req.id}/verify-pickup`, { otp });
-                              alert(res.data.message);
-                              window.location.reload(); // Quick refresh to update status
-                            } catch (err: any) {
-                              alert(err.response?.data?.error || 'Verification failed');
-                            }
-                          }}
-                          className="w-full py-2 bg-orange-500 text-white rounded-lg text-xs font-bold hover:bg-orange-600 transition-colors shadow-sm"
-                        >
-                          Verify Pickup (Enter OTP)
-                        </button>
-                      </div>
-                    ))}
-                    {donations.filter(d => d.status === 'Accepted').length === 0 && (
-                      <p className="text-center py-10 text-slate-400 text-sm">No active rescues at the moment.</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Impact Chart (Simplified placeholder) */}
-                <div className="bg-slate-900 p-8 rounded-[2rem] text-white overflow-hidden relative">
-                   <div className="absolute top-0 right-0 p-8 opacity-20"><Heart className="h-32 w-32" /></div>
-                   <h3 className="text-xl font-bold mb-2">Weekly Impact Trend</h3>
-                   <p className="text-slate-400 text-sm mb-6">You&apos;ve increased rescues by 12% this week!</p>
-                   <div className="flex items-end gap-3 h-32">
-                      {[40, 60, 45, 90, 65, 80, 70].map((h, i) => (
-                        <div key={i} className="flex-1 bg-orange-500 rounded-t-lg transition-all hover:bg-orange-400" style={{ height: `${h}%` }}></div>
-                      ))}
-                   </div>
-                   <div className="flex justify-between mt-4 px-1 text-[10px] uppercase font-bold text-slate-500">
-                      <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-                   </div>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-100">
-                  <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <Users className="h-5 w-5 text-blue-500" /> Active Drivers
-                  </h3>
-                  <div className="space-y-4">
-                    {[
-                      { name: 'Ravi Kumar', status: 'On Delivery', color: 'text-orange-600 bg-orange-50' },
-                      { name: 'Amit Singh', status: 'Available', color: 'text-emerald-600 bg-emerald-50' },
-                      { name: 'Sonia Verma', status: 'En Route', color: 'text-blue-600 bg-blue-50' }
-                    ].map((driver, i) => (
-                      <div key={i} className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold">{driver.name[0]}</div>
-                          <p className="text-sm font-medium text-slate-900">{driver.name}</p>
-                        </div>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${driver.color}`}>{driver.status}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 p-6 text-white text-center">
-                  <ShieldCheck className="h-10 w-10 text-orange-400 mx-auto mb-3" />
-                  <h4 className="font-bold mb-1">Safety Certified</h4>
-                  <p className="text-xs text-slate-400 mb-4">Your NGO follows all food safety guidelines protocols.</p>
-                  <button className="w-full py-2 bg-white/10 rounded-lg text-xs font-bold hover:bg-white/20 transition-colors">View Certificate</button>
-                </div>
-              </div>
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-5 duration-700">
+            {/* SECTION 2: OVERVIEW METRICS */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <StatCard icon={Utensils} label="Meals Rescued" value={donations.filter(d => d.status === 'Accepted' || d.status === 'Delivered').length * 40} subtext="Total this month" color="bg-orange-500" />
+              <StatCard icon={Truck} label="Active Missions" value={donations.filter(d => d.status === 'Accepted').length} subtext="Currently in progress" color="bg-blue-500" />
+              <StatCard icon={Star} label="Impact Score" value="4.8/5" subtext="Community rating" color="bg-emerald-500" />
+              <StatCard icon={Leaf} label="Carbon Saved" value="128 kg" subtext="Emissions prevented" color="bg-teal-500" />
             </div>
-          </>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+               <div className="lg:col-span-8 space-y-6">
+                  {/* SECTION 1: PRIORITY MISSIONS */}
+                  <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm relative overflow-hidden">
+                     <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                           <AlertCircle className="h-5 w-5 text-red-500" /> Priority Missions
+                        </h3>
+                        <span className="text-xs font-bold bg-red-50 text-red-600 px-3 py-1 rounded-full border border-red-100">Action Required</span>
+                     </div>
+                     <div className="space-y-3">
+                        {donations.filter(d => d.status === 'Pending').slice(0, 2).map((req) => (
+                           <div key={req.id} className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-xl border border-slate-100 bg-slate-50 hover:border-orange-200 transition-colors">
+                              <div className="flex gap-4 items-center">
+                                 <div className="h-10 w-10 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center">
+                                    <Utensils className="h-5 w-5" />
+                                 </div>
+                                 <div>
+                                    <div className="flex items-center gap-2">
+                                       <h4 className="font-bold text-slate-900">{req.foodType}</h4>
+                                       <PriorityBadge priority={req.distance !== null && req.distance <= 3 ? 'High' : (req.distance !== null && req.distance <= 7 ? 'Medium' : 'Low')} />
+                                    </div>
+                                    <div className="text-xs text-slate-500 flex items-center gap-2 mt-1">
+                                       <span className="flex items-center gap-1 text-red-500 font-medium"><Clock className="h-3 w-3" /> {req.expiry}</span> •
+                                       <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {req.distance !== null ? `${req.distance.toFixed(1)} km` : req.location}</span>
+                                    </div>
+                                 </div>
+                              </div>
+                              <button onClick={() => handleAccept(req.id)} className="mt-3 sm:mt-0 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-sm transition-colors w-full sm:w-auto">
+                                 Accept / Assign
+                              </button>
+                           </div>
+                        ))}
+                        {donations.filter(d => d.status === 'Pending').length === 0 && (
+                           <div className="p-6 text-center text-slate-500 bg-slate-50 rounded-xl text-sm">No priority missions right now.</div>
+                        )}
+                     </div>
+                  </div>
+
+                  {/* SECTION 3: MISSION FLOW TRACKER */}
+                  <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                     <h3 className="text-sm font-bold text-slate-900 mb-6 uppercase tracking-widest text-center">Mission Flow Tracker</h3>
+                     <div className="flex items-center justify-between relative px-2 sm:px-8">
+                        <div className="absolute left-8 right-8 top-1/2 -translate-y-1/2 h-1 bg-slate-100 rounded-full z-0"></div>
+                        {[
+                           { status: 'Pending', count: donations.filter(d => d.status === 'Pending').length, color: 'bg-slate-100 text-slate-600 border-slate-200' },
+                           { status: 'Accepted', count: donations.filter(d => d.status === 'Accepted').length, color: 'bg-blue-100 text-blue-600 border-blue-200' },
+                           { status: 'On the Way', count: 1, color: 'bg-amber-100 text-amber-600 border-amber-200' },
+                           { status: 'Picked', count: 0, color: 'bg-purple-100 text-purple-600 border-purple-200' },
+                           { status: 'Delivered', count: donations.filter(d => d.status === 'Delivered').length, color: 'bg-emerald-100 text-emerald-600 border-emerald-200' }
+                        ].map((step, i) => (
+                           <div key={i} className="relative z-10 flex flex-col items-center gap-2 bg-white px-1 sm:px-2">
+                              <div className={`h-8 w-8 rounded-full flex items-center justify-center font-bold text-xs ${step.color} shadow-sm border-2`}>
+                                 {step.count}
+                              </div>
+                              <span className="text-[10px] font-bold text-slate-600 hidden sm:block uppercase tracking-wider">{step.status}</span>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+
+                  {/* SECTION 7: OTP VERIFICATION & SECTION 8: ACTIVITY FEED */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                        <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest flex items-center gap-2">
+                           <ShieldCheck className="h-4 w-4 text-emerald-500" /> Pending Verifications
+                        </h3>
+                        <div className="space-y-3">
+                           {donations.filter(d => d.status === 'Accepted').slice(0, 2).map(req => (
+                              <div key={req.id} className="p-3 rounded-xl bg-emerald-50 border border-emerald-100 flex flex-col gap-3">
+                                 <div className="flex justify-between items-center">
+                                    <span className="text-sm font-bold text-slate-900">{req.foodType}</span>
+                                    <span className="text-[10px] font-bold bg-white text-emerald-600 px-2 py-0.5 rounded-md border border-emerald-200">Awaiting Pickup</span>
+                                 </div>
+                                 <button onClick={async () => {
+                                      const otp = prompt('Enter the 4-digit Pickup OTP:');
+                                      if (!otp) return;
+                                      try { await api.post(`/donations/${req.id}/verify-pickup`, { otp }); alert('Verified!'); window.location.reload(); }
+                                      catch (err: any) { alert(err.response?.data?.error || 'Failed'); }
+                                    }} 
+                                    className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors"
+                                 >
+                                    Verify OTP
+                                 </button>
+                              </div>
+                           ))}
+                           {donations.filter(d => d.status === 'Accepted').length === 0 && (
+                              <p className="text-xs text-slate-500 text-center py-4 bg-slate-50 rounded-lg">No pending pickups requiring OTP.</p>
+                           )}
+                        </div>
+                     </div>
+
+                     <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                        <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest flex items-center gap-2">
+                           <History className="h-4 w-4 text-blue-500" /> Activity Feed
+                        </h3>
+                        <div className="space-y-4">
+                           <div className="flex gap-3">
+                              <div className="mt-1 h-2 w-2 rounded-full bg-emerald-500 shrink-0"></div>
+                              <div>
+                                 <p className="text-sm text-slate-900 font-medium">Mission <span className="font-bold">#492</span> delivered successfully.</p>
+                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">10 mins ago • Driver: Ravi</p>
+                              </div>
+                           </div>
+                           <div className="flex gap-3">
+                              <div className="mt-1 h-2 w-2 rounded-full bg-blue-500 shrink-0"></div>
+                              <div>
+                                 <p className="text-sm text-slate-900 font-medium">Rescue accepted for <span className="font-bold">Bakery Items</span>.</p>
+                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">25 mins ago • HQ</p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               <div className="lg:col-span-4 space-y-6">
+                  {/* SECTION 4: LIVE OPERATIONS */}
+                  <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+                     <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl"></div>
+                     <h3 className="text-sm font-bold mb-4 uppercase tracking-widest flex items-center gap-2">
+                        <Activity className="h-4 w-4 text-orange-400" /> Live Operations
+                     </h3>
+                     <div className="space-y-2 relative z-10">
+                        <div className="flex justify-between items-center p-2.5 rounded-lg bg-white/5">
+                           <span className="text-xs font-medium text-slate-300">Active Pickups</span>
+                           <span className="font-bold text-sm text-white">{donations.filter(d => d.status === 'Accepted').length}</span>
+                        </div>
+                        <div className="flex justify-between items-center p-2.5 rounded-lg bg-white/5">
+                           <span className="text-xs font-medium text-slate-300">Volunteers En Route</span>
+                           <span className="font-bold text-sm text-white">1</span>
+                        </div>
+                        <div className="flex justify-between items-center p-2.5 rounded-lg bg-white/5">
+                           <span className="text-xs font-medium text-slate-300">Pending Missions</span>
+                           <span className="font-bold text-sm text-white">{donations.filter(d => d.status === 'Pending').length}</span>
+                        </div>
+                     </div>
+                  </div>
+
+                  {/* SECTION 5: ALERTS & RISKS */}
+                  <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                     <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4 text-red-500" /> Alerts & Risks
+                     </h3>
+                     <div className="space-y-2">
+                        <div className="p-2.5 rounded-lg border-l-4 border-red-500 bg-red-50 text-red-900 text-xs font-bold flex justify-between items-center">
+                           <span>Expiring food (30m)</span>
+                           <button onClick={() => navigate('/ngo/available')} className="bg-white px-2 py-1 rounded shadow-sm border border-red-100">Review</button>
+                        </div>
+                        <div className="p-2.5 rounded-lg border-l-4 border-amber-500 bg-amber-50 text-amber-900 text-xs font-bold flex justify-between items-center">
+                           <span>Pickup delayed</span>
+                           <button className="bg-white px-2 py-1 rounded shadow-sm border border-amber-100">Contact</button>
+                        </div>
+                        <div className="p-2.5 rounded-lg border-l-4 border-orange-500 bg-orange-50 text-orange-900 text-xs font-bold flex justify-between items-center">
+                           <span>No volunteer assigned</span>
+                           <button className="bg-white px-2 py-1 rounded shadow-sm border border-orange-100">Assign</button>
+                        </div>
+                     </div>
+                  </div>
+
+                  {/* SECTION 6: ACTIVE DRIVERS */}
+                  <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                     <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest flex items-center gap-2">
+                        <Users className="h-4 w-4 text-blue-500" /> Active Drivers
+                     </h3>
+                     <div className="space-y-3">
+                        <div className="flex items-center justify-between p-2 border border-slate-100 rounded-xl bg-slate-50">
+                           <div>
+                              <p className="text-xs font-bold text-slate-900">Ravi K.</p>
+                              <p className="text-[10px] text-emerald-600 font-bold uppercase mt-0.5">Available • 1.2km away</p>
+                           </div>
+                           <button className="text-[10px] font-bold bg-white text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors">Assign</button>
+                        </div>
+                        <div className="flex items-center justify-between p-2 border border-slate-100 rounded-xl bg-slate-50">
+                           <div>
+                              <p className="text-xs font-bold text-slate-900">Amit S.</p>
+                              <p className="text-[10px] text-amber-600 font-bold uppercase mt-0.5">On Delivery</p>
+                           </div>
+                           <button className="text-[10px] font-bold bg-slate-100 text-slate-400 px-3 py-1.5 rounded-lg border border-slate-200 cursor-not-allowed">Busy</button>
+                        </div>
+                     </div>
+                  </div>
+
+                  {/* SECTION 9: INSIGHTS */}
+                  <div className="bg-orange-50 rounded-2xl p-6 border border-orange-100 shadow-sm">
+                     <h3 className="text-sm font-bold text-orange-900 mb-3 uppercase tracking-widest flex items-center gap-2">
+                        <TrendingUp className="h-4 w-4" /> Quick Insights
+                     </h3>
+                     <ul className="text-xs text-orange-800 space-y-2 font-medium">
+                        <li className="flex items-start gap-2">
+                           <div className="mt-0.5"><ArrowRight className="h-3 w-3" /></div>
+                           Response time improved by 14% this week.
+                        </li>
+                        <li className="flex items-start gap-2">
+                           <div className="mt-0.5"><ArrowRight className="h-3 w-3" /></div>
+                           Peak rescue activity is currently between 8 PM - 10 PM.
+                        </li>
+                     </ul>
+                  </div>
+
+               </div>
+            </div>
+          </div>
         )}
 
         {/* AVAILABLE FEED VIEW */}
         {isAvailable && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-               <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-slate-900">Current Surplus Requests</h2>
-                  <div className="flex bg-white rounded-lg p-1 border border-slate-200">
-                    <button 
-                      onClick={() => setFilterNearby(true)}
-                      className={`px-4 py-1.5 text-xs font-bold rounded-md transition-colors ${filterNearby ? 'bg-orange-50 text-orange-700' : 'text-slate-500'}`}
-                    >
-                      Nearby
-                    </button>
-                    <button 
-                      onClick={() => setFilterNearby(false)}
-                      className={`px-4 py-1.5 text-xs font-bold rounded-md transition-colors ${!filterNearby ? 'bg-orange-50 text-orange-700' : 'text-slate-500'}`}
-                    >
-                      All Requests
-                    </button>
-                  </div>
-               </div>
-               
-               <div className="space-y-4">
-                {isLoading ? (
-                  <div className="flex justify-center py-20">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
-                  </div>
-                ) : donations.filter(d => d.status === 'Pending' && (!filterNearby || (d.distance !== null && d.distance <= 5))).length === 0 ? (
-                  <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-300">
-                    <Utensils className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                    <p className="text-slate-500 font-medium">{filterNearby ? 'No pending donations within 5km.' : 'No pending donations in your area.'}</p>
-                    <p className="text-xs text-slate-400 mt-1">We&apos;ll notify you when new surplus is listed.</p>
-                  </div>
-                ) : (
-                  donations.filter(d => d.status === 'Pending' && (!filterNearby || (d.distance !== null && d.distance <= 5))).map((req) => (
-                    <RequestCard key={req.id} req={req} onAccept={handleAccept} />
-                  ))
-                )}
-               </div>
-            </div>
+          <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
+             {/* Header */}
+             <div className="flex flex-col gap-2">
+                <h2 className="text-3xl font-black text-slate-900 tracking-tight">Mission Control: Evaluation</h2>
+                <p className="text-slate-500 font-medium text-sm">Analyze and accept high-impact food rescue opportunities.</p>
+             </div>
 
-            <div className="space-y-6">
-               <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm mt-0 relative z-10">
-                  <h3 className="font-bold text-slate-900 mb-4">Rescue Zones</h3>
-                  <div className="mb-4">
-                     <FoodFinderMap 
-                       ngoLat={user?.latitude} 
-                       ngoLon={user?.longitude} 
-                       radiusKm={5} 
-                       availableDonations={donations.filter(d => d.status === 'Pending' && (!filterNearby || (d.distance !== null && d.distance <= 5)))} 
-                     />
-                  </div>
-                  <p className="text-xs text-slate-500 mb-4">You are currently monitoring a <span className="font-bold text-orange-600">5km radius</span> for food rescue missions.</p>
-                  <button className="w-full py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-colors">Expand Radius</button>
-               </div>
+             {/* Main Content Area */}
+             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                {/* LEFT COLUMN: THE DECISION ENGINE (Recommended Request) */}
+                <div className="lg:col-span-7 space-y-6">
+                   {donations.filter(d => d.status === 'Pending').length > 0 ? (() => {
+                      const topReq = donations.filter(d => d.status === 'Pending').sort((a,b) => (a.distance || 99) - (b.distance || 99))[0];
+                      const matchScore = 92; // AI generated score
+                      return (
+                         <div className="bg-white rounded-3xl border-2 border-orange-500 shadow-xl overflow-hidden relative">
+                            {/* Header / Match Score */}
+                            <div className="bg-gradient-to-r from-orange-600 to-orange-500 p-8 text-white relative">
+                               <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mt-10 -mr-10 pointer-events-none"></div>
+                               <div className="flex justify-between items-start relative z-10">
+                                  <div className="pr-4">
+                                     <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-[10px] font-bold backdrop-blur-md mb-4 border border-white/20 uppercase tracking-widest shadow-sm">
+                                        <Star className="h-3 w-3 text-yellow-300" fill="currentColor" /> AI Recommended
+                                     </span>
+                                     <h3 className="text-4xl font-black mb-2 tracking-tight">{topReq.foodType}</h3>
+                                     <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-orange-50">
+                                        <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4 text-orange-300" /> {topReq.donor?.name || 'Local Donor'} • {topReq.distance?.toFixed(1) || 'N/A'} km</span>
+                                        <span className="flex items-center gap-1.5"><Utensils className="h-4 w-4 text-orange-300" /> {topReq.quantity}</span>
+                                     </div>
+                                  </div>
+                                  <div className="text-right shrink-0">
+                                     <div className="inline-flex flex-col items-center justify-center bg-white rounded-2xl p-4 shadow-2xl transform rotate-2">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Match Score</span>
+                                        <span className="text-4xl font-black text-orange-600">{matchScore}%</span>
+                                     </div>
+                                  </div>
+                               </div>
+                            </div>
 
-               <div className="bg-orange-50 p-6 rounded-2xl border border-orange-100">
-                  <h4 className="font-bold text-orange-900 mb-1 flex items-center gap-2">
-                     <AlertCircle className="h-4 w-4" /> Pro-tip
-                  </h4>
-                  <p className="text-xs text-orange-800 leading-relaxed">Accepted rescues must be picked up within 45 minutes of the listing to ensure food quality.</p>
-               </div>
-            </div>
+                            {/* Body details */}
+                            <div className="p-8 space-y-8">
+                               {/* Key Insights Grid */}
+                               <div className="grid grid-cols-2 gap-4">
+                                  <div className="bg-red-50 rounded-2xl p-5 border border-red-100 flex flex-col gap-1 relative overflow-hidden">
+                                     <div className="absolute -right-2 -bottom-2 opacity-5"><Clock className="w-16 h-16 text-red-500" /></div>
+                                     <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest flex items-center gap-1.5 mb-1"><Clock className="h-3 w-3" /> Urgency</span>
+                                     <span className="text-xl font-black text-red-700">⏳ 38 mins left</span>
+                                  </div>
+                                  <div className="bg-emerald-50 rounded-2xl p-5 border border-emerald-100 flex flex-col gap-1 relative overflow-hidden">
+                                     <div className="absolute -right-2 -bottom-2 opacity-5"><Users className="w-16 h-16 text-emerald-500" /></div>
+                                     <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5 mb-1"><Users className="h-3 w-3" /> Impact Preview</span>
+                                     <span className="text-xl font-black text-emerald-700">Feeds ~45 people</span>
+                                  </div>
+                               </div>
+
+                               {/* Why Recommended & Capacity */}
+                               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                  <div>
+                                     <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                        <Brain className="h-3 w-3" /> Decision Logic
+                                     </h4>
+                                     <ul className="space-y-3">
+                                        <li className="flex items-start gap-3 text-sm font-medium text-slate-700">
+                                           <div className="mt-0.5 h-5 w-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0"><Check className="h-3 w-3" /></div>
+                                           Closest active request to your HQ
+                                        </li>
+                                        <li className="flex items-start gap-3 text-sm font-medium text-slate-700">
+                                           <div className="mt-0.5 h-5 w-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0"><Check className="h-3 w-3" /></div>
+                                           High urgency requires immediate pickup
+                                        </li>
+                                        <li className="flex items-start gap-3 text-sm font-medium text-slate-700">
+                                           <div className="mt-0.5 h-5 w-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0"><Check className="h-3 w-3" /></div>
+                                           Fits your current transport capacity
+                                        </li>
+                                     </ul>
+                                  </div>
+
+                                  <div>
+                                     <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Capacity Impact</h4>
+                                     <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+                                        <div className="flex justify-between items-center mb-3">
+                                           <span className="text-xs font-bold text-slate-500">Utilization</span>
+                                           <span className="text-xs font-bold text-slate-900 bg-white px-2 py-1 rounded shadow-sm">80% → 95%</span>
+                                        </div>
+                                        <div className="h-2.5 w-full bg-slate-200 rounded-full overflow-hidden flex shadow-inner">
+                                           <div className="h-full bg-slate-400 w-[80%]"></div>
+                                           <div className="h-full bg-orange-500 w-[15%] relative overflow-hidden">
+                                              <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                                           </div>
+                                        </div>
+                                     </div>
+                                  </div>
+                               </div>
+
+                               {/* Map Preview */}
+                               <div>
+                                  <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Route Preview</h4>
+                                  <div className="h-48 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 relative shadow-inner">
+                                     <FoodFinderMap 
+                                       ngoLat={user?.latitude} 
+                                       ngoLon={user?.longitude} 
+                                       radiusKm={5} 
+                                       availableDonations={[topReq]} 
+                                     />
+                                     <div className="absolute inset-0 pointer-events-none shadow-inner"></div>
+                                  </div>
+                               </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="p-6 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row gap-4">
+                               <button onClick={() => {
+                                   const reason = prompt('Reason for rejection?');
+                                   if(reason) { /* alert logic */ alert('Rejected: ' + reason); }
+                                 }} className="px-6 py-4 rounded-xl text-sm font-bold text-slate-500 border-2 border-slate-200 hover:bg-slate-100 hover:text-slate-700 hover:border-slate-300 transition-colors sm:w-1/3 flex justify-center items-center gap-2">
+                                  <X className="h-5 w-5" /> Reject
+                               </button>
+                               <VerificationGate role="ngo">
+                                 <button onClick={() => handleAccept(topReq.id)} className="flex-1 px-6 py-4 rounded-xl text-sm font-bold text-white bg-orange-600 shadow-xl shadow-orange-500/30 hover:bg-orange-700 hover:shadow-orange-600/40 transform hover:-translate-y-0.5 transition-all flex justify-center items-center gap-2">
+                                    <CheckCircle2 className="h-5 w-5" /> Accept Rescue
+                                 </button>
+                               </VerificationGate>
+                            </div>
+                         </div>
+                      );
+                   })() : (
+                      <div className="bg-white rounded-3xl border border-slate-200 p-16 text-center shadow-sm">
+                         <div className="mx-auto h-24 w-24 rounded-full bg-slate-50 flex items-center justify-center mb-6">
+                            <CheckCircle2 className="h-12 w-12 text-emerald-500" />
+                         </div>
+                         <h3 className="text-2xl font-black text-slate-900 mb-2">No urgent decisions required</h3>
+                         <p className="text-slate-500 font-medium">All nearby food rescues have been handled.</p>
+                      </div>
+                   )}
+                </div>
+
+                {/* RIGHT COLUMN: QUEUE & FILTERS */}
+                <div className="lg:col-span-5 space-y-6">
+                   {/* FILTER & SORT */}
+                   <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                      <div className="flex flex-wrap items-center gap-3">
+                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-2 flex items-center gap-1.5"><Filter className="h-3 w-3" /> Filters</span>
+                         <button className="px-3 py-1.5 text-xs font-bold rounded-lg bg-orange-50 text-orange-700 border border-orange-200 flex items-center gap-1.5 hover:bg-orange-100 transition-colors shadow-sm">
+                            Distance <ChevronDown className="h-3 w-3" />
+                         </button>
+                         <button className="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-50 text-slate-600 border border-slate-200 flex items-center gap-1.5 hover:bg-slate-100 transition-colors shadow-sm">
+                            Urgency <ChevronDown className="h-3 w-3" />
+                         </button>
+                         <button className="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-50 text-slate-600 border border-slate-200 flex items-center gap-1.5 hover:bg-slate-100 transition-colors shadow-sm">
+                            Food Type <ChevronDown className="h-3 w-3" />
+                         </button>
+                      </div>
+                   </div>
+
+                   {/* SECONDARY REQUESTS LIST */}
+                   <div className="space-y-4">
+                      <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                         <List className="h-3 w-3" /> Other Opportunities
+                      </h4>
+                      {donations.filter(d => d.status === 'Pending').slice(1).map(req => (
+                         <div key={req.id} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col gap-4 hover:border-orange-300 hover:shadow-md transition-all cursor-pointer group relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-10 transition-opacity"><ArrowRight className="w-12 h-12 text-orange-600 -mt-2 -mr-2" /></div>
+                            <div className="flex justify-between items-start relative z-10">
+                               <div className="flex gap-4">
+                                  <div className="h-12 w-12 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center group-hover:bg-orange-50 group-hover:text-orange-600 transition-colors border border-slate-100 group-hover:border-orange-100">
+                                     <Utensils className="h-6 w-6" />
+                                  </div>
+                                  <div>
+                                     <h5 className="font-bold text-slate-900 text-base">{req.foodType}</h5>
+                                     <p className="text-xs font-medium text-slate-500 flex items-center gap-1.5 mt-1"><MapPin className="h-3 w-3" /> {req.donor?.name || 'Local Donor'} ({req.distance?.toFixed(1)} km)</p>
+                                  </div>
+                               </div>
+                               <span className="text-xs font-black bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md border border-slate-200">{req.quantity}</span>
+                            </div>
+                            <div className="flex items-center justify-between pt-2 border-t border-slate-100 relative z-10">
+                               <span className="text-[10px] font-bold text-red-600 bg-red-50 px-2.5 py-1 rounded-md flex items-center gap-1.5 border border-red-100"><Clock className="h-3 w-3" /> {req.expiry} left</span>
+                               <button onClick={(e) => { e.stopPropagation(); handleAccept(req.id); }} className="text-xs font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1.5 group-hover:underline">
+                                  Review Details <ArrowRight className="h-3 w-3" />
+                               </button>
+                            </div>
+                         </div>
+                      ))}
+                      {donations.filter(d => d.status === 'Pending').length <= 1 && (
+                         <div className="p-8 text-center text-slate-500 bg-slate-50 rounded-2xl text-sm border border-slate-200 border-dashed flex flex-col items-center gap-3">
+                            <Utensils className="h-8 w-8 text-slate-300" />
+                            <span className="font-medium">No other pending requests.</span>
+                         </div>
+                      )}
+                   </div>
+                </div>
+
+             </div>
           </div>
         )}
 
@@ -849,174 +1170,246 @@ const NGODashboard = () => {
 
         {/* PROFILE VIEW */}
         {isProfile && (
-          <div className="space-y-8 w-full animate-in fade-in duration-700">
-             <div className="mb-0">
-                <ProfileVerificationCenter />
+          <div className="w-full space-y-8 animate-in fade-in duration-700">
+             {/* SECTION 1: ORGANIZATION HEADER & SECTION 2: TRUST SCORE */}
+             <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none transition-transform duration-1000 rotate-12"><Building2 className="h-48 w-48" /></div>
+                <div className="flex items-center gap-6 relative z-10">
+                   <div className="h-24 w-24 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-600 text-4xl font-black shadow-inner border-2 border-white transform -rotate-3">
+                      {user?.name?.[0] || 'N'}
+                   </div>
+                   <div>
+                      <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-3">{user?.name || 'NGO Organization'}</h2>
+                      <div className="flex flex-wrap items-center gap-3">
+                         <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 shadow-sm"><ShieldCheck className="h-3 w-3" /> Verified ResQ Partner</span>
+                         <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200">ID: UP/2023/04859</span>
+                      </div>
+                   </div>
+                </div>
+
+                <div className="flex flex-col items-center justify-center p-6 bg-slate-900 rounded-2xl border border-slate-800 min-w-[250px] relative z-10 shadow-xl">
+                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2"><Star className="h-3 w-3 text-orange-400" fill="currentColor" /> Trust Score</span>
+                   <div className="flex items-baseline gap-2">
+                      <span className="text-5xl font-black text-white">94%</span>
+                   </div>
+                   <span className="text-[10px] font-bold text-emerald-400 mt-2 tracking-widest uppercase">(Highly Reliable)</span>
+                </div>
              </div>
-             <form onSubmit={handleProfileUpdate} className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full animate-in slide-in-from-bottom-5 duration-500">
-              <div className="lg:col-span-2 space-y-8">
-                <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-slate-100 shadow-sm relative overflow-hidden">
-                   <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none transition-transform duration-1000 group-hover:rotate-6"><Building2 className="h-48 w-48" /></div>
+
+             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 space-y-8">
                    
-                   <div className="flex flex-col sm:flex-row items-center gap-6 mb-12 relative z-10">
-                      <div className="h-24 w-24 bg-orange-100 rounded-[2rem] flex items-center justify-center text-orange-600 text-4xl font-black rotate-3 shadow-orange-100/50 shadow-xl border-4 border-white">
-                         {user?.name?.[0] || 'N'}
+                   {/* SECTION 3: CAPACITY USAGE */}
+                   <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden">
+                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2"><Activity className="h-5 w-5 text-orange-500" /> Real-Time Capacity</h3>
+                      <div className="grid grid-cols-3 gap-4 mb-8">
+                         <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100">
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Daily Limit</span>
+                            <span className="text-3xl font-black text-slate-900">500</span>
+                         </div>
+                         <div className="p-5 bg-orange-50 rounded-2xl border border-orange-100">
+                            <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest block mb-2">Current Usage</span>
+                            <span className="text-3xl font-black text-orange-700">420</span>
+                         </div>
+                         <div className="p-5 bg-emerald-50 rounded-2xl border border-emerald-100">
+                            <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest block mb-2">Remaining</span>
+                            <span className="text-3xl font-black text-emerald-700">80</span>
+                         </div>
                       </div>
-                      <div className="text-center sm:text-left">
-                         <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-none mb-3">{user?.name}</h2>
-                         <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
-                            <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100 italic"><Building2 className="h-3 w-3" /> DARPAN: UP/2023/04859</span>
-                            <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 shadow-sm shadow-emerald-100/20"><ShieldCheck className="h-3 w-3" /> Verified Partner</span>
+                      <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner flex">
+                         <div className="h-full bg-orange-500 w-[84%] relative">
+                            <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                         </div>
+                      </div>
+                      <div className="flex justify-between items-center mt-4 text-[10px] font-black uppercase tracking-widest">
+                         <span className="text-slate-500">84% Utilized</span>
+                         <button onClick={() => alert('Capacity increase request submitted to admin.')} className="text-orange-600 hover:text-orange-700 hover:underline transition-all">Request Capacity Increase</button>
+                      </div>
+                   </div>
+
+                   {/* SECTION 4: OPERATIONAL SETTINGS */}
+                   <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
+                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2"><Settings className="h-5 w-5 text-slate-500" /> Operational Configuration</h3>
+                      <div className="space-y-4">
+                         <div className="flex items-center justify-between p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors">
+                            <div>
+                               <h4 className="font-bold text-slate-900 text-sm">Rescue Radius</h4>
+                               <p className="text-xs text-slate-500 mt-1">Maximum distance for automated alerts.</p>
+                            </div>
+                            <select className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none shadow-sm cursor-pointer hover:border-orange-200 transition-colors">
+                               <option>3 km</option>
+                               <option selected>5 km</option>
+                               <option>10 km</option>
+                            </select>
+                         </div>
+                         
+                         <div className="flex items-center justify-between p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors">
+                            <div>
+                               <h4 className="font-bold text-slate-900 text-sm">Operating Hours</h4>
+                               <p className="text-xs text-slate-500 mt-1">Time window for accepting new pickups.</p>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm font-bold text-slate-700">
+                               <span className="bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm">08:00 AM</span>
+                               <span className="text-slate-400">-</span>
+                               <span className="bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm">10:00 PM</span>
+                            </div>
+                         </div>
+
+                         <div className="flex items-center justify-between p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors">
+                            <div>
+                               <h4 className="font-bold text-slate-900 text-sm">Auto-Accept Trusted Donors</h4>
+                               <p className="text-xs text-slate-500 mt-1">Bypass manual review for 5-star rated donors.</p>
+                            </div>
+                            <button onClick={() => alert('Auto-accept rules updated.')} className="h-8 w-14 bg-orange-500 rounded-full relative shadow-inner transition-colors">
+                               <div className="h-6 w-6 bg-white rounded-full absolute top-1 right-1 shadow-sm transition-transform"></div>
+                            </button>
                          </div>
                       </div>
                    </div>
 
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10 relative z-10">
-                      <div className="space-y-3">
-                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] ml-1">Organization Nomenclature</label>
-                         <div className="relative group">
-                            <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-orange-500 transition-colors" />
-                            <input 
-                                disabled={!isEditingProfile}
-                                value={editProfileData.name}
-                                onChange={(e) => setEditProfileData({...editProfileData, name: e.target.value})}
-                                className="w-full pl-12 pr-4 py-4 rounded-[1.25rem] border border-slate-200 bg-slate-50/30 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/5 transition-all outline-none font-bold text-slate-800 disabled:opacity-60"
-                            />
-                         </div>
+                   {/* SECTION 6: TEAM MANAGEMENT */}
+                   <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
+                      <div className="flex items-center justify-between mb-6">
+                         <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2"><Users className="h-5 w-5 text-blue-500" /> Team Management</h3>
+                         <button onClick={() => alert('Invite new member flow triggered.')} className="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-700 bg-blue-50 px-4 py-2 rounded-lg transition-colors">+ Add Member</button>
                       </div>
-
                       <div className="space-y-3">
-                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] ml-1">Communication Channel</label>
-                         <div className="relative group">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-orange-500 transition-colors" />
-                            <input 
-                                disabled={!isEditingProfile}
-                                value={editProfileData.email}
-                                type="email"
-                                onChange={(e) => setEditProfileData({...editProfileData, email: e.target.value})}
-                                className="w-full pl-12 pr-4 py-4 rounded-[1.25rem] border border-slate-200 bg-slate-50/30 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/5 transition-all outline-none font-bold text-slate-800 disabled:opacity-60"
-                            />
-                         </div>
+                         {[
+                            {name: 'Rahul Sharma', role: 'Fleet Manager', status: 'Active', color: 'emerald'},
+                            {name: 'Priya Desai', role: 'Volunteer Driver', status: 'On Duty', color: 'blue'},
+                            {name: 'Arun Kumar', role: 'Facility Staff', status: 'Offline', color: 'slate'}
+                         ].map((member, i) => (
+                            <div key={i} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors shadow-sm hover:shadow">
+                               <div className="flex items-center gap-4">
+                                  <div className="h-10 w-10 bg-slate-100 rounded-xl flex items-center justify-center font-black text-slate-600 border border-slate-200">
+                                     {member.name[0]}
+                                  </div>
+                                  <div>
+                                     <h4 className="font-bold text-slate-900 text-sm">{member.name}</h4>
+                                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">{member.role}</p>
+                                  </div>
+                               </div>
+                               <span className={`text-[10px] font-bold px-3 py-1.5 rounded-lg border bg-${member.color}-50 text-${member.color}-600 border-${member.color}-200 shadow-sm`}>
+                                  {member.status}
+                               </span>
+                            </div>
+                         ))}
                       </div>
-
-                      <div className="space-y-3">
-                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] ml-1">Emergency Dispatch</label>
-                         <div className="relative group">
-                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-orange-500 transition-colors" />
-                            <input 
-                                disabled={!isEditingProfile}
-                                value={editProfileData.phone}
-                                onChange={(e) => setEditProfileData({...editProfileData, phone: e.target.value})}
-                                className="w-full pl-12 pr-4 py-4 rounded-[1.25rem] border border-slate-200 bg-slate-50/30 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/5 transition-all outline-none font-bold text-slate-800 disabled:opacity-60"
-                            />
-                         </div>
-                      </div>
-
-                      <div className="space-y-3">
-                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] ml-1">Operational Vicinity</label>
-                         <div className="relative group">
-                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-orange-500 transition-colors" />
-                            <input 
-                                disabled={!isEditingProfile}
-                                value={editProfileData.address}
-                                onChange={(e) => setEditProfileData({...editProfileData, address: e.target.value})}
-                                className="w-full pl-12 pr-4 py-4 rounded-[1.25rem] border border-slate-200 bg-slate-50/30 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/5 transition-all outline-none font-bold text-slate-800 disabled:opacity-60"
-                            />
-                         </div>
-                      </div>
-
-                      {isEditingProfile && (
-                        <div className="space-y-3 md:col-span-2 animate-in slide-in-from-top-2 duration-300">
-                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] ml-1">Security Redirection (New Password)</label>
-                           <input 
-                                type="password" 
-                                placeholder="Target new encryption key"
-                                value={editProfileData.password}
-                                onChange={(e) => setEditProfileData({...editProfileData, password: e.target.value})}
-                                className="w-full px-5 py-4 rounded-[1.25rem] border border-slate-200 bg-slate-50/30 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/5 transition-all outline-none font-bold text-slate-800"
-                           />
-                        </div>
-                      )}
-                   </div>
-
-                   <div className="mt-12 pt-10 border-t border-slate-100 flex justify-end gap-4 relative z-10">
-                      {isEditingProfile && (
-                        <button 
-                            type="submit"
-                            disabled={isUpdatingProfile}
-                            className="flex items-center justify-center gap-2 rounded-2xl bg-orange-600 px-10 py-4 text-xs font-black uppercase tracking-widest text-white shadow-xl shadow-orange-500/30 hover:bg-orange-700 transition-all hover:scale-105 active:scale-95 disabled:opacity-75"
-                        >
-                            {isUpdatingProfile ? <><Loader2 className="w-4 h-4 animate-spin" /> Committing Changes...</> : 'Save Institutional Data'}
-                        </button>
-                      )}
                    </div>
                 </div>
 
-                <div className="bg-slate-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden group shadow-2xl shadow-slate-900/20">
-                   <div className="absolute -right-20 -bottom-20 h-80 w-80 bg-orange-500/10 rounded-full blur-3xl group-hover:bg-orange-500/20 transition-all duration-700"></div>
-                   <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-                       <div className="bg-white/10 p-5 rounded-[2rem] backdrop-blur-md border border-white/10 group-hover:scale-110 transition-transform">
-                          <ShieldCheck className="h-10 w-10 text-orange-400" />
-                       </div>
-                       <div className="flex-1 text-center md:text-left">
-                          <h4 className="text-2xl font-black mb-2 tracking-tight">System Compliance Hub</h4>
-                          <p className="text-slate-400 text-sm leading-relaxed max-w-md italic">Your legal 80G and 12A certifications are cryptographically verified until June 2027.</p>
-                       </div>
-                       <button 
-                         type="button" 
-                         onClick={() => alert('Viewing credentials... Secure Vault Access Enabled.')}
-                         className="px-8 py-4 bg-white text-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-orange-50 transition-colors shadow-lg shadow-white/5 active:scale-95"
-                       >
-                         View Credentials
-                       </button>
-                    </div>
+                <div className="space-y-8">
+                   {/* SECTION 5: COMPLIANCE STATUS */}
+                   <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
+                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-emerald-500" /> Compliance Status</h3>
+                      <div className="space-y-4">
+                         <div className="p-5 bg-emerald-50 rounded-2xl border border-emerald-100 relative overflow-hidden">
+                            <div className="absolute -right-2 -bottom-2 opacity-10"><ShieldCheck className="w-16 h-16 text-emerald-600" /></div>
+                            <div className="flex justify-between items-start mb-3 relative z-10">
+                               <h4 className="font-bold text-emerald-900 text-sm flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4" /> FSSAI License</h4>
+                               <span className="text-[10px] font-bold text-emerald-700 bg-white px-2.5 py-1 rounded-md shadow-sm border border-emerald-100">Valid</span>
+                            </div>
+                            <p className="text-[10px] font-black text-emerald-700/70 uppercase tracking-widest relative z-10">Expires in 1.5 Years</p>
+                         </div>
+                         <div className="p-5 bg-amber-50 rounded-2xl border border-amber-100 relative overflow-hidden">
+                            <div className="absolute -right-2 -bottom-2 opacity-10"><AlertCircle className="w-16 h-16 text-amber-600" /></div>
+                            <div className="flex justify-between items-start mb-3 relative z-10">
+                               <h4 className="font-bold text-amber-900 text-sm flex items-center gap-1.5"><AlertCircle className="h-4 w-4" /> 80G Registration</h4>
+                               <span className="text-[10px] font-bold text-amber-700 bg-white px-2.5 py-1 rounded-md shadow-sm border border-amber-100">Action Needed</span>
+                            </div>
+                            <p className="text-[10px] font-black text-amber-700/70 uppercase tracking-widest mb-4 relative z-10">Expires in 45 Days</p>
+                            <button onClick={() => alert('Renewal request initiated. A platform agent will contact you.')} className="w-full py-2.5 bg-white rounded-xl text-xs font-bold text-amber-700 border border-amber-200 hover:bg-amber-100 transition-colors shadow-sm relative z-10">Initiate Renewal</button>
+                         </div>
+                      </div>
+                   </div>
+
+                   {/* SECTION 7: PERFORMANCE SUMMARY */}
+                   <div className="bg-slate-900 rounded-[2rem] p-8 text-white relative overflow-hidden shadow-xl">
+                      <div className="absolute -top-10 -right-10 w-48 h-48 bg-orange-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                      <h3 className="text-[10px] font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2 relative z-10"><TrendingUp className="h-4 w-4 text-orange-400" /> Performance Metrics</h3>
+                      <div className="space-y-5 relative z-10">
+                         <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                            <span className="text-xs text-slate-400 font-medium">Avg Response Time</span>
+                            <span className="text-lg font-black text-white tracking-tight">8.5 mins</span>
+                         </div>
+                         <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                            <span className="text-xs text-slate-400 font-medium">Success Rate</span>
+                            <span className="text-lg font-black text-emerald-400 tracking-tight">98.2%</span>
+                         </div>
+                         <div className="flex items-center justify-between">
+                            <span className="text-xs text-slate-400 font-medium">Delay Rate (&gt;15m)</span>
+                            <span className="text-lg font-black text-amber-400 tracking-tight">1.8%</span>
+                         </div>
+                      </div>
+                   </div>
+
+                   {/* SECTION 8: ARCHIVES & REPORTS */}
+                   <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
+                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2"><FileText className="h-5 w-5 text-slate-500" /> Archives & Reports</h3>
+                      <div className="space-y-3">
+                         <button onClick={() => alert('Downloading Monthly Impact Report...')} className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 transition-colors group">
+                            <div className="flex items-center gap-4">
+                               <div className="p-2 bg-white rounded-xl shadow-sm group-hover:text-orange-600 transition-colors"><Download className="h-5 w-5" /></div>
+                               <span className="font-bold text-sm text-slate-700">Monthly Impact Report</span>
+                            </div>
+                            <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-orange-500 transition-colors" />
+                         </button>
+                         <button onClick={() => alert('Opening Past Missions Log...')} className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 transition-colors group">
+                            <div className="flex items-center gap-4">
+                               <div className="p-2 bg-white rounded-xl shadow-sm group-hover:text-orange-600 transition-colors"><History className="h-5 w-5" /></div>
+                               <span className="font-bold text-sm text-slate-700">Past Missions Log</span>
+                            </div>
+                            <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-orange-500 transition-colors" />
+                         </button>
+                         <button onClick={() => alert('Opening System Audit Logs...')} className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 transition-colors group">
+                            <div className="flex items-center gap-4">
+                               <div className="p-2 bg-white rounded-xl shadow-sm group-hover:text-orange-600 transition-colors"><ShieldCheck className="h-5 w-5" /></div>
+                               <span className="font-bold text-sm text-slate-700">System Audit Logs</span>
+                            </div>
+                            <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-orange-500 transition-colors" />
+                         </button>
+                      </div>
+                   </div>
+
                 </div>
+             </div>
+          </div>
+        )}
+
+        {/* MAP VIEW */}
+        {isMap && (
+          <div className="space-y-6 w-full animate-in fade-in duration-700 h-[800px] flex flex-col">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-3xl font-black text-slate-900 tracking-tight">Live Operations Map</h2>
+                <p className="text-slate-500 font-medium mt-1">Real-time tracking of active rescues and fleet positions.</p>
               </div>
-
-              <div className="space-y-8">
-                <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm transition-all hover:shadow-md">
-                   <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-8 flex items-center gap-3">
-                      <TrendingUp className="h-4 w-4 text-orange-500" /> Operational Config
-                   </h3>
-                   <div className="space-y-4">
-                      <div className="p-5 rounded-2xl border border-slate-50 bg-slate-50/50 hover:bg-white hover:border-orange-100 transition-all group">
-                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 group-hover:text-orange-500">Rescue Radius</p>
-                         <div className="flex items-baseline gap-2">
-                            <p className="text-2xl font-black text-slate-900 tracking-tighter">5.0</p>
-                            <span className="text-[10px] font-black text-slate-400 uppercase">Kilometers</span>
-                         </div>
-                      </div>
-                      <div className="p-5 rounded-2xl border border-slate-50 bg-slate-50/50 hover:bg-white hover:border-orange-100 transition-all group">
-                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 group-hover:text-orange-500">Daily Capacity</p>
-                         <div className="flex items-baseline gap-2">
-                            <p className="text-2xl font-black text-slate-900 tracking-tighter">500</p>
-                            <span className="text-[10px] font-black text-slate-400 uppercase">Meals / Day</span>
-                         </div>
-                      </div>
-                   </div>
-                   <button 
-                    type="button" 
-                    onClick={() => alert('Logistics config updated successfully!')}
-                    className="w-full mt-8 py-4 bg-orange-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-700 transition-all shadow-lg shadow-orange-500/20 active:scale-95"
-                   >
-                    Update Infrastructure
-                   </button>
-                </div>
-
-                <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-[2.5rem] p-8 text-white shadow-xl relative overflow-hidden group">
-                   <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:rotate-12 transition-transform duration-700"><History className="h-24 w-24" /></div>
-                   <h4 className="text-lg font-black mb-2 tracking-tight">Rescue Archives</h4>
-                   <p className="text-orange-100/70 text-[10px] font-medium mb-8 leading-relaxed">Secure audit trails for all mission-critical food rescues in fiscal year 2024.</p>
-                   <button 
-                    type="button" 
-                    onClick={() => alert('Compiling digital history... Safe storage protocol active.')}
-                    className="w-full py-4 bg-white/20 backdrop-blur-md rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white/30 transition-all border border-white/10 active:scale-95"
-                   >
-                    Digital Archives Export
-                   </button>
-                </div>
+              <div className="flex items-center gap-3">
+                <span className="flex items-center gap-2 text-xs font-bold bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full border border-emerald-200">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Live
+                </span>
               </div>
-            </form>
+            </div>
+            
+            <div className="flex-1 rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-xl shadow-slate-200/50 relative bg-slate-50">
+               <FoodFinderMap 
+                   ngoLat={user?.latitude || 17.3850} 
+                   ngoLon={user?.longitude || 78.4867} 
+                   radiusKm={10} 
+                   availableDonations={donations.filter(d => d.status === 'Pending' || d.status === 'Accepted')} 
+               />
+               
+               <div className="absolute top-6 left-6 z-10 space-y-4">
+                  <div className="bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-slate-100 max-w-[250px]">
+                     <h3 className="font-black text-slate-900 text-sm mb-3">Map Legend</h3>
+                     <div className="space-y-2 text-xs font-bold text-slate-600">
+                        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-emerald-500" /> Active Pickups</div>
+                        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-orange-500" /> High Priority</div>
+                        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-blue-500" /> Fleet Vehicles</div>
+                     </div>
+                  </div>
+               </div>
+            </div>
           </div>
         )}
 

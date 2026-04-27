@@ -13,7 +13,8 @@ import {
     Bell,
     AlertCircle,
     MessageSquare,
-    Trophy
+    Trophy,
+    Users
 } from 'lucide-react'
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar'
 import { cn } from '@/lib/utils'
@@ -82,32 +83,32 @@ const DashboardLayout = () => {
                 {
                     label: "Home",
                     href: "/donor/home",
-                    icon: <Home className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                    icon: <Home className="text-slate-200 h-5 w-5 flex-shrink-0" />,
                 },
                 {
                     label: "Dashboard",
                     href: "/donor",
-                    icon: <LayoutDashboard className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                    icon: <LayoutDashboard className="text-slate-200 h-5 w-5 flex-shrink-0" />,
                 },
                 {
                     label: "My Donations",
                     href: "/donor/donations", 
-                    icon: <UtensilsCrossed className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                    icon: <UtensilsCrossed className="text-slate-200 h-5 w-5 flex-shrink-0" />,
                 },
                 {
                     label: "Rescue Map",
                     href: "/donor/map",
-                    icon: <MapPin className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                    icon: <MapPin className="text-slate-200 h-5 w-5 flex-shrink-0" />,
                 },
                 {
                     label: "Profile",
                     href: "/donor/profile",
-                    icon: <UserCog className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                    icon: <UserCog className="text-slate-200 h-5 w-5 flex-shrink-0" />,
                 },
                 {
                     label: "Analytics", 
                     href: "/donor/analytics",
-                    icon: <BarChart3 className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                    icon: <BarChart3 className="text-slate-200 h-5 w-5 flex-shrink-0" />,
                 },
             ]
         }
@@ -130,7 +131,17 @@ const DashboardLayout = () => {
                     icon: <HandHeart className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
                 },
                 {
-                    label: "Profile",
+                    label: "Mission Analytics",
+                    href: "/ngo/analytics",
+                    icon: <BarChart3 className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
+                {
+                    label: "Live Operations",
+                    href: "/ngo/map",
+                    icon: <MapPin className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
+                {
+                    label: "Settings & Profile",
                     href: "/ngo/profile",
                     icon: <UserCog className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
                 },
@@ -155,6 +166,16 @@ const DashboardLayout = () => {
                     icon: <UtensilsCrossed className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
                 },
                 {
+                    label: "Live Control",
+                    href: "/events/control",
+                    icon: <MapPin className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
+                {
+                    label: "Impact Analytics",
+                    href: "/events/analytics",
+                    icon: <BarChart3 className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                },
+                {
                     label: "Profile",
                     href: "/events/profile",
                     icon: <UserCog className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
@@ -175,9 +196,9 @@ const DashboardLayout = () => {
                     icon: <LayoutDashboard className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
                 },
                 {
-                    label: "Leaderboard",
-                    href: "/volunteer/leaderboard",
-                    icon: <Trophy className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+                    label: "Dashboard",
+                    href: "/volunteer/dashboard",
+                    icon: <LayoutDashboard className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
                 },
                 {
                     label: "Profile",
@@ -216,7 +237,7 @@ const DashboardLayout = () => {
     return (
         <div
             className={cn(
-                "rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden",
+                "flex flex-col md:flex-row bg-[#262626] w-full flex-1 mx-auto overflow-hidden",
                 "h-screen"
             )}
         >
@@ -226,7 +247,11 @@ const DashboardLayout = () => {
                         {open ? <Logo /> : <LogoIcon />}
                         <div className="mt-8 flex flex-col gap-2">
                             {links.map((link, idx) => (
-                                <SidebarLink key={idx} link={link} />
+                                <SidebarLink 
+                                    key={idx} 
+                                    link={link} 
+                                    className="text-slate-300 hover:text-white transition-colors py-3"
+                                />
                             ))}
                             
 
@@ -260,8 +285,9 @@ const DashboardLayout = () => {
                                 link={{
                                     label: "Logout",
                                     href: "/auth",
-                                    icon: <LogOut className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+                                    icon: <LogOut className="text-slate-200 h-5 w-5 flex-shrink-0" />
                                 }}
+                                className="text-slate-300 hover:text-white transition-colors"
                                 onClick={() => {
                                     localStorage.removeItem('resqmeals_current_user')
                                 }}
