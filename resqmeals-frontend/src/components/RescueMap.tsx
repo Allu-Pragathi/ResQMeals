@@ -51,7 +51,7 @@ export default function RescueMap({ user }: { user: any }) {
 
   // Live Tracking Simulation
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (activeDispatch) {
       let step = 0;
       const totalSteps = 200;

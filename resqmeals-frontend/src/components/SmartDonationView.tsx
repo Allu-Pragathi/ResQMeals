@@ -70,7 +70,7 @@ export default function SmartDonationView({ user, donations, onAddDonation }: Do
 
   // Backend Polling for NGO Approval
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (trackingState === 'PENDING' && activeDonationId) {
       interval = setInterval(async () => {
         try {
@@ -95,7 +95,7 @@ export default function SmartDonationView({ user, donations, onAddDonation }: Do
 
   // Live Map Movement Simulation
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (trackingState === 'ON_THE_WAY') {
       let step = 0;
       const totalSteps = 100;
