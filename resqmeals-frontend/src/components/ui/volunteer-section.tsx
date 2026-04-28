@@ -5,7 +5,7 @@ export const VolunteerSection = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="w-full bg-orange-50 py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="w-full bg-transparent px-4 sm:px-6 lg:px-8 relative z-10">
             {/* Background Elements */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-orange-200/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-200/40 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
@@ -65,7 +65,7 @@ export const VolunteerSection = () => {
                 </div>
 
                 {/* Visual */}
-                <div className="relative md:h-[600px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white group">
+                <div className="relative md:h-[500px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white group">
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 z-10"></div>
                     <img
                         src="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?q=80&w=2070&auto=format&fit=crop"

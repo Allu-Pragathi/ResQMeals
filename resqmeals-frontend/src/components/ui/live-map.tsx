@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import api from '../../lib/api'
 
-export function LiveMapSection() {
+export function LiveMapSection({ isEdgeToEdge = false }: { isEdgeToEdge?: boolean } = {}) {
     const [markers, setMarkers] = useState<any[]>([])
     const [zoom, setZoom] = useState(1)
     const [isFullscreen, setIsFullscreen] = useState(false)
@@ -17,9 +17,28 @@ export function LiveMapSection() {
         const fetchMarkers = async () => {
             try {
                 const res = await api.get('/donations')
-                setMarkers(res.data.donations)
+                if (res.data.donations && res.data.donations.length > 0) {
+                    setMarkers(res.data.donations)
+                } else {
+                    // Fallback realistic sample data
+                    setMarkers([
+                        { id: '1', latitude: 28.6139, longitude: 77.2090, foodType: '50 Buffet Meals', donor: { name: 'Spice Garden Restaurant' }, status: 'live' },
+                        { id: '2', latitude: 19.0760, longitude: 72.8777, foodType: '120 Baked Goods', donor: { name: 'Taj Hotel' }, status: 'picked_up' },
+                        { id: '3', latitude: 12.9716, longitude: 77.5946, foodType: '30 Groceries', donor: { name: 'FreshMart' }, status: 'live' },
+                        { id: '4', latitude: 13.0827, longitude: 80.2707, foodType: '80 Meals', donor: { name: 'Southern Spice' }, status: 'live' },
+                        { id: '5', latitude: 17.3850, longitude: 78.4867, foodType: '45 Biryani Packs', donor: { name: 'Hyderabadi Kitchen' }, status: 'picked_up' },
+                    ])
+                }
             } catch (err) {
                 console.error('Failed to fetch map data', err)
+                // Fallback realistic sample data
+                setMarkers([
+                    { id: '1', latitude: 28.6139, longitude: 77.2090, foodType: '50 Buffet Meals', donor: { name: 'Spice Garden Restaurant' }, status: 'live' },
+                    { id: '2', latitude: 19.0760, longitude: 72.8777, foodType: '120 Baked Goods', donor: { name: 'Taj Hotel' }, status: 'picked_up' },
+                    { id: '3', latitude: 12.9716, longitude: 77.5946, foodType: '30 Groceries', donor: { name: 'FreshMart' }, status: 'live' },
+                    { id: '4', latitude: 13.0827, longitude: 80.2707, foodType: '80 Meals', donor: { name: 'Southern Spice' }, status: 'live' },
+                    { id: '5', latitude: 17.3850, longitude: 78.4867, foodType: '45 Biryani Packs', donor: { name: 'Hyderabadi Kitchen' }, status: 'picked_up' },
+                ])
             }
         }
         fetchMarkers()
@@ -37,13 +56,13 @@ export function LiveMapSection() {
 
     return (
         <div className={`
-            ${isFullscreen ? 'fixed inset-0 z-[100] h-screen w-screen rounded-none' : 'relative w-full h-[600px] rounded-2xl'}
-            transition-all duration-500 ease-in-out overflow-hidden shadow-2xl border border-slate-200 bg-slate-50
+            ${isFullscreen ? 'fixed inset-0 z-[100] h-screen w-screen rounded-none' : `relative w-full ${isEdgeToEdge ? 'h-full rounded-none border-x-0 border-y' : 'h-[600px] rounded-2xl border'} border-slate-200`}
+            transition-all duration-500 ease-in-out overflow-hidden shadow-2xl bg-slate-50
         `}>
             {/* Top Bar */}
-            <div className={`absolute top-0 left-0 right-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex items-center justify-between ${isFullscreen ? 'py-6 px-10' : ''}`}>
+            <div className={`absolute top-0 left-0 right-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex items-center justify-between ${isFullscreen || isEdgeToEdge ? 'py-8 px-10' : ''}`}>
                 <div>
-                    <h3 className={`font-bold text-slate-900 ${isFullscreen ? 'text-2xl' : 'text-lg'}`}>Live Rescue Network</h3>
+                    <h3 className={`font-bold text-slate-900 ${isFullscreen || isEdgeToEdge ? 'text-3xl' : 'text-lg'}`}>Live Rescue Operations</h3>
                     <p className="text-sm text-slate-500">Currently showing {markers.length} active rescues across India</p>
                 </div>
                 <div className="flex items-center gap-6">
@@ -93,8 +112,10 @@ export function LiveMapSection() {
                             key={item.id} 
                             top={pos.top} 
                             left={pos.left} 
-                            label={`${item.donor?.name || 'Restaurant'}: ${item.foodType}`} 
+                            label={`${item.donor?.name || 'Restaurant'}`} 
+                            subLabel={`${item.foodType}`}
                             type="restaurant" 
+                            status={item.status || 'live'}
                         />
                     )
                 })}
@@ -137,22 +158,33 @@ export function LiveMapSection() {
     );
 }
 
-function Marker({ top, left, label, type }: { top: string, left: string, label: string, type: 'restaurant' | 'ngo' }) {
-    const color = type === 'restaurant' ? 'bg-emerald-500' : 'bg-orange-500';
+function Marker({ top, left, label, subLabel, type, status }: { top: string, left: string, label: string, subLabel?: string, type: 'restaurant' | 'ngo', status?: string }) {
+    const isLive = status !== 'picked_up';
+    const color = type === 'restaurant' ? (isLive ? 'bg-orange-500' : 'bg-blue-500') : 'bg-emerald-500';
 
     return (
         <div
-            className="absolute group cursor-pointer"
+            className="absolute group cursor-pointer z-10 hover:z-50"
             style={{ top, left }}
         >
             <div className="relative flex items-center justify-center -translate-x-1/2 -translate-y-1/2">
-                <span className={`animate-ping absolute inline-flex h-6 w-6 rounded-full ${color} opacity-75`}></span>
+                {isLive && <span className={`animate-ping absolute inline-flex h-6 w-6 rounded-full ${color} opacity-75`}></span>}
                 <span className={`relative inline-flex rounded-full h-3 w-3 ${color} border-2 border-white shadow-md`}></span>
 
                 {/* Tooltip */}
-                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 pointer-events-none shadow-xl z-50">
-                    {label}
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-max p-3 bg-white border border-slate-100 rounded-xl opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 pointer-events-none shadow-2xl z-50">
+                    <div className="flex flex-col gap-1">
+                        <div className="flex items-center justify-between gap-3">
+                            <span className="font-bold text-slate-900 text-sm">{label}</span>
+                            {status && (
+                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${isLive ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
+                                    {isLive ? 'Live Rescue' : 'In Transit'}
+                                </span>
+                            )}
+                        </div>
+                        {subLabel && <span className="text-slate-500 text-xs font-medium">{subLabel}</span>}
+                    </div>
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-6 border-transparent border-t-white"></div>
                 </div>
             </div>
         </div>

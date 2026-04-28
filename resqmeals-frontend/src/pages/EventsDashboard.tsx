@@ -53,6 +53,9 @@ const EventsDashboard = () => {
         expiry: '',
         location: ''
     })
+    const [foodSeg, setFoodSeg] = useState('cooked')
+    const [coldChain, setColdChain] = useState(true)
+    const [multiNgo, setMultiNgo] = useState(true)
     const [forecast, setForecast] = useState<any[]>([])
     const [isAiLoading, setIsAiLoading] = useState(false)
 
@@ -801,30 +804,27 @@ const EventsDashboard = () => {
                                   <Utensils className="h-4 w-4 text-orange-500" /> Food Segmentation
                                </h3>
                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                                  <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-orange-500 bg-orange-50 text-orange-700 cursor-pointer">
-                                     <PartyPopper className="h-6 w-6 mb-2" />
+                                  <label onClick={() => setFoodSeg('cooked')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all ${foodSeg === 'cooked' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-sm' : 'border-slate-100 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:border-slate-200'}`}>
+                                     <PartyPopper className={`h-6 w-6 mb-2 ${foodSeg === 'cooked' ? 'text-orange-500' : 'text-slate-400'}`} />
                                      <span className="text-xs font-bold">Cooked Meals</span>
-                                     <input type="radio" name="foodSeg" className="hidden" defaultChecked />
                                   </label>
-                                  <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-slate-100 bg-slate-50 text-slate-500 hover:bg-slate-100 cursor-pointer">
-                                     <Briefcase className="h-6 w-6 mb-2" />
+                                  <label onClick={() => setFoodSeg('packaged')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all ${foodSeg === 'packaged' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-sm' : 'border-slate-100 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:border-slate-200'}`}>
+                                     <Briefcase className={`h-6 w-6 mb-2 ${foodSeg === 'packaged' ? 'text-orange-500' : 'text-slate-400'}`} />
                                      <span className="text-xs font-bold">Packaged Items</span>
-                                     <input type="radio" name="foodSeg" className="hidden" />
                                   </label>
-                                  <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-slate-100 bg-slate-50 text-slate-500 hover:bg-slate-100 cursor-pointer">
-                                     <Leaf className="h-6 w-6 mb-2" />
+                                  <label onClick={() => setFoodSeg('raw')} className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all ${foodSeg === 'raw' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-sm' : 'border-slate-100 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:border-slate-200'}`}>
+                                     <Leaf className={`h-6 w-6 mb-2 ${foodSeg === 'raw' ? 'text-orange-500' : 'text-slate-400'}`} />
                                      <span className="text-xs font-bold">Raw/Perishable</span>
-                                     <input type="radio" name="foodSeg" className="hidden" />
                                   </label>
                                </div>
-                               <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-50 border border-blue-100">
-                                  <ThermometerSun className="h-5 w-5 text-blue-500" />
+                               <div onClick={() => setColdChain(!coldChain)} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${coldChain ? 'bg-blue-50 border-blue-100 shadow-sm' : 'bg-slate-50 border-slate-100 hover:bg-slate-100 hover:border-slate-200'}`}>
+                                  <ThermometerSun className={`h-5 w-5 ${coldChain ? 'text-blue-500' : 'text-slate-400'}`} />
                                   <div className="flex-1">
-                                     <p className="text-xs font-bold text-blue-900">Cold Chain Required</p>
-                                     <p className="text-[10px] text-blue-700">Temperature-controlled vehicles will be prioritized.</p>
+                                     <p className={`text-xs font-bold ${coldChain ? 'text-blue-900' : 'text-slate-700'}`}>Cold Chain Required</p>
+                                     <p className={`text-[10px] ${coldChain ? 'text-blue-700' : 'text-slate-500'}`}>Temperature-controlled vehicles will be prioritized.</p>
                                   </div>
-                                  <div className="w-10 h-6 bg-blue-500 rounded-full relative shadow-inner cursor-pointer">
-                                     <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow"></div>
+                                  <div className={`w-10 h-6 rounded-full relative shadow-inner transition-colors duration-300 ${coldChain ? 'bg-blue-500' : 'bg-slate-300'}`}>
+                                     <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all duration-300 ${coldChain ? 'right-1' : 'left-1'}`}></div>
                                   </div>
                                </div>
                             </div>
@@ -835,10 +835,10 @@ const EventsDashboard = () => {
                                   <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                                      <MapIcon className="h-4 w-4 text-orange-500" /> Zone Distribution Planner
                                   </h3>
-                                  <div className="flex items-center gap-2">
-                                     <span className="text-[10px] font-bold text-slate-500 uppercase">Multi-NGO Dispatch</span>
-                                     <div className="w-8 h-4 bg-emerald-500 rounded-full relative cursor-pointer shadow-inner">
-                                        <div className="absolute right-0.5 top-0.5 w-3 h-3 bg-white rounded-full shadow"></div>
+                                  <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setMultiNgo(!multiNgo)}>
+                                     <span className="text-[10px] font-bold text-slate-500 uppercase group-hover:text-slate-700 transition-colors">Multi-NGO Dispatch</span>
+                                     <div className={`w-8 h-4 rounded-full relative shadow-inner transition-colors duration-300 ${multiNgo ? 'bg-emerald-500' : 'bg-slate-300'}`}>
+                                        <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-all duration-300 ${multiNgo ? 'right-0.5' : 'left-0.5'}`}></div>
                                      </div>
                                   </div>
                                </div>

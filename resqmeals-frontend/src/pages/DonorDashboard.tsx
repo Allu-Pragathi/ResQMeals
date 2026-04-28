@@ -256,7 +256,7 @@ const DonorDashboard = () => {
                 Donor Portal • Welcome, {user?.name || 'Hero'}
              </p>
           </div>
-          <h1 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tight leading-tight">
+          <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-tight">
             {isHome && `Dashboard Overview`}
             {isDashboard && 'Stats & Activity'}
             {isDonations && 'My Donations'}
@@ -352,7 +352,7 @@ const DonorDashboard = () => {
             
             <div className="relative z-10 w-full flex flex-col md:flex-row md:items-center justify-between gap-12">
               <div className="max-w-2xl">
-                <h2 className="text-4xl md:text-6xl font-black text-white leading-tight mb-6">
+                <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-6">
                   Ready to make <br />a difference?
                 </h2>
                 

@@ -17,7 +17,7 @@ export const ImpactCalculator = () => {
 
     return (
         <div className="w-full">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-6">
                 <div className="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-sm font-medium text-orange-800 mb-4">
                     Interactive Tool
                 </div>
@@ -32,7 +32,7 @@ export const ImpactCalculator = () => {
             <div className="w-full bg-white relative">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-amber-500"></div>
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 grid lg:grid-cols-2 gap-12 items-center">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 grid lg:grid-cols-2 gap-12 items-center">
                     {/* Input Section */}
                     <div>
                         <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">I have approximately</label>
