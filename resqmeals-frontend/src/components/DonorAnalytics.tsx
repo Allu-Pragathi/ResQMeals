@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  TrendingUp, BarChart3, Leaf, Heart, Clock, CheckCircle2, AlertCircle, Building2, Zap, ArrowUpRight, Activity, PieChart as PieChartIcon, Sparkles, Target, Lightbulb, Package, Timer, Trophy
+  TrendingUp, BarChart3, Leaf, Heart, Clock, CheckCircle2, AlertCircle, Building2, Zap, ArrowUpRight, Activity, PieChart as PieChartIcon, Sparkles, Target, Lightbulb, Package, Timer, Trophy, Shield, Map
 } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar, Cell, PieChart, Pie, Legend } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar, Cell, PieChart, Pie, Legend, LineChart, Line, ScatterChart, Scatter, ZAxis } from 'recharts';
 
 const leaderboardData = [
   { rank: 1, name: "Marriott Hotel", meals: "1,240", icon: "🏢", isCurrent: false },
@@ -13,319 +13,321 @@ const leaderboardData = [
 ];
 
 const trendData = [
-  { day: 'Mon', donations: 4 },
-  { day: 'Tue', donations: 6 },
-  { day: 'Wed', donations: 5 },
-  { day: 'Thu', donations: 8 },
-  { day: 'Fri', donations: 12 },
-  { day: 'Sat', donations: 18 },
-  { day: 'Sun', donations: 15 },
+  { day: 'Mon', donations: 4, impact: 20 },
+  { day: 'Tue', donations: 6, impact: 35 },
+  { day: 'Wed', donations: 5, impact: 30 },
+  { day: 'Thu', donations: 8, impact: 50 },
+  { day: 'Fri', donations: 12, impact: 85 },
+  { day: 'Sat', donations: 18, impact: 120 },
+  { day: 'Sun', donations: 15, impact: 100 },
 ];
 
 const peakHoursData = [
-  { hour: '12 PM', volume: 20 },
-  { hour: '3 PM', volume: 45 },
-  { hour: '6 PM', volume: 80 },
-  { hour: '9 PM', volume: 100 },
-  { hour: '11 PM', volume: 60 },
+  { hour: '08:00', volume: 20 },
+  { hour: '11:00', volume: 45 },
+  { hour: '14:00', volume: 80 },
+  { hour: '17:00', volume: 100 },
+  { hour: '20:00', volume: 140 },
+  { hour: '23:00', volume: 60 },
 ];
 
-const ngoData = [
-  { name: 'Hope Fnd.', volume: 450 },
-  { name: 'FoodBank', volume: 380 },
-  { name: 'Robin Hood', volume: 220 },
+const foodTypeDistribution = [
+  { name: 'Fresh_Produce', value: 400, color: '#10b981' },
+  { name: 'Cooked_Meals', value: 300, color: '#f97316' },
+  { name: 'Bakery_Items', value: 200, color: '#f59e0b' },
+  { name: 'Dairy_Products', value: 100, color: '#3b82f6' },
 ];
 
-const performanceData = [
-  { name: 'Success', value: 94, fill: '#10b981' }, // emerald-500
-  { name: 'Delay', value: 4, fill: '#f59e0b' },   // amber-500
-  { name: 'Rejection', value: 2, fill: '#f43f5e' }, // rose-500
+const collaborationData = [
+  { name: 'Hope_Fnd', missions: 45, efficiency: 98 },
+  { name: 'Food_Bank', missions: 32, efficiency: 92 },
+  { name: 'Robin_Hood', missions: 28, efficiency: 95 },
+  { name: 'Unity_Relief', missions: 15, efficiency: 88 },
 ];
 
-export default function DonorAnalytics({ donations }: { donations: any[] }) {
+export default function DonorAnalytics({ donations, isDarkMode }: { donations: any[], isDarkMode?: boolean }) {
+  const textColor = isDarkMode ? 'text-white' : 'text-slate-900';
+  const subTextColor = isDarkMode ? 'text-slate-400' : 'text-slate-500';
+  const cardBg = isDarkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200 shadow-sm';
+  
   return (
-    <section aria-label="Smart Analytics Dashboard" className="space-y-8 animate-in fade-in duration-700">
+    <section aria-label="Smart Analytics Dashboard" className={`space-y-10 pb-32 ${isDarkMode ? 'dark' : ''}`}>
       
-      {/* HEADER */}
-      <div className="bg-white/80 backdrop-blur-xl border-white/50 p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-         <h2 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-            <BarChart3 className="w-8 h-8 text-orange-500" aria-hidden="true" />
-            Intelligence & Analytics
-         </h2>
-         <p className="text-slate-500 mt-2 font-medium text-lg">Actionable insights to optimize your surplus redistribution.</p>
+      {/* 🚀 CYBER-ANALYTICS HEADER */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 mb-16">
+         <div>
+            <motion.div 
+               initial={{ opacity: 0, x: -20 }}
+               animate={{ opacity: 1, x: 0 }}
+               className="flex items-center gap-3 mb-4"
+            >
+               <div className="h-0.5 w-16 bg-orange-500"></div>
+               <span className="text-[10px] font-mono font-black text-orange-500 uppercase tracking-[0.5em]">Impact_Intelligence_v3.0</span>
+            </motion.div>
+            <h2 className={`text-6xl md:text-8xl font-black tracking-tighter leading-none mb-4 ${textColor}`}>
+               The Core.
+            </h2>
+            <p className={`${subTextColor} font-mono text-xs uppercase tracking-widest`}>Global Telemetry // Operational Insights // Predictive Modeling</p>
+         </div>
+         
+         <div className="flex flex-wrap gap-4">
+            <div className={`px-8 py-4 rounded-2xl border flex items-center gap-4 group transition-all cursor-pointer ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-900 hover:border-orange-500'}`}>
+               <div className="relative">
+                  <Activity className={`w-5 h-5 group-hover:scale-110 transition-transform ${isDarkMode ? 'text-emerald-400' : 'text-orange-500'}`} />
+                  <span className={`absolute -top-1 -right-1 h-2 w-2 rounded-full animate-ping ${isDarkMode ? 'bg-emerald-500' : 'bg-orange-500'}`}></span>
+               </div>
+               <div className="flex flex-col">
+                  <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Data_Stream</span>
+                  <span className="text-xs font-black uppercase">Live_Operational</span>
+               </div>
+            </div>
+         </div>
       </div>
 
-      {/* --- SECTION 1: OVERVIEW METRICS --- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6" aria-label="Overview Metrics">
+      {/* --- REAL-TIME IMPACT GRID --- */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
          {[
-            { title: "Total Rescued", val: "2,450 kg", icon: Package, color: "text-blue-600", bg: "bg-blue-100" },
-            { title: "Meals Served", val: "10,200", icon: Heart, color: "text-rose-600", bg: "bg-rose-100" },
-            { title: "CO₂ Reduced", val: "850 kg", icon: Leaf, color: "text-emerald-600", bg: "bg-emerald-100" },
-            { title: "Total Missions", val: "128", icon: Target, color: "text-orange-600", bg: "bg-orange-100" }
-         ].map((m, i) => {
-            const Icon = m.icon;
-            return (
-              <div key={i} className="bg-white/80 backdrop-blur-xl border-white/50 p-8 rounded-[2.5rem] border border-slate-100 shadow-sm" tabIndex={0} aria-label={`${m.title}: ${m.val}`}>
-                 <div className={`w-12 h-12 ${m.bg} ${m.color} rounded-2xl flex items-center justify-center mb-6`}>
-                    <Icon className="w-6 h-6" aria-hidden="true" />
-                 </div>
-                 <p className="text-4xl font-black text-slate-900 mb-1">{m.val}</p>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{m.title}</p>
-              </div>
-            );
-         })}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* --- SECTION 2: TREND ANALYSIS --- */}
-        <div className="lg:col-span-8 bg-white/80 backdrop-blur-xl border-white/50 p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col">
-           <div className="flex justify-between items-center mb-8">
-              <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
-                 <TrendingUp className="w-5 h-5 text-orange-500" aria-hidden="true" /> Weekly Flow Trend
-              </h3>
-              <select className="bg-slate-50/70 backdrop-blur-lg border-white/50 border border-slate-200 text-xs font-bold text-slate-600 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-orange-500" aria-label="Select Time Range">
-                 <option>This Week</option>
-                 <option>Last Week</option>
-                 <option>This Month</option>
-              </select>
-           </div>
-           <div className="flex-1 min-h-[300px] w-full" aria-label="Area chart showing weekly donation trends" role="img">
-             <ResponsiveContainer width="100%" height="100%">
-               <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                 <defs>
-                   <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
-                     <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
-                     <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
-                   </linearGradient>
-                 </defs>
-                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                 <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 700}} dy={10} />
-                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 700}} />
-                 <Tooltip 
-                   contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '16px', color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
-                   itemStyle={{ color: '#fb923c' }}
-                 />
-                 <Area type="monotone" dataKey="donations" stroke="#f97316" strokeWidth={4} fillOpacity={1} fill="url(#trendGradient)" aria-hidden="true" />
-               </AreaChart>
-             </ResponsiveContainer>
-           </div>
-        </div>
-
-        {/* --- SECTION 3: PREDICTION (ADVANCED) --- */}
-        <div className="lg:col-span-4 p-8 flex flex-col justify-between">
-           
-           <div>
-              <h3 className="text-sm font-black uppercase tracking-widest text-orange-500 mb-8 flex items-center gap-2">
-                 <Sparkles className="w-5 h-5" aria-hidden="true" /> AI Predictions
-              </h3>
-              
-              <div className="space-y-6">
-                 <div tabIndex={0} aria-label="Expected surplus tomorrow: High (25 kg predicted). Peak time: 8 PM to 10 PM.">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Expected Tomorrow</p>
-                    <p className="text-3xl font-black text-slate-900 mb-2">High Volume</p>
-                    <p className="text-sm text-slate-600 font-medium">Predicting ~25kg surplus based on historical weekend patterns.</p>
-                 </div>
-                 
-                 <div tabIndex={0}>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">High Demand Window</p>
-                    <p className="text-2xl font-black text-slate-900 flex items-center gap-2"><Clock className="w-5 h-5 text-orange-500" aria-hidden="true" /> 8 PM - 10 PM</p>
-                    <p className="text-sm text-slate-600 font-medium mt-2">NGOs have 40% faster acceptance rates during this window.</p>
-                 </div>
-              </div>
-           </div>
-        </div>
-
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* --- SECTION 9: ACTIONABLE RECOMMENDATIONS --- */}
-        <div className="lg:col-span-7 bg-white/80 backdrop-blur-xl border-white/50 p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-           <h3 className="text-sm font-black uppercase tracking-widest text-orange-900 mb-6 flex items-center gap-2">
-              <Lightbulb className="w-5 h-5 text-orange-500" aria-hidden="true" /> Actionable Recommendations
-           </h3>
-           <div className="space-y-4">
-              <div className="p-5 border-b border-slate-100 flex gap-4 items-start focus-within:ring-2 focus-within:ring-orange-300" tabIndex={0}>
-                 <div className="bg-orange-100 text-orange-600 p-3 rounded-2xl shrink-0" aria-hidden="true"><Clock className="w-5 h-5" /></div>
-                 <div>
-                    <h4 className="font-black text-slate-900">Shift Donations Earlier</h4>
-                    <p className="text-sm text-slate-600 font-medium mt-1">Donating before 8 PM avoids the 10 PM bottleneck, reducing volunteer pickup times by an average of 14 minutes.</p>
-                 </div>
-              </div>
-              <div className="p-5 border-b border-slate-100 flex gap-4 items-start focus-within:ring-2 focus-within:ring-orange-300" tabIndex={0}>
-                 <div className="bg-emerald-100 text-emerald-600 p-3 rounded-2xl shrink-0" aria-hidden="true"><Building2 className="w-5 h-5" /></div>
-                 <div>
-                    <h4 className="font-black text-slate-900">Prioritize "Hope Foundation"</h4>
-                    <p className="text-sm text-slate-600 font-medium mt-1">They currently have high capacity and show the fastest acceptance rate (under 2 mins) in your 5km radius.</p>
-                 </div>
-              </div>
-           </div>
-        </div>
-
-        {/* --- SECTION 5: PERFORMANCE BREAKDOWN WITH PIE CHART --- */}
-        <div className="lg:col-span-5 bg-white/80 backdrop-blur-xl border-white/50 p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col">
-           <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-6 flex items-center gap-2">
-              <Activity className="w-5 h-5 text-orange-500" aria-hidden="true" /> Logistics Performance
-           </h3>
-           
-           <div className="flex-1 min-h-[160px] w-full mb-6" aria-label="Pie chart showing success, delay, and rejection rates" role="img">
-             <ResponsiveContainer width="100%" height="100%">
-               <PieChart>
-                 <Pie
-                   data={performanceData}
-                   cx="50%"
-                   cy="50%"
-                   innerRadius={50}
-                   outerRadius={70}
-                   paddingAngle={5}
-                   dataKey="value"
-                   stroke="none"
-                 >
-                   {performanceData.map((entry, index) => (
-                     <Cell key={`cell-${index}`} fill={entry.fill} />
-                   ))}
-                 </Pie>
-                 <Tooltip 
-                   contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                 />
-               </PieChart>
-             </ResponsiveContainer>
-           </div>
-
-           <div className="grid grid-cols-2 gap-4">
-              <div className="bg-emerald-50 p-4 rounded-3xl border border-emerald-100 text-center" tabIndex={0}>
-                 <p className="text-xl font-black text-emerald-600">94%</p>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-emerald-800 mt-1">Success</p>
-              </div>
-              <div className="bg-amber-50 p-4 rounded-3xl border border-amber-100 text-center" tabIndex={0}>
-                 <p className="text-xl font-black text-amber-600">4%</p>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-amber-800 mt-1">Delay Rate</p>
-              </div>
-              <div className="bg-rose-50 p-4 rounded-3xl border border-rose-100 text-center" tabIndex={0}>
-                 <p className="text-xl font-black text-rose-600">2%</p>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-rose-800 mt-1">Rejection</p>
-              </div>
-              <div className="bg-blue-50 p-4 rounded-3xl border border-blue-100 text-center" tabIndex={0}>
-                 <p className="text-xl font-black text-blue-600">18m</p>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-blue-800 mt-1">Avg. Pickup</p>
-              </div>
-           </div>
-        </div>
-
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-         
-         {/* --- SECTION 6: NGO ANALYSIS WITH BAR CHART --- */}
-         <div className="lg:col-span-4 bg-white/80 backdrop-blur-xl border-white/50 p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col">
-            <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-6 flex items-center gap-2">
-               <Building2 className="w-5 h-5 text-orange-500" aria-hidden="true" /> NGO Partner Analysis
-            </h3>
-            
-            <div className="flex-1 min-h-[140px] w-full mb-6" aria-label="Bar chart showing NGO volume handled" role="img">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={ngoData} layout="vertical" margin={{ top: 0, right: 20, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
-                  <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 10, fontWeight: 700}} width={70} />
-                  <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px', fontWeight: 'bold' }} cursor={{fill: '#f8fafc'}} />
-                  <Bar dataKey="volume" fill="#f97316" radius={[0, 8, 8, 0]} barSize={16}>
-                    {ngoData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={index === 0 ? '#10b981' : '#cbd5e1'} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="space-y-4">
-               <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-1">Most Reliable & Fastest</p>
-                  <p className="font-black text-lg text-slate-900">Hope Foundation</p>
-                  <div className="flex items-center gap-2 mt-1">
-                     <span className="text-[10px] font-bold text-slate-500 border border-slate-200 px-2 py-0.5 rounded-md">99% Success</span>
-                     <span className="text-[10px] font-bold text-slate-500 border border-slate-200 px-2 py-0.5 rounded-md">2m Response</span>
+            { title: "KILOGRAMS_RESCUED", val: "2,450", sub: "kg", icon: Package, color: "text-blue-500", trend: "+12.4%" },
+            { title: "MEALS_GENERATED", val: "10,200", sub: "units", icon: Heart, color: "text-rose-500", trend: "+8.2%" },
+            { title: "CARBON_OFFSET", val: "850", sub: "kg CO2", icon: Leaf, color: "text-emerald-500", trend: "+15.1%" },
+            { title: "NETWORK_RELIABILITY", val: "99.9", sub: "%", icon: Shield, color: "text-orange-500", trend: "Stable" }
+         ].map((m, i) => (
+            <motion.div 
+               key={i}
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ delay: i * 0.1 }}
+               className={`relative overflow-hidden border p-10 hover:border-orange-500/50 transition-all group rounded-[2.5rem] ${cardBg}`}
+            >
+               <div className="flex justify-between items-start mb-8">
+                  <p className="text-[10px] font-mono font-bold text-slate-400 tracking-[0.2em]">{m.title}</p>
+                  <span className={`text-[10px] font-black font-mono ${m.trend.startsWith('+') ? 'text-emerald-500' : 'text-slate-400'}`}>{m.trend}</span>
+               </div>
+               <div className="flex items-baseline gap-2 mb-8">
+                  <span className={`text-5xl font-black tracking-tighter ${textColor}`}>{m.val}</span>
+                  <span className="text-sm font-bold text-slate-400 uppercase">{m.sub}</span>
+               </div>
+               <div className="flex items-center gap-4">
+                  <div className={`p-3 rounded-xl ${m.color} bg-current/10 border border-current/20`}>
+                     <m.icon className="w-5 h-5" />
+                  </div>
+                  <div className={`h-1 flex-1 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
+                     <motion.div initial={{ width: 0 }} animate={{ width: "75%" }} className={`h-full bg-current ${m.color}`} />
                   </div>
                </div>
-            </div>
-         </div>
-
-         {/* --- SECTION 4: INSIGHTS PANEL --- */}
-         <div className="lg:col-span-4 bg-white/80 backdrop-blur-xl border-white/50 rounded-[2.5rem] p-8 border border-slate-100 shadow-sm">
-            <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-6 flex items-center gap-2">
-               <PieChartIcon className="w-5 h-5 text-orange-500" aria-hidden="true" /> Smart Insights
-            </h3>
-            <ul className="space-y-4">
-               <li className="flex items-start gap-3" tabIndex={0}>
-                  <div className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-2 shrink-0"></div>
-                  <p className="text-sm font-bold text-slate-600 leading-relaxed">Weekend donations are <strong className="text-slate-900">45% higher</strong> than weekdays.</p>
-               </li>
-               <li className="flex items-start gap-3" tabIndex={0}>
-                  <div className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-2 shrink-0"></div>
-                  <p className="text-sm font-bold text-slate-600 leading-relaxed">Most logistical delays occur <strong className="text-slate-900">after 10 PM</strong> due to volunteer scarcity.</p>
-               </li>
-               <li className="flex items-start gap-3" tabIndex={0}>
-                  <div className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-2 shrink-0"></div>
-                  <p className="text-sm font-bold text-slate-600 leading-relaxed">Vegan meals have a <strong className="text-slate-900">3x faster</strong> assignment rate.</p>
-               </li>
-            </ul>
-         </div>
-
-         {/* --- SECTION 7: COMPARISON & SECTION 8: IMPACT --- */}
-         <div className="lg:col-span-4 space-y-8">
-            <div className="p-8" tabIndex={0} aria-label="Comparison: +12% improvement this week. You are in the top 5% of all local donors.">
-               <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
-                  <ArrowUpRight className="w-5 h-5 text-emerald-400" aria-hidden="true" /> Growth Metrics
-               </h3>
-               <div className="flex items-end gap-3 mb-2">
-                  <p className="text-4xl font-black text-emerald-600">+12%</p>
-                  <p className="text-sm font-bold text-slate-500 mb-1">vs last week</p>
-               </div>
-               <p className="text-sm text-slate-600 font-medium">You are in the <strong className="text-slate-900">top 5%</strong> of all local donors this month!</p>
-            </div>
-
-            <div className="p-8 border-t border-slate-100" tabIndex={0}>
-               <h3 className="text-sm font-black uppercase tracking-widest text-emerald-800 mb-2 flex items-center gap-2">
-                  <Heart className="w-5 h-5 text-emerald-600" aria-hidden="true" /> Direct Impact
-               </h3>
-               <p className="text-2xl font-black text-slate-900 leading-tight">Your efforts have fed a total of <span className="text-emerald-600">10,200 people</span> so far.</p>
-            </div>
-         </div>
-
+            </motion.div>
+         ))}
       </div>
 
-      {/* --- SECTION 10: LOCAL TOP DONORS LEADERBOARD --- */}
-      <div className="bg-white/80 backdrop-blur-xl border-white/50 p-8 rounded-[2.5rem] border border-slate-100 shadow-sm" aria-label="Local Top Donors Leaderboard">
-         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
-            <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3 tracking-tight">
-               <Trophy className="w-8 h-8 text-orange-500" aria-hidden="true" /> Local Top Donors
-            </h3>
-            <div className="bg-orange-50 text-orange-900 px-6 py-3 rounded-2xl font-black text-sm tracking-wide border border-orange-100">
-               <span className="text-orange-700">You are #3 this week!</span> <span className="text-emerald-500 ml-2">+2 positions</span>
-            </div>
-         </div>
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
          
-         <div className="space-y-4">
-            {leaderboardData.map((donor, idx) => (
-               <div 
-                  key={idx} 
-                  tabIndex={0}
-                  className={`flex items-center justify-between p-6 rounded-[2rem] transition-transform ${donor.isCurrent ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/20 scale-[1.02]' : 'hover:bg-slate-50'}`}
-                  aria-label={`Rank ${donor.rank}: ${donor.name}, ${donor.meals} meals rescued.`}
-               >
-                  <div className="flex items-center gap-8">
-                     <span className={`text-2xl font-black ${donor.isCurrent ? 'text-white' : 'text-slate-900'} w-4`}>{donor.rank}</span>
-                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${donor.isCurrent ? 'bg-orange-500/50 border border-orange-400' : 'bg-slate-100 border border-slate-200'}`}>
-                        {donor.icon}
+         {/* --- PRIMARY OPERATIONAL FLOW --- */}
+         <div className="xl:col-span-8 space-y-8">
+            <div className={`border p-10 rounded-[3rem] ${cardBg}`}>
+               <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
+                  <div>
+                     <h3 className={`font-black uppercase tracking-[0.2em] text-sm ${textColor}`}>
+                        Operational_Efficiency_Matrix
+                     </h3>
+                     <p className="text-[10px] font-mono text-slate-400 mt-2">Correlating donation frequency with community impact.</p>
+                  </div>
+                  <div className="flex gap-4">
+                     <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-orange-500"></div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase">Donations</span>
                      </div>
-                     <span className={`text-xl font-black ${donor.isCurrent ? 'text-white' : 'text-slate-900'}`}>{donor.name}</span>
-                  </div>
-                  <div className="text-right">
-                     <p className={`text-2xl font-black ${donor.isCurrent ? 'text-white' : 'text-slate-900'}`}>{donor.meals}</p>
-                     <p className={`text-[10px] font-black uppercase tracking-widest ${donor.isCurrent ? 'text-orange-200' : 'text-slate-400'}`}>Meals Rescued</p>
+                     <div className="flex items-center gap-2">
+                        <div className={`h-2 w-2 rounded-full ${isDarkMode ? 'bg-white' : 'bg-slate-900'}`}></div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase">Impact</span>
+                     </div>
                   </div>
                </div>
+               
+               <div className="h-[450px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                     <AreaChart data={trendData}>
+                        <defs>
+                           <linearGradient id="colorDonations" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
+                              <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
+                           </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} />
+                        <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 900}} />
+                        <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 900}} />
+                        <Tooltip 
+                           contentStyle={{ backgroundColor: isDarkMode ? '#0f172a' : '#fff', border: 'none', borderRadius: '1rem', padding: '1rem', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}
+                           itemStyle={{ color: isDarkMode ? '#fff' : '#0f172a', fontSize: '12px', fontWeight: 'bold' }}
+                           labelStyle={{ color: '#64748b', fontSize: '10px', marginBottom: '0.5rem' }}
+                        />
+                        <Area type="monotone" dataKey="donations" stroke="#f97316" strokeWidth={4} fillOpacity={1} fill="url(#colorDonations)" />
+                        <Area type="monotone" dataKey="impact" stroke="#ffffff00" fill="#94a3b820" />
+                     </AreaChart>
+                  </ResponsiveContainer>
+               </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+               {/* --- PEAK HOURS VISUALIZATION --- */}
+               <div className={`border p-10 rounded-[3rem] ${cardBg}`}>
+                  <h4 className={`font-black uppercase tracking-[0.2em] text-xs mb-10 ${textColor}`}>Peak_Operational_Hours</h4>
+                  <div className="h-[250px] w-full">
+                     <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={peakHoursData}>
+                           <Tooltip cursor={{fill: 'transparent'}} contentStyle={{display: 'none'}} />
+                           <Bar dataKey="volume" radius={[10, 10, 10, 10]}>
+                              {peakHoursData.map((entry, index) => (
+                                 <Cell key={`cell-${index}`} fill={entry.volume > 80 ? '#f97316' : (isDarkMode ? '#1e293b' : '#f1f5f9')} />
+                              ))}
+                           </Bar>
+                           <XAxis dataKey="hour" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 9, fontWeight: 900}} />
+                        </BarChart>
+                     </ResponsiveContainer>
+                  </div>
+                  <div className={`mt-8 pt-8 border-t flex justify-between items-center ${isDarkMode ? 'border-slate-800' : 'border-slate-100'}`}>
+                     <div className="flex flex-col">
+                        <span className="text-[10px] font-mono text-slate-500 uppercase">Max_Capacity</span>
+                        <span className="text-xl font-black text-orange-500">20:00 - 21:30</span>
+                     </div>
+                     <Timer className="w-6 h-6 text-slate-300" />
+                  </div>
+               </div>
+
+               {/* --- COLLABORATION NETWORK --- */}
+               <div className={`border p-10 rounded-[3rem] ${cardBg}`}>
+                  <h4 className={`font-black uppercase tracking-[0.2em] text-xs mb-10 ${textColor}`}>Collab_Partner_Efficiency</h4>
+                  <div className="space-y-6">
+                     {collaborationData.map((ngo, idx) => (
+                        <div key={idx} className="space-y-2">
+                           <div className="flex justify-between items-center">
+                              <span className="text-[10px] font-black uppercase text-slate-400">{ngo.name}</span>
+                              <span className="text-[10px] font-mono font-black text-emerald-500">{ngo.efficiency}% EFF</span>
+                           </div>
+                           <div className={`h-1.5 w-full rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
+                              <motion.div 
+                                 initial={{ width: 0 }} 
+                                 animate={{ width: `${ngo.efficiency}%` }} 
+                                 className={`h-full ${ngo.efficiency > 90 ? 'bg-emerald-500' : 'bg-blue-500'}`} 
+                              />
+                           </div>
+                        </div>
+                     ))}
+                  </div>
+                  <button className={`mt-10 w-full py-4 border rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all ${isDarkMode ? 'border-slate-800 text-slate-400 hover:text-orange-500 hover:border-orange-500' : 'border-slate-200 text-slate-500 hover:border-slate-900 hover:text-slate-900'}`}>
+                     View_Partner_Metrics
+                  </button>
+               </div>
+            </div>
+         </div>
+
+         {/* --- INTELLIGENCE & DISTRIBUTION --- */}
+         <div className="xl:col-span-4 space-y-8">
+            <div className={`p-12 rounded-[3.5rem] h-full flex flex-col relative overflow-hidden group border ${isDarkMode ? 'bg-slate-950 border-slate-900 text-white' : 'bg-slate-950 border-slate-900 text-white'}`}>
+               <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full blur-[100px] -mr-32 -mt-32 transition-all group-hover:bg-orange-500/20"></div>
+               
+               <div className="relative z-10 mb-16">
+                  <div className="flex items-center gap-3 text-orange-500 mb-12">
+                     <Sparkles className="w-6 h-6 animate-pulse" />
+                     <span className="text-[10px] font-black uppercase tracking-[0.4em]">AI_Prediction_Model</span>
+                  </div>
+                  
+                  <div className="space-y-12">
+                     <div>
+                        <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-4">OPTIMAL_DONATION_STRATEGY</p>
+                        <p className="text-4xl font-black leading-tight">Prioritize_Cooked_Meals during Weekend_Cycle.</p>
+                        <div className="mt-8 p-6 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-md">
+                           <p className="text-xs text-slate-400 leading-relaxed font-medium italic">
+                              "Current trends indicate a 28% shortage in community kitchens on Saturdays. Your intervention could bridge this gap."
+                           </p>
+                        </div>
+                     </div>
+
+                     <div className="grid grid-cols-2 gap-8">
+                        <div>
+                           <p className="text-[9px] font-mono text-slate-600 uppercase mb-2">Impact_Factor</p>
+                           <p className="text-3xl font-black text-white">4.8x</p>
+                        </div>
+                        <div>
+                           <p className="text-[9px] font-mono text-slate-600 uppercase mb-2">Relief_Speed</p>
+                           <p className="text-3xl font-black text-orange-500">Fast</p>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               <div className="mt-auto pt-12 border-t border-white/10 flex flex-col gap-8 relative z-10">
+                  <h5 className="text-[10px] font-black uppercase tracking-widest text-slate-500 text-center">Food_Asset_Distribution</h5>
+                  <div className="h-[200px] w-full flex items-center justify-center">
+                     <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                           <Pie
+                              data={foodTypeDistribution}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={60}
+                              outerRadius={80}
+                              paddingAngle={5}
+                              dataKey="value"
+                           >
+                              {foodTypeDistribution.map((entry, index) => (
+                                 <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
+                              ))}
+                           </Pie>
+                           <Tooltip 
+                              contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '1rem' }}
+                              itemStyle={{ color: '#fff', fontSize: '10px', fontWeight: 'bold' }}
+                           />
+                        </PieChart>
+                     </ResponsiveContainer>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                     {foodTypeDistribution.map((f, i) => (
+                        <div key={i} className="flex items-center gap-2">
+                           <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: f.color }}></div>
+                           <span className="text-[9px] font-mono text-slate-400 uppercase truncate">{f.name}</span>
+                        </div>
+                     ))}
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      {/* --- PEER BENCHMARKING: LEADERBOARD --- */}
+      <div className={`border p-12 rounded-[4rem] ${cardBg}`}>
+         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
+            <div>
+               <h3 className={`text-2xl font-black tracking-tight uppercase ${textColor}`}>Peer_Impact_Benchmarking</h3>
+               <p className="text-xs text-slate-400 font-mono mt-2 uppercase tracking-widest">Global Network Standing // Top 5% Rank</p>
+            </div>
+            <button className={`px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex items-center gap-3 ${isDarkMode ? 'bg-slate-900 text-white hover:bg-orange-500' : 'bg-slate-900 text-white hover:bg-slate-800 shadow-xl'}`}>
+               <Trophy className="w-4 h-4" /> View_Full_Leaderboard
+            </button>
+         </div>
+         
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {leaderboardData.map((donor, idx) => (
+               <motion.div 
+                  key={idx}
+                  whileHover={{ y: -10 }}
+                  className={`p-10 border transition-all rounded-[3rem] relative overflow-hidden ${donor.isCurrent ? (isDarkMode ? 'border-orange-500 bg-orange-50/10' : 'border-orange-500 bg-orange-50/50') : (isDarkMode ? 'border-slate-800 bg-slate-950/40' : 'border-slate-100 bg-slate-50')}`}
+               >
+                  {donor.isCurrent && (
+                     <div className="absolute top-0 right-0 px-6 py-2 bg-orange-500 text-white font-black text-[8px] uppercase tracking-widest rounded-bl-3xl">You</div>
+                  )}
+                  <p className="font-mono text-[10px] text-slate-400 mb-6 uppercase tracking-widest">RANK_0{donor.rank}</p>
+                  <div className="text-3xl mb-4">{donor.icon}</div>
+                  <p className={`text-xl font-black mb-1 ${textColor}`}>{donor.name}</p>
+                  <p className="text-sm font-bold text-slate-400">{donor.meals} meals rescues</p>
+                  
+                  <div className={`mt-10 h-1 w-full rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-800' : 'bg-slate-200'}`}>
+                     <motion.div 
+                        initial={{ width: 0 }} 
+                        animate={{ width: `${100 - (idx * 15)}%` }} 
+                        className={`h-full ${donor.isCurrent ? 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-slate-400'}`} 
+                     />
+                  </div>
+               </motion.div>
             ))}
          </div>
       </div>

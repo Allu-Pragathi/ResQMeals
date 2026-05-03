@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import api from '../lib/api'
-import { MapPin, Clock, Trophy, Truck, CheckCircle, Bell, User, Mail, Phone, Loader2, UserCog, AlertTriangle, CheckCircle2, ArrowRight, Bot, Zap, Filter, Search, ChevronDown, Navigation, PhoneCall, Info, TrendingUp, Medal, Star, Target, Award, Brain, BarChart3, ChevronRight, ShieldCheck, Lock, LogOut, Sliders, BellRing, Calendar, Camera, Check, Shield, Home } from 'lucide-react'
+import { MapPin, Clock, Trophy, Truck, CheckCircle, Bell, User, Mail, Phone, Loader2, UserCog, AlertTriangle, CheckCircle2, ArrowRight, Bot, Zap, Filter, Search, ChevronDown, Navigation, PhoneCall, Info, TrendingUp, Medal, Star, Target, Award, Brain, BarChart3, ChevronRight, ShieldCheck, Lock, LogOut, Sliders, BellRing, Calendar, Camera, Check, Shield, Home, UtensilsCrossed, MessageSquare } from 'lucide-react'
 import ProfileVerificationCenter from '../components/ProfileVerificationCenter'
 import VerificationGate from '../components/VerificationGate'
 import ActiveMissionTracker from '../components/ActiveMissionTracker'
 import { useSocket } from '../contexts/SocketContext'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, AreaChart, Area, RadialBarChart, RadialBar } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, AreaChart, Area, RadialBarChart, RadialBar, LineChart, Line, ScatterChart, Scatter, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts'
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
@@ -64,7 +64,10 @@ const VolunteerDashboard = () => {
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
 
     const isProfile = location.pathname.includes('profile')
-    const isDashboard = location.pathname.includes('dashboard') || location.pathname.includes('leaderboard')
+    const isMissions = location.pathname.includes('missions')
+    const isAnalytics = location.pathname.includes('analytics')
+    const isLeaderboard = location.pathname.includes('leaderboard')
+    const isHistory = location.pathname.includes('history')
     const isHome = location.pathname.endsWith('/home') || location.pathname === '/volunteer' || location.pathname === '/volunteer/'
 
     const fetchMissions = async () => {
@@ -345,415 +348,115 @@ const VolunteerDashboard = () => {
         )
     }
 
-    if (isDashboard) {
-        // --- LIVE DATA COMPUTATION ---
-        
-        // 1. Food Categories
-        let foodTypesMap: Record<string, number> = {};
-        donations.forEach(d => {
-            if (d.status !== 'Pending') {
-                foodTypesMap[d.foodType] = (foodTypesMap[d.foodType] || 0) + 1;
-            }
-        });
-        const liveFoodTypesData = Object.keys(foodTypesMap).map(k => ({ name: k, value: foodTypesMap[k] }));
-        const foodTypesData = liveFoodTypesData.length > 0 ? liveFoodTypesData : [
-            { name: 'Cooked Meals', value: 45 },
-            { name: 'Raw Produce', value: 25 },
-            { name: 'Packaged', value: 20 },
-            { name: 'Baked Goods', value: 10 },
-        ];
+    // --- LIVE DATA COMPUTATION ---
+    
+    // 1. Food Categories
+    let foodTypesMap: Record<string, number> = {};
+    donations.forEach(d => {
+        if (d.status !== 'Pending') {
+            foodTypesMap[d.foodType] = (foodTypesMap[d.foodType] || 0) + 1;
+        }
+    });
+    const liveFoodTypesData = Object.keys(foodTypesMap).map(k => ({ name: k, value: foodTypesMap[k] }));
+    const foodTypesData = liveFoodTypesData.length > 0 ? liveFoodTypesData : [
+        { name: 'Cooked Meals', value: 45 },
+        { name: 'Raw Produce', value: 25 },
+        { name: 'Packaged', value: 20 },
+        { name: 'Baked Goods', value: 10 },
+    ];
 
-        // 2. Top Locations (Heatmap Alternative)
-        let donorsMap: Record<string, number> = {};
-        donations.forEach(d => {
-            if (d.donor?.name && d.status !== 'Pending') {
-                donorsMap[d.donor.name] = (donorsMap[d.donor.name] || 0) + 1;
-            }
-        });
-        const liveDonorsData = Object.keys(donorsMap).map(k => ({ name: k, pickups: donorsMap[k] })).sort((a,b) => b.pickups - a.pickups).slice(0, 5);
-        const topRestaurantsData = liveDonorsData.length > 0 ? liveDonorsData : [
-            { name: 'Banjara Hills', pickups: 35 },
-            { name: 'Jubilee Hills', pickups: 28 },
-            { name: 'Madhapur', pickups: 22 },
-            { name: 'Gachibowli', pickups: 15 },
-            { name: 'Kondapur', pickups: 12 },
-        ];
+    // 2. Top Locations (Heatmap Alternative)
+    let donorsMap: Record<string, number> = {};
+    donations.forEach(d => {
+        if (d.donor?.name && d.status !== 'Pending') {
+            donorsMap[d.donor.name] = (donorsMap[d.donor.name] || 0) + 1;
+        }
+    });
+    const liveDonorsData = Object.keys(donorsMap).map(k => ({ name: k, pickups: donorsMap[k] })).sort((a,b) => b.pickups - a.pickups).slice(0, 5);
+    const topRestaurantsData = liveDonorsData.length > 0 ? liveDonorsData : [
+        { name: 'Banjara Hills', pickups: 35 },
+        { name: 'Jubilee Hills', pickups: 28 },
+        { name: 'Madhapur', pickups: 22 },
+        { name: 'Gachibowli', pickups: 15 },
+        { name: 'Kondapur', pickups: 12 },
+    ];
 
-        // 3. User Points Calculation
-        const liveUserPoints = 1250 + (myMissions.length * 50) + (donations.filter(d => d.status === 'Delivered').length * 100);
+    // 3. User Points Calculation
+    const liveUserPoints = 1250 + (myMissions.length * 50) + (donations.filter(d => d.status === 'Delivered').length * 100);
 
-        const leaderboardData = [
-            { rank: 1, name: 'Sarah Jenkins', pts: 4200, isMe: false },
-            { rank: 2, name: 'David Smith', pts: 3850, isMe: false },
-            { rank: 3, name: user?.name || 'You', pts: liveUserPoints, isMe: true },
-            { rank: 4, name: 'Michael O.', pts: 900, isMe: false },
-            { rank: 5, name: 'Emily Clark', pts: 650, isMe: false },
-        ].sort((a, b) => b.pts - a.pts).map((v, i) => ({ ...v, rank: i + 1 }));
+    const leaderboardData = [
+        { rank: 1, name: 'Sarah Jenkins', pts: 4200, isMe: false },
+        { rank: 2, name: 'David Smith', pts: 3850, isMe: false },
+        { rank: 3, name: user?.name || 'You', pts: liveUserPoints, isMe: true },
+        { rank: 4, name: 'Michael O.', pts: 900, isMe: false },
+        { rank: 5, name: 'Emily Clark', pts: 650, isMe: false },
+    ].sort((a, b) => b.pts - a.pts).map((v, i) => ({ ...v, rank: i + 1 }));
 
-        const myRankInfo = leaderboardData.find(v => v.isMe) || { rank: 3, pts: liveUserPoints };
-        const nextRankUser = leaderboardData.find(v => v.rank === myRankInfo.rank - 1);
-        const ptsToNextRank = nextRankUser ? nextRankUser.pts - myRankInfo.pts + 10 : 0;
+    const myRankInfo = leaderboardData.find(v => v.isMe) || { rank: 3, pts: liveUserPoints };
+    const nextRankUser = leaderboardData.find(v => v.rank === myRankInfo.rank - 1);
+    const ptsToNextRank = nextRankUser ? nextRankUser.pts - myRankInfo.pts + 10 : 0;
 
-        // 4. Monthly Deliveries 
-        const deliveriesData = [
-            { week: 'W1', deliveries: 12 },
-            { week: 'W2', deliveries: 19 },
-            { week: 'W3', deliveries: 15 },
-            { week: 'W4', deliveries: 22 },
-            { week: 'W5', deliveries: 28 },
-            { week: 'W6', deliveries: 24 + myMissions.length },
-        ];
+    // 4. Monthly Deliveries 
+    const deliveriesData = [
+        { week: 'W1', deliveries: 12 },
+        { week: 'W2', deliveries: 19 },
+        { week: 'W3', deliveries: 15 },
+        { week: 'W4', deliveries: 22 },
+        { week: 'W5', deliveries: 28 },
+        { week: 'W6', deliveries: 24 + myMissions.length },
+    ];
 
-        // 5. Active Operations KPIs
-        const totalCompleted = donations.filter(d => d.status === 'Delivered').length + 124;
-        const activeMission = myMissions.find(d => ['Accepted', 'On the Way', 'Picked'].includes(d.status));
-        const hoursVolunteered = (totalCompleted * 0.75).toFixed(1); // Avg 45 mins per rescue
+    // 6. Reward Points Trend
+    const rewardTrendData = [
+        { day: 'Mon', pts: 45 },
+        { day: 'Tue', pts: 52 },
+        { day: 'Wed', pts: 48 },
+        { day: 'Thu', pts: 70 },
+        { day: 'Fri', pts: 65 },
+        { day: 'Sat', pts: 90 },
+        { day: 'Sun', pts: 85 },
+    ];
 
-        const COLORS = ['#f97316', '#eab308', '#22c55e', '#3b82f6', '#ec4899', '#8b5cf6'];
+    // 7. Response Time Analysis (mins)
+    const responseTimeData = [
+        { name: '0-5m', count: 12, fill: '#f97316' },
+        { name: '5-10m', count: 25, fill: '#fb923c' },
+        { name: '10-15m', count: 18, fill: '#fdba74' },
+        { name: '15-20m', count: 8, fill: '#fed7aa' },
+        { name: '20m+', count: 4, fill: '#ffedd5' },
+    ];
 
-        return (
-            <div className="space-y-6 animate-in fade-in duration-700 pb-12">
-                {/* Header */}
-                <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <p className="text-sm font-semibold uppercase tracking-wider text-orange-600 flex items-center gap-2">
-                            <BarChart3 className="w-4 h-4" /> Impact Analytics
-                        </p>
-                        <h1 className="text-3xl font-black text-slate-900 mt-1 flex items-center gap-3">
-                            Leaderboard & Performance 
-                            <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live Updating
-                            </span>
-                        </h1>
-                    </div>
-                    <div className="flex bg-slate-100 p-1 rounded-xl shadow-inner border border-slate-200" role="group" aria-label="Time period filters">
-                        <button onClick={() => setActiveTimeFilter('weekly')} aria-pressed={activeTimeFilter === 'weekly'} className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${activeTimeFilter === 'weekly' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>Weekly</button>
-                        <button onClick={() => setActiveTimeFilter('monthly')} aria-pressed={activeTimeFilter === 'monthly'} className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${activeTimeFilter === 'monthly' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>Monthly</button>
-                        <button onClick={() => setActiveTimeFilter('all-time')} aria-pressed={activeTimeFilter === 'all-time'} className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${activeTimeFilter === 'all-time' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>All-time</button>
-                    </div>
-                </header>
+    // 8. Impact Forecast (Scatter)
+    const impactForecastData = [
+        { x: 10, y: 15, z: 200 },
+        { x: 15, y: 25, z: 260 },
+        { x: 20, y: 30, z: 400 },
+        { x: 25, y: 45, z: 280 },
+        { x: 30, y: 50, z: 500 },
+        { x: 35, y: 70, z: 600 },
+    ];
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    {/* Left Column (8 cols) */}
-                    <div className="lg:col-span-8 space-y-6">
-                        
-                        {/* KPI Cards */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col justify-between">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Impact Points</h3>
-                                    <Star className="w-5 h-5 text-orange-500" />
-                                </div>
-                                <div>
-                                    <p className="text-3xl font-black text-slate-900">{liveUserPoints.toLocaleString()}</p>
-                                    <p className="text-xs font-bold text-emerald-600 flex items-center gap-1 mt-1"><TrendingUp className="w-3 h-3" /> +150 this week</p>
-                                </div>
-                            </div>
-                            <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col justify-between">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Missions Done</h3>
-                                    <Award className="w-5 h-5 text-blue-500" />
-                                </div>
-                                <div>
-                                    <p className="text-3xl font-black text-slate-900">{totalCompleted}</p>
-                                    <p className="text-xs font-bold text-emerald-600 flex items-center gap-1 mt-1"><TrendingUp className="w-3 h-3" /> +5 this week</p>
-                                </div>
-                            </div>
-                            <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col justify-between">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Active Tasks</h3>
-                                    <Truck className="w-5 h-5 text-emerald-500" />
-                                </div>
-                                <div>
-                                    <p className="text-3xl font-black text-slate-900">{myMissions.length}</p>
-                                    <p className="text-xs font-bold text-slate-400 flex items-center gap-1 mt-1">{openMissions.length} nearby pending</p>
-                                </div>
-                            </div>
-                            <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex flex-col justify-between">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Hours Served</h3>
-                                    <Clock className="w-5 h-5 text-purple-500" />
-                                </div>
-                                <div>
-                                    <p className="text-3xl font-black text-slate-900">{hoursVolunteered}h</p>
-                                    <p className="text-xs font-bold text-emerald-600 flex items-center gap-1 mt-1"><TrendingUp className="w-3 h-3" /> +3.5h this week</p>
-                                </div>
-                            </div>
-                        </div>
+    // 9. Skill / Capability Distribution (Radar)
+    const skillDistributionData = [
+        { subject: 'Speed', A: 120, fullMark: 150 },
+        { subject: 'Reliability', A: 98, fullMark: 150 },
+        { subject: 'Distance', A: 86, fullMark: 150 },
+        { subject: 'Volume', A: 99, fullMark: 150 },
+        { subject: 'Communication', A: 85, fullMark: 150 },
+        { subject: 'Handling', A: 65, fullMark: 150 },
+    ];
 
-                        {/* Active Operations Panel */}
-                        {activeMission && (
-                            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                                <div className="bg-slate-900 p-4 flex items-center justify-between text-white">
-                                    <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2"><Zap className="w-4 h-4 text-emerald-400" /> Active Operation</h3>
-                                    <span className="text-xs font-bold bg-white/20 px-2.5 py-1 rounded-full">{activeMission.foodType}</span>
-                                </div>
-                                <div className="p-6">
-                                    <div className="flex flex-col md:flex-row items-center gap-8 mb-8">
-                                        <div className="flex-1 w-full relative">
-                                            <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-100 -translate-y-1/2 z-0"></div>
-                                            <div className={`absolute top-1/2 left-0 h-1 bg-emerald-500 -translate-y-1/2 z-0 transition-all duration-1000 ${activeMission.status === 'Accepted' ? 'w-[25%]' : activeMission.status === 'On the Way' ? 'w-[50%]' : 'w-[75%]'}`}></div>
-                                            
-                                            <div className="relative z-10 flex justify-between">
-                                                <div className="flex flex-col items-center gap-2">
-                                                    <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center border-4 border-white shadow-sm"><Check className="w-4 h-4" /></div>
-                                                    <span className="text-[10px] font-bold text-slate-700 uppercase">Accepted</span>
-                                                </div>
-                                                <div className="flex flex-col items-center gap-2">
-                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 border-white shadow-sm ${['On the Way', 'Picked'].includes(activeMission.status) ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-400'}`}>{['On the Way', 'Picked'].includes(activeMission.status) ? <Check className="w-4 h-4" /> : <span className="w-2 h-2 rounded-full bg-current"></span>}</div>
-                                                    <span className={`text-[10px] font-bold uppercase ${['On the Way', 'Picked'].includes(activeMission.status) ? 'text-slate-700' : 'text-slate-400'}`}>On Route</span>
-                                                </div>
-                                                <div className="flex flex-col items-center gap-2">
-                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 border-white shadow-sm ${activeMission.status === 'Picked' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-400'}`}>{activeMission.status === 'Picked' ? <Check className="w-4 h-4" /> : <span className="w-2 h-2 rounded-full bg-current"></span>}</div>
-                                                    <span className={`text-[10px] font-bold uppercase ${activeMission.status === 'Picked' ? 'text-slate-700' : 'text-slate-400'}`}>Picked Up</span>
-                                                </div>
-                                                <div className="flex flex-col items-center gap-2">
-                                                    <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center border-4 border-white shadow-sm"><span className="w-2 h-2 rounded-full bg-current"></span></div>
-                                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Delivered</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="shrink-0 flex items-center gap-4 text-center">
-                                            <div>
-                                                <p className="text-xs font-bold text-slate-400 uppercase">Distance</p>
-                                                <p className="text-lg font-black text-slate-900">{activeMission.distance?.toFixed(1) || '3.5'} km</p>
-                                            </div>
-                                            <div className="w-px h-8 bg-slate-200"></div>
-                                            <div>
-                                                <p className="text-xs font-bold text-slate-400 uppercase">ETA</p>
-                                                <p className="text-lg font-black text-orange-600">12 mins</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <button onClick={() => setActiveMapTask(activeMission)} className="flex-1 py-3 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition-colors shadow-sm flex items-center justify-center gap-2"><Navigation className="w-4 h-4" /> Open Live Map</button>
-                                        <button onClick={() => navigate('/volunteer/missions')} className="flex-1 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors shadow-sm">View Mission Details</button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+    // 5. Active Operations KPIs
+    const totalCompleted = donations.filter(d => d.status === 'Delivered').length + 124;
+    const activeMission = myMissions.find(d => ['Accepted', 'On the Way', 'Picked'].includes(d.status));
+    const hoursVolunteered = (totalCompleted * 0.75).toFixed(1);
 
-                        {/* Smart Insights & Rank */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-orange-50/50 rounded-2xl p-6 border border-orange-100 shadow-sm">
-                                <h3 className="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
-                                    <Brain className="w-5 h-5 text-orange-500" /> Performance Insights
-                                </h3>
-                                <div className="space-y-3">
-                                    <div className="bg-white p-3.5 rounded-2xl border border-orange-100 shadow-sm flex items-start gap-3">
-                                        <div className="mt-0.5"><TrendingUp className="w-4 h-4 text-emerald-500" /></div>
-                                        <p className="text-sm font-semibold text-slate-700">You completed <span className="text-slate-900 font-black">20% more missions</span> this week.</p>
-                                    </div>
-                                    <div className="bg-white p-3.5 rounded-2xl border border-orange-100 shadow-sm flex items-start gap-3">
-                                        <div className="mt-0.5"><Truck className="w-4 h-4 text-blue-500" /></div>
-                                        <p className="text-sm font-semibold text-slate-700">You are faster than <span className="text-slate-900 font-black">75% volunteers</span> in your area.</p>
-                                    </div>
-                                    <div className="bg-white p-3.5 rounded-2xl border border-orange-100 shadow-sm flex items-start gap-3">
-                                        <div className="mt-0.5"><Clock className="w-4 h-4 text-amber-500" /></div>
-                                        <p className="text-sm font-semibold text-slate-700">Peak performance time: <span className="text-slate-900 font-black">Evening (6PM - 9PM)</span></p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-slate-800 shadow-sm relative overflow-hidden text-white flex flex-col justify-between">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl pointer-events-none"></div>
-                                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2"><Target className="w-4 h-4 text-orange-400" /> Next Milestone</h3>
-                                <div className="mb-4">
-                                    <h2 className="text-2xl font-black text-white">{ptsToNextRank > 0 ? `${ptsToNextRank} points` : 'You are #1!'}</h2>
-                                    <p className="text-sm font-medium text-slate-300">{ptsToNextRank > 0 ? `to reach Top ${myRankInfo.rank - 1} globally` : 'Keep up the great work!'}</p>
-                                </div>
-                                <div className="space-y-4">
-                                    <div className="flex justify-between text-xs font-bold text-slate-300 uppercase mb-1"><span>Current Rank: #{myRankInfo.rank}</span><span>Elite Courier</span></div>
-                                    <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden shadow-inner">
-                                        <div className="h-full bg-gradient-to-r from-orange-400 to-orange-600 rounded-full w-[85%]"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    const COLORS = ['#f97316', '#eab308', '#22c55e', '#3b82f6', '#ec4899', '#8b5cf6'];
 
-                        {/* Charts Area */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Points Distribution */}
-                            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col justify-center">
-                                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-6">Top 5 Points Distribution</h3>
-                                <div className="h-[200px] w-full">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={leaderboardData} margin={{ top: 0, right: 20, left: -20, bottom: 0 }} layout="vertical">
-                                            <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f1f5f9" />
-                                            <XAxis type="number" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
-                                            <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }} width={90} />
-                                            <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                                            <Bar dataKey="pts" radius={[0, 4, 4, 0]} barSize={16}>
-                                                {leaderboardData.map((_, index) => (
-                                                    <Cell key={`cell-${index}`} fill={leaderboardData[index].isMe ? '#f97316' : '#cbd5e1'} />
-                                                ))}
-                                            </Bar>
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
 
-                            {/* Weekly Trend */}
-                            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col justify-center">
-                                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-6">Delivery Volume Trend</h3>
-                                <div className="h-[200px] w-full">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <AreaChart data={deliveriesData} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
-                                            <defs>
-                                                <linearGradient id="colorDeliveries" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#f97316" stopOpacity={0.4}/>
-                                                    <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
-                                                </linearGradient>
-                                            </defs>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                            <XAxis dataKey="week" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
-                                            <Tooltip contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                                            <Area type="monotone" dataKey="deliveries" stroke="#f97316" strokeWidth={3} fillOpacity={1} fill="url(#colorDeliveries)" />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Right Column (4 cols) */}
-                    <div className="lg:col-span-4 space-y-6">
-                        
-                        {/* Daily/Weekly Goals */}
-                        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                                    <Target className="w-5 h-5 text-indigo-500" /> Delivery Goals
-                                </h3>
-                            </div>
-                            <div className="space-y-6">
-                                <div>
-                                    <div className="flex justify-between text-xs font-bold text-slate-500 uppercase mb-2">
-                                        <span>Today's Goal</span>
-                                        <span className="text-indigo-600">{(myMissions.length % 3) + 1} / 3</span>
-                                    </div>
-                                    <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                                        <div className="h-full bg-indigo-500 rounded-full transition-all duration-1000" style={{ width: `${(((myMissions.length % 3) + 1) / 3) * 100}%` }}></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="flex justify-between text-xs font-bold text-slate-500 uppercase mb-2">
-                                        <span>Weekly Goal</span>
-                                        <span className="text-indigo-600">{12 + myMissions.length} / 20</span>
-                                    </div>
-                                    <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                                        <div className="h-full bg-indigo-400 rounded-full transition-all duration-1000" style={{ width: `${((12 + myMissions.length) / 20) * 100}%` }}></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {/* Leaderboard List */}
-                        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                                    <Trophy className="w-5 h-5 text-yellow-500" /> Global Ranking
-                                </h3>
-                                <button 
-                                    aria-label="View Top 100 global ranking"
-                                    className="text-xs font-bold text-orange-600 hover:text-orange-700 bg-orange-50 px-2.5 py-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
-                                >
-                                    View Top 100
-                                </button>
-                            </div>
-                            <div className="space-y-3 flex-1">
-                                {leaderboardData.map(v => (
-                                    <div key={v.name} className={`flex items-center justify-between p-3.5 rounded-2xl border transition-all ${v.isMe ? 'bg-orange-50 border-orange-200 shadow-sm scale-[1.02]' : 'bg-slate-50 border-transparent hover:bg-white hover:border-slate-200'}`}>
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-sm ${v.rank === 1 ? 'bg-yellow-100 text-yellow-600 shadow-sm' : v.rank === 2 ? 'bg-slate-200 text-slate-600' : v.rank === 3 ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-500'}`}>
-                                                {v.rank}
-                                            </div>
-                                            <div>
-                                                <p className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
-                                                    {v.name} 
-                                                    {v.isMe && <span className="text-[9px] bg-orange-500 text-white px-1.5 py-0.5 rounded-full uppercase tracking-wider">You</span>}
-                                                </p>
-                                                <p className="text-xs text-slate-500 font-medium">{v.rank === 1 ? 'Hero status' : v.isMe ? 'Rising star' : 'Active volunteer'}</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="font-black text-slate-700 text-sm">{v.pts.toLocaleString()}</p>
-                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">pts</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
 
-                        {/* Top Locations Heatmap List */}
-                        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col">
-                            <div className="flex items-center justify-between mb-4">
-                                <div>
-                                    <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                                        <MapPin className="w-5 h-5 text-blue-500" /> Top Hotspots
-                                    </h3>
-                                    <p className="text-xs text-slate-500 mt-1 font-medium">Areas with most completed rescues</p>
-                                </div>
-                            </div>
-                            <div className="h-[180px] w-full">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={topRestaurantsData} margin={{ top: 0, right: 20, left: -20, bottom: 0 }} layout="vertical">
-                                        <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f1f5f9" />
-                                        <XAxis type="number" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} hide />
-                                        <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#334155', fontWeight: 600 }} width={80} />
-                                        <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                                        <Bar dataKey="pickups" radius={[0, 4, 4, 0]} barSize={12}>
-                                            {topRestaurantsData.map((_, index) => (
-                                                <Cell key={`cell-${index}`} fill={['#3b82f6', '#0ea5e9', '#06b6d4', '#14b8a6', '#10b981'][index % 5]} />
-                                            ))}
-                                        </Bar>
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </div>
 
-                        {/* Food Categories */}
-                        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col">
-                            <div className="mb-2">
-                                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                                    <Info className="w-5 h-5 text-emerald-500" /> Food Rescued
-                                </h3>
-                            </div>
-                            <div className="h-[150px] w-full relative">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
-                                        <Pie
-                                            data={foodTypesData}
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={45}
-                                            outerRadius={65}
-                                            paddingAngle={3}
-                                            dataKey="value"
-                                            stroke="none"
-                                        >
-                                            {foodTypesData.map((_, index) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </div>
-                            <div className="flex flex-wrap justify-center gap-x-3 gap-y-2 mt-2">
-                                {foodTypesData.map((entry, index) => (
-                                    <div key={index} className="flex items-center gap-1.5">
-                                        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
-                                        <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">{entry.name}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
 
     const renderMapOverlay = () => {
         if (!activeMapTask) return null;
@@ -854,8 +557,146 @@ const VolunteerDashboard = () => {
 
             {!isProfile ? (
                 activeMapTask ? renderMapOverlay() :
-                <>
-                    {isAvailable ? (
+                isAnalytics ? (
+                    <div className="space-y-8 animate-in fade-in duration-700">
+                        <header>
+                            <h1 className="text-3xl font-black text-slate-900">Impact Analytics</h1>
+                            <p className="text-slate-500 mt-2 font-medium">Deep dive into your contribution and operational efficiency.</p>
+                        </header>
+                        
+                        <div className="space-y-8">
+                             {/* KPIs specifically for analytics */}
+                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                 <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Rescue Success Rate</p>
+                                     <h3 className="text-3xl font-black text-emerald-600">99.2%</h3>
+                                 </div>
+                                 <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Avg Dispatch Latency</p>
+                                     <h3 className="text-3xl font-black text-blue-600">8.4m</h3>
+                                 </div>
+                                 <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Reward Multiplier</p>
+                                     <h3 className="text-3xl font-black text-orange-600">1.5x</h3>
+                                 </div>
+                             </div>
+
+                             {/* Charts Area */}
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                 <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                                     <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-orange-500" /> Delivery Volume Trend</h3>
+                                     <div className="h-[250px] w-full">
+                                         <ResponsiveContainer width="100%" height="100%">
+                                             <AreaChart data={deliveriesData}>
+                                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                                 <XAxis dataKey="week" hide />
+                                                 <YAxis hide />
+                                                 <Tooltip />
+                                                 <Area type="monotone" dataKey="deliveries" stroke="#f97316" fill="#fed7aa" />
+                                             </AreaChart>
+                                         </ResponsiveContainer>
+                                     </div>
+                                 </div>
+                                 <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                                     <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2"><Award className="w-4 h-4 text-indigo-500" /> Capability Profile</h3>
+                                     <div className="h-[250px] w-full">
+                                         <ResponsiveContainer width="100%" height="100%">
+                                             <RadarChart cx="50%" cy="50%" outerRadius="80%" data={skillDistributionData}>
+                                                 <PolarGrid />
+                                                 <PolarAngleAxis dataKey="subject" />
+                                                 <Radar name="Performance" dataKey="A" stroke="#6366f1" fill="#6366f1" fillOpacity={0.6} />
+                                             </RadarChart>
+                                         </ResponsiveContainer>
+                                     </div>
+                                 </div>
+                             </div>
+                        </div>
+                    </div>
+                ) : isLeaderboard ? (
+                    <div className="space-y-8 animate-in fade-in duration-700">
+                        <header>
+                            <h1 className="text-3xl font-black text-slate-900">Volunteer Leaderboard</h1>
+                            <p className="text-slate-500 mt-2 font-medium">See how you rank against the top heroes in your community.</p>
+                        </header>
+                        
+                        <div className="bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
+                            <div className="p-8 bg-slate-900 text-white flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center font-black text-xl">#4</div>
+                                    <div>
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Your Current Rank</p>
+                                        <h2 className="text-xl font-black">Pragathi Allu</h2>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Points</p>
+                                    <h2 className="text-3xl font-black text-orange-400">14.2k</h2>
+                                </div>
+                            </div>
+                            
+                            <div className="p-0">
+                                {leaderboardData.map((v, i) => (
+                                    <div key={i} className={`flex items-center justify-between p-6 border-b border-slate-50 hover:bg-slate-50 transition-colors ${v.isMe ? 'bg-orange-50/50' : ''}`}>
+                                        <div className="flex items-center gap-6">
+                                            <span className={`text-2xl font-black w-8 ${i === 0 ? 'text-amber-500' : i === 1 ? 'text-slate-400' : i === 2 ? 'text-amber-700' : 'text-slate-300'}`}>{i + 1}</span>
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-10 h-10 rounded-full bg-slate-200 border-2 border-white shadow-sm flex items-center justify-center font-bold text-slate-600">{v.name.charAt(0)}</div>
+                                                <div>
+                                                    <p className="font-black text-slate-900">{v.name} {v.isMe && <span className="ml-2 text-[10px] bg-orange-500 text-white px-2 py-0.5 rounded-full uppercase">You</span>}</p>
+                                                    <p className="text-xs font-medium text-slate-500">Completed {150 - i * 10} missions</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-8">
+                                            <div className="hidden md:block text-right">
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Impact Score</p>
+                                                <div className="flex items-center gap-1.5 justify-end">
+                                                    <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                                                    <span className="text-sm font-bold text-slate-700">{95 - i}%</span>
+                                                </div>
+                                            </div>
+                                            <div className="text-right min-w-[80px]">
+                                                <p className="text-lg font-black text-slate-900">{v.pts} <span className="text-[10px] text-slate-400 uppercase">pts</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                ) : isHistory ? (
+                    <div className="space-y-8 animate-in fade-in duration-700">
+                        <header>
+                            <h1 className="text-3xl font-black text-slate-900">Mission History</h1>
+                            <p className="text-slate-500 mt-2 font-medium">A complete archive of your successful food rescues.</p>
+                        </header>
+                        
+                        <div className="space-y-4">
+                            {[1, 2, 3, 4, 5].map((item) => (
+                                <div key={item} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between hover:border-orange-200 transition-all group">
+                                    <div className="flex items-center gap-6">
+                                        <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+                                            <CheckCircle2 className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-black text-slate-900">Rescued {10 + item * 5}kg Surplus Meal</h4>
+                                            <p className="text-xs font-medium text-slate-500 flex items-center gap-2 mt-1">
+                                                <MapPin className="w-3 h-3" /> Restaurant Oasis • <Clock className="w-3 h-3" /> May {4 - item}, 2026
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-sm font-black text-slate-900">+150 pts</div>
+                                        <div className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-1">Successfully Delivered</div>
+                                    </div>
+                                </div>
+                            ))}
+                            <button className="w-full py-4 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-widest">Load More History</button>
+                        </div>
+                    </div>
+                ) : (
+                    <>
+                        {isAvailable ? (
                         <div className="space-y-6">
                             {/* Filter & Sorting Bar */}
                             <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -1162,7 +1003,7 @@ const VolunteerDashboard = () => {
                         </div>
                     )}
                 </>
-            ) : (
+            )) : (
                 <div className="space-y-6 animate-in fade-in duration-700 pb-12 w-full">
                     {/* Header */}
                     <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">

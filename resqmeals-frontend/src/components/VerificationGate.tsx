@@ -10,9 +10,7 @@ const VerificationGate = ({ role, children }: VerificationGateProps) => {
     const savedUser = localStorage.getItem('resqmeals_current_user')
     const user = savedUser ? JSON.parse(savedUser) : null
     
-    // BYPASS FOR DEVELOPMENT: Always allow access regardless of verification status
-    // If user is verified, just render the child components (the forms, etc.)
-    if (true || user?.isVerified) {
+    if (user?.isVerified) {
         return <>{children}</>
     }
 
@@ -21,7 +19,6 @@ const VerificationGate = ({ role, children }: VerificationGateProps) => {
         <div className="w-full min-h-[400px] flex items-center justify-center p-6">
             <div className="max-w-md w-full bg-white rounded-[2.5rem] border border-slate-100 shadow-2xl p-8 md:p-10 text-center relative overflow-hidden group">
                 {/* Visual Elements */}
-                <div className="absolute top-0 left-0 w-full h-2 bg-rose-500"></div>
                 <div className="absolute -top-12 -right-12 w-32 h-32 bg-rose-50 rounded-full blur-2xl opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
                 
                 <div className="relative z-10 flex flex-col items-center">

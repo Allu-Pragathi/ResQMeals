@@ -3,12 +3,17 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 import StatusBadge from '../components/StatusBadge'
 import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, 
+  AreaChart, Area, LineChart, Line, ScatterChart, Scatter, Pie, PieChart,
+  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis 
+} from 'recharts'
+import { 
   Calendar, MapPin, Utensils, Users, Clock, 
   TrendingUp, Award, Building2, Mail, Phone,
   Loader2, Plus, History, Heart, ShieldCheck,
   Gift, PartyPopper, Home as HouseIcon, Briefcase, Bot,
   AlertTriangle, Activity, Zap, CheckCircle2, Navigation, Truck,
-  PieChart, Leaf, Radio, ChevronRight, BarChart3, ThermometerSun,
+  Leaf, Radio, ChevronRight, BarChart3, ThermometerSun,
   Map as MapIcon, ArrowRight, AlertCircle, Trophy
 } from 'lucide-react'
 import ProfileVerificationCenter from '../components/ProfileVerificationCenter'
@@ -58,6 +63,41 @@ const EventsDashboard = () => {
     const [multiNgo, setMultiNgo] = useState(true)
     const [forecast, setForecast] = useState<any[]>([])
     const [isAiLoading, setIsAiLoading] = useState(false)
+
+    // Analysis Data
+    const eventVolumeTrend = [
+        { month: 'Jan', cooked: 400, raw: 240, packaged: 180 },
+        { month: 'Feb', cooked: 300, raw: 139, packaged: 220 },
+        { month: 'Mar', cooked: 500, raw: 380, packaged: 250 },
+        { month: 'Apr', cooked: 450, raw: 390, packaged: 280 },
+        { month: 'May', cooked: 600, raw: 480, packaged: 320 },
+        { month: 'Jun', cooked: 550, raw: 430, packaged: 300 },
+    ];
+
+    const latencyScatterData = [
+        { x: 1, y: 12, z: 200 },
+        { x: 2, y: 15, z: 260 },
+        { x: 3, y: 8, z: 400 },
+        { x: 4, y: 22, z: 280 },
+        { x: 5, y: 18, z: 500 },
+        { x: 6, y: 14, z: 600 },
+    ];
+
+    const impactSuccessData = [
+        { name: 'Weddings', value: 45, fill: '#f97316' },
+        { name: 'Corporate', value: 30, fill: '#3b82f6' },
+        { name: 'Festivals', value: 15, fill: '#10b981' },
+        { name: 'Private', value: 10, fill: '#6366f1' },
+    ];
+
+    const capabilityRadarData = [
+        { subject: 'Logistics', A: 120, fullMark: 150 },
+        { subject: 'Food Safety', A: 140, fullMark: 150 },
+        { subject: 'NGO Network', A: 110, fullMark: 150 },
+        { subject: 'Response Time', A: 90, fullMark: 150 },
+        { subject: 'Cold Chain', A: 130, fullMark: 150 },
+        { subject: 'Scalability', A: 100, fullMark: 150 },
+    ];
 
     const isProfile = location.pathname.includes('profile')
     const isSchedule = location.pathname.includes('schedule')
@@ -1205,12 +1245,12 @@ const EventsDashboard = () => {
 
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                             <div className="lg:col-span-8 space-y-6">
-                                {/* 2. Performance Breakdown & 5. Time Analysis */}
+                                {/* Row 1: Operational Efficiency & Volume */}
                                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
                                     <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-2">
-                                        <PieChart className="h-4 w-4 text-blue-500" /> Operational Performance
+                                        <Activity className="h-4 w-4 text-orange-500" /> Operational Performance Hub
                                     </h3>
-                                    <div className="grid grid-cols-3 gap-6">
+                                    <div className="grid grid-cols-3 gap-6 mb-8">
                                         <div className="text-center p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
                                             <div className="text-2xl font-black text-emerald-600 mb-1">98%</div>
                                             <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Completion Rate</div>
@@ -1224,28 +1264,37 @@ const EventsDashboard = () => {
                                             <div className="text-[10px] font-bold text-orange-800 uppercase tracking-wider">Avg Delivery Time</div>
                                         </div>
                                     </div>
-                                    <div className="mt-6 pt-6 border-t border-slate-100 grid grid-cols-2 gap-6">
-                                        <div>
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Average Delay</p>
-                                            <p className="text-sm font-bold text-slate-900">8 minutes</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Peak Delay Time</p>
-                                            <p className="text-sm font-bold text-amber-600">3:15 PM - 3:30 PM (Traffic)</p>
-                                        </div>
+                                    <div className="h-[250px] w-full">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <AreaChart data={eventVolumeTrend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                                <defs>
+                                                    <linearGradient id="colorCooked" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="5%" stopColor="#f97316" stopOpacity={0.8}/>
+                                                        <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
+                                                    </linearGradient>
+                                                </defs>
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                                                <Tooltip contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                                                <Area type="monotone" dataKey="cooked" stroke="#f97316" fillOpacity={1} fill="url(#colorCooked)" />
+                                                <Area type="monotone" dataKey="raw" stroke="#10b981" fillOpacity={0.1} fill="#10b981" />
+                                            </AreaChart>
+                                        </ResponsiveContainer>
                                     </div>
                                 </div>
 
-                                {/* 3. NGO Performance Analysis & 6. Zone Performance */}
+                                {/* Row 2: Partner & Zone Performance */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
                                         <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-2">
-                                            <Building2 className="h-4 w-4 text-indigo-500" /> NGO Success Rates
+                                            <Building2 className="h-4 w-4 text-indigo-500" /> NGO Success Matrix
                                         </h3>
                                         <div className="space-y-4">
                                             {[
                                                 { name: 'Feeding India', rate: '100%', meals: 300, color: 'bg-emerald-500' },
-                                                { name: 'Mumbai Roti Bank', rate: '95%', meals: 200, color: 'bg-emerald-400' }
+                                                { name: 'Mumbai Roti Bank', rate: '95%', meals: 200, color: 'bg-emerald-400' },
+                                                { name: 'Robin Hood Army', rate: '92%', meals: 150, color: 'bg-emerald-300' }
                                             ].map((ngo, i) => (
                                                 <div key={i} className="flex flex-col gap-2">
                                                     <div className="flex justify-between items-center">
@@ -1262,12 +1311,13 @@ const EventsDashboard = () => {
                                     
                                     <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
                                         <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-2">
-                                            <MapIcon className="h-4 w-4 text-purple-500" /> Zone Completion
+                                            <MapIcon className="h-4 w-4 text-purple-500" /> Regional Hotspots
                                         </h3>
                                         <div className="space-y-4">
                                             {[
                                                 { name: 'North District', completion: '100%', color: 'bg-emerald-500' },
-                                                { name: 'South Metro', completion: '85%', color: 'bg-amber-400' }
+                                                { name: 'South Metro', completion: '85%', color: 'bg-amber-400' },
+                                                { name: 'East Corridor', completion: '72%', color: 'bg-orange-400' }
                                             ].map((zone, i) => (
                                                 <div key={i} className="flex flex-col gap-2">
                                                     <div className="flex justify-between items-center">
@@ -1283,25 +1333,96 @@ const EventsDashboard = () => {
                                     </div>
                                 </div>
 
-                                {/* 9. Event Type Comparison */}
-                                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-                                    <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-2">
-                                        <BarChart3 className="h-4 w-4 text-teal-500" /> Category Benchmarking
-                                    </h3>
-                                    <p className="text-xs text-slate-500 mb-4">How this wedding compares to other event types (avg. meals rescued).</p>
-                                    <div className="flex items-end gap-2 h-32 mt-4">
-                                        {[
-                                            { type: 'Corporate', height: '40%', value: 120, color: 'bg-slate-200' },
-                                            { type: 'Birthday', height: '30%', value: 50, color: 'bg-slate-200' },
-                                            { type: 'Wedding (This)', height: '95%', value: 500, color: 'bg-orange-500' },
-                                            { type: 'Concert', height: '60%', value: 300, color: 'bg-slate-200' }
-                                        ].map((bar, i) => (
-                                            <div key={i} className="flex-1 flex flex-col items-center justify-end group">
-                                                <span className="text-[10px] font-bold text-slate-400 mb-2 opacity-0 group-hover:opacity-100 transition-opacity">{bar.value}m</span>
-                                                <div className={`w-full max-w-[40px] rounded-t-lg ${bar.color} transition-all duration-500`} style={{ height: bar.height }}></div>
-                                                <span className="text-[9px] font-bold text-slate-500 mt-2 rotate-45 sm:rotate-0 origin-left">{bar.type}</span>
-                                            </div>
-                                        ))}
+                                {/* Row 3: Categorical & Success Distribution */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col">
+                                        <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                            <BarChart3 className="h-4 w-4 text-teal-500" /> Category Benchmark
+                                        </h3>
+                                        <div className="flex items-end gap-2 h-48 mt-4">
+                                            {[
+                                                { type: 'Corporate', height: '40%', value: 120, color: 'bg-slate-200' },
+                                                { type: 'Birthday', height: '30%', value: 50, color: 'bg-slate-200' },
+                                                { type: 'Wedding', height: '95%', value: 500, color: 'bg-orange-500' },
+                                                { type: 'Concert', height: '60%', value: 300, color: 'bg-slate-200' }
+                                            ].map((bar, i) => (
+                                                <div key={i} className="flex-1 flex flex-col items-center justify-end group">
+                                                    <span className="text-[10px] font-bold text-slate-400 mb-2 opacity-0 group-hover:opacity-100 transition-opacity">{bar.value}m</span>
+                                                    <div className={`w-full max-w-[40px] rounded-t-lg ${bar.color} transition-all duration-500`} style={{ height: bar.height }}></div>
+                                                    <span className="text-[9px] font-bold text-slate-500 mt-2 rotate-45 sm:rotate-0 origin-left">{bar.type}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col">
+                                        <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                            <PieChart className="h-4 w-4 text-indigo-500" /> Impact by Event Type
+                                        </h3>
+                                        <div className="h-[200px] w-full">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <PieChart>
+                                                    <Pie
+                                                        data={impactSuccessData}
+                                                        cx="50%"
+                                                        cy="50%"
+                                                        innerRadius={60}
+                                                        outerRadius={80}
+                                                        paddingAngle={5}
+                                                        dataKey="value"
+                                                    >
+                                                        {impactSuccessData.map((entry, index) => (
+                                                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                                                        ))}
+                                                    </Pie>
+                                                    <Tooltip contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                                                </PieChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                        <div className="flex flex-wrap justify-center gap-3 mt-4">
+                                            {impactSuccessData.map((entry, index) => (
+                                                <div key={index} className="flex items-center gap-2">
+                                                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.fill }}></div>
+                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">{entry.name}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Row 4: Advanced Capability & Intelligence */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                                        <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                            <Award className="h-4 w-4 text-emerald-500" /> Event Capability Radar
+                                        </h3>
+                                        <div className="h-[300px] w-full">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={capabilityRadarData}>
+                                                    <PolarGrid stroke="#f1f5f9" />
+                                                    <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }} />
+                                                    <Radar name="Performance" dataKey="A" stroke="#10b981" fill="#10b981" fillOpacity={0.6} />
+                                                    <Tooltip contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                                                </RadarChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                                        <h3 className="text-sm font-bold text-slate-900 mb-6 flex items-center gap-2">
+                                            <Zap className="h-4 w-4 text-orange-500" /> Intelligence Matrix (Latency)
+                                        </h3>
+                                        <div className="h-[300px] w-full">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: -20 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                                                    <XAxis type="number" dataKey="x" name="Order ID" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                                                    <YAxis type="number" dataKey="y" name="Latency" unit="m" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} />
+                                                    <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                                                    <Scatter name="Latency" data={latencyScatterData} fill="#f97316" />
+                                                </ScatterChart>
+                                            </ResponsiveContainer>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

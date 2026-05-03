@@ -1,24 +1,24 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, MapPin, Package, CheckCircle, Navigation, TrendingUp, Sparkles, Loader2, Bot, Zap, ArrowRight, ShieldCheck, Bike, Building, Star, BellRing, Phone, Lock } from 'lucide-react';
+import { Clock, MapPin, Package, CheckCircle, TrendingUp, Bot, Zap, ShieldCheck, Bike, Building, Star, BellRing, Phone, Lock, ChevronRight, Activity, Loader2, Info } from 'lucide-react';
 import api from '../lib/api';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
 const donorIcon = L.divIcon({
-  html: `<div style="background-color: #3b82f6; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.3);"></div>`,
-  className: '', iconSize: [20, 20], iconAnchor: [10, 10]
+  html: `<div style="background-color: #3b82f6; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);"></div>`,
+  className: '', iconSize: [16, 16], iconAnchor: [8, 8]
 });
 
 const ngoIcon = L.divIcon({
-  html: `<div style="background-color: #10b981; width: 28px; height: 28px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 14px;">🏢</div>`,
-  className: '', iconSize: [28, 28], iconAnchor: [14, 14]
+  html: `<div style="background-color: #10b981; width: 24px; height: 24px; border-radius: 4px; border: 2px solid white; box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; font-weight: 900;">NGO</div>`,
+  className: '', iconSize: [24, 24], iconAnchor: [12, 12]
 });
 
 const volIcon = L.divIcon({
-  html: `<div style="background-color: #f97316; width: 28px; height: 28px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 14px;">🛵</div>`,
-  className: '', iconSize: [28, 28], iconAnchor: [14, 14]
+  html: `<div style="background-color: #f97316; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 15px rgba(249, 115, 22, 0.5); display: flex; align-items: center; justify-content: center; font-size: 12px;">🛵</div>`,
+  className: '', iconSize: [24, 24], iconAnchor: [12, 12]
 });
 
 const DONOR_POS: [number, number] = [17.4381, 78.3953];
@@ -78,11 +78,10 @@ export default function SmartDonationView({ user, donations, onAddDonation }: Do
           if (res.data.donation.status === 'Accepted') {
             clearInterval(interval);
             setTrackingState('ACCEPTED');
-            addLog("SUCCESS: NGO Accepted your donation request.");
-            addLog("System assigning nearest volunteer...");
+            addLog("NGO_MATCH_CONFIRMED: Protocol 74 initiated.");
             setTimeout(() => {
                setTrackingState('ON_THE_WAY');
-               addLog("Volunteer assigned. On the way to pickup location.");
+               addLog("LOGISTICS: Volunteer unit dispatched to coordinates.");
             }, 3000);
           }
         } catch (err) {
@@ -112,8 +111,8 @@ export default function SmartDonationView({ user, donations, onAddDonation }: Do
         if (step >= totalSteps) {
           clearInterval(interval);
           setTrackingState('ARRIVED');
-          addLog("Volunteer arrived at your location.");
-          addLog("Awaiting OTP Verification.");
+          addLog("EVENT: Unit arrived at destination.");
+          addLog("AUTH: Awaiting OTP synchronization.");
         }
       }, 100);
     } 
@@ -133,7 +132,7 @@ export default function SmartDonationView({ user, donations, onAddDonation }: Do
         if (step >= totalSteps) {
           clearInterval(interval);
           setTrackingState('DELIVERED');
-          addLog("Donation successfully delivered to NGO!");
+          addLog("MISSION_COMPLETE: Payload delivered to endpoint.");
           api.patch(`/donations/${activeDonationId}/status`, { status: 'Delivered' });
         }
       }, 100);
@@ -146,8 +145,7 @@ export default function SmartDonationView({ user, donations, onAddDonation }: Do
     setIsSubmitting(true);
     setTrackingState('PENDING');
     setLogs([]);
-    addLog("System matching logic initiated...");
-    addLog(`Broadcasting to NGOs within ${formData.radius}km radius...`);
+    addLog("MISSION_INIT: Scanning local NGO network...");
     
     try {
       const finalData = {
@@ -162,12 +160,11 @@ export default function SmartDonationView({ user, donations, onAddDonation }: Do
       onAddDonation(response.data.donation);
       setActiveDonationId(response.data.donation.id);
       
-      addLog("Donation securely logged.");
-      addLog("STATUS: PENDING. Waiting for an NGO partner to review and accept...");
-      addLog("(Open the NGO Dashboard in another window to accept this request)");
+      addLog("DATA_SYNC: Payload registered in secure ledger.");
+      addLog("WAIT: Broadcasting signal to authorized partners...");
     } catch (e) {
       console.warn("Backend save failed", e);
-      addLog("ERROR: Failed to connect to backend.");
+      addLog("CRITICAL_FAILURE: Network connection timed out.");
       setTrackingState('IDLE');
     } finally {
       setIsSubmitting(false);
@@ -177,302 +174,276 @@ export default function SmartDonationView({ user, donations, onAddDonation }: Do
   const verifyOtp = async () => {
     if (!activeDonationId) return;
     try {
-      const res = await api.post(`/donations/${activeDonationId}/verify-pickup`, { otp });
+      await api.post(`/donations/${activeDonationId}/verify-pickup`, { otp });
       setTrackingState('PICKED_UP');
-      addLog("OTP Verified successfully. Status updated to PICKED_UP.");
+      addLog("AUTH_SUCCESS: OTP validated.");
       setTimeout(() => {
         setTrackingState('IN_TRANSIT');
-        addLog("Volunteer in transit to NGO.");
+        addLog("LOGISTICS: Unit transitioning to NGO coordinates.");
       }, 2000);
     } catch (err: any) {
       setOtpError(true);
-      addLog(`OTP Error: ${err.response?.data?.error || 'Invalid OTP'}`);
+      addLog(`AUTH_ERROR: Invalid sequence.`);
       setTimeout(() => setOtpError(false), 2000);
     }
   };
 
   if (trackingState !== 'IDLE') {
     return (
-      <div className="min-h-screen font-sans text-slate-800">
-        <div className="mb-6 flex justify-between items-center max-w-7xl mx-auto">
-          <div>
-            <h1 className="text-3xl font-black text-slate-900 flex items-center gap-3">
-              <span className="relative flex h-4 w-4">
-                {(trackingState !== 'DELIVERED' && trackingState !== 'ARRIVED') && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>}
-                <span className={`relative inline-flex rounded-full h-4 w-4 ${trackingState === 'DELIVERED' ? 'bg-emerald-500' : 'bg-orange-500'}`}></span>
-              </span>
-              Live Rescue Mission Tracker
-            </h1>
-            <p className="text-slate-500 font-bold mt-1">Real-time GPS dispatch & delivery system.</p>
-          </div>
-          {trackingState === 'DELIVERED' && (
-            <button onClick={() => { setTrackingState('IDLE'); setFormData({ ...formData, foodDesc: '', quantity: '' }); setVolPos(VOL_START_POS); setActiveDonationId(null); }} className="px-6 py-3 bg-slate-900 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-orange-600 transition-colors">
-              Start New Mission
-            </button>
-          )}
+      <div className="min-h-screen pb-20">
+        <div className="flex justify-between items-center mb-12">
+           <div>
+              <div className="flex items-center gap-2 mb-2">
+                 <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse"></div>
+                 <p className="text-[10px] font-mono font-black text-orange-500 uppercase tracking-widest">Live_Mission_Active</p>
+              </div>
+              <h2 className="text-4xl font-black text-slate-900 tracking-tight">Rescue Logistics</h2>
+           </div>
+           {trackingState === 'DELIVERED' && (
+             <button onClick={() => { setTrackingState('IDLE'); setActiveDonationId(null); }} className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase text-[11px] tracking-widest hover:scale-105 active:scale-95 transition-all">
+                Plan New Rescue
+             </button>
+           )}
         </div>
 
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          {/* LEFT: MAP & LOGS */}
-          <div className="lg:col-span-7 space-y-6 flex flex-col">
-            <div className="bg-white/70 backdrop-blur-2xl border-white/60 p-2 rounded-[2rem] shadow-xl border border-slate-100 flex-1 min-h-[400px] relative z-0 overflow-hidden">
-              <MapContainer center={DONOR_POS} zoom={13} style={{ height: '100%', width: '100%', borderRadius: '1.8rem', zIndex: 1 }}>
-                <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
-                
-                <Marker position={DONOR_POS} icon={donorIcon}>
-                  <Popup>Your Location</Popup>
-                </Marker>
-                
-                {(trackingState !== 'PENDING') && (
-                  <Marker position={NGO_POS} icon={ngoIcon}>
-                    <Popup>Assigned NGO</Popup>
-                  </Marker>
-                )}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+           
+           {/* MAP VIEW */}
+           <div className="lg:col-span-8 space-y-6">
+              <div className="bg-white border border-slate-200 rounded-[2.5rem] p-4 shadow-sm h-[500px] relative overflow-hidden">
+                 <div className="absolute inset-0 bg-slate-50 opacity-50 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
+                 <div className="relative h-full w-full rounded-[2rem] overflow-hidden border border-slate-100 z-10">
+                    <MapContainer center={DONOR_POS} zoom={13} style={{ height: '100%', width: '100%' }}>
+                      <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
+                      <Marker position={DONOR_POS} icon={donorIcon} />
+                      {trackingState !== 'PENDING' && <Marker position={NGO_POS} icon={ngoIcon} />}
+                      {['ON_THE_WAY', 'ARRIVED', 'IN_TRANSIT', 'PICKED_UP'].includes(trackingState) && <Marker position={volPos} icon={volIcon} />}
+                      <Polyline positions={[DONOR_POS, NGO_POS]} pathOptions={{ color: '#000', weight: 2, dashArray: '8, 8', opacity: 0.2 }} />
+                    </MapContainer>
+                 </div>
 
-                {['ON_THE_WAY', 'ARRIVED', 'IN_TRANSIT', 'PICKED_UP'].includes(trackingState) && (
-                  <Marker position={volPos} icon={volIcon}>
-                    <Popup>Volunteer</Popup>
-                  </Marker>
-                )}
-
-                <Polyline positions={[VOL_START_POS, DONOR_POS]} pathOptions={{ color: '#94a3b8', dashArray: '5, 10', weight: 3 }} />
-                <Polyline positions={[DONOR_POS, NGO_POS]} pathOptions={{ color: '#f97316', dashArray: trackingState === 'IN_TRANSIT' ? '0' : '5, 10', weight: 4 }} />
-              </MapContainer>
-
-              <div className="absolute top-6 left-6 z-[1000] bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-slate-100 min-w-[200px]">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Live Status</p>
-                <p className="text-xl font-black text-orange-600 mb-3">{trackingState.replace('_', ' ')}</p>
-                {(trackingState === 'ON_THE_WAY' || trackingState === 'IN_TRANSIT') && (
-                  <div className="flex justify-between items-center bg-orange-50 p-2 rounded-xl">
-                    <span className="text-xs font-bold text-orange-800">ETA: {eta}</span>
-                    <span className="text-xs font-bold text-orange-800">{distanceRemaining}</span>
-                  </div>
-                )}
+                 {/* Floating Hud */}
+                 <div className="absolute bottom-10 right-10 z-20 bg-slate-900 text-white p-6 rounded-2xl shadow-2xl min-w-[240px]">
+                    <div className="flex justify-between items-center mb-4">
+                       <span className="text-[10px] font-mono text-slate-400">UNIT_STATUS</span>
+                       <Activity className="w-4 h-4 text-emerald-400" />
+                    </div>
+                    <p className="text-xl font-black mb-1">{trackingState.replace('_', ' ')}</p>
+                    <div className="flex gap-4 mt-4 pt-4 border-t border-white/10">
+                       <div>
+                          <p className="text-[10px] font-mono text-slate-500">DIST_REM</p>
+                          <p className="text-sm font-black">{distanceRemaining}</p>
+                       </div>
+                       <div>
+                          <p className="text-[10px] font-mono text-slate-500">TIME_EST</p>
+                          <p className="text-sm font-black">{eta}</p>
+                       </div>
+                    </div>
+                 </div>
               </div>
-            </div>
 
-            <div className="bg-slate-900 rounded-[2rem] p-6 text-white shadow-xl h-48 flex flex-col relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-6 opacity-10">
-                <BellRing className="w-24 h-24" />
+              {/* Console Logs */}
+              <div className="bg-slate-900 rounded-[2.5rem] p-8 h-48 flex flex-col font-mono">
+                 <div className="flex items-center gap-2 mb-4 text-orange-500">
+                    <Zap className="w-4 h-4" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">System_Console_Out</span>
+                 </div>
+                 <div className="flex-1 overflow-y-auto space-y-2 pr-4 text-[11px] custom-scrollbar">
+                    {logs.map((log, i) => (
+                      <div key={i} className="flex gap-4">
+                         <span className="text-slate-600">[{log.time}]</span>
+                         <span className="text-slate-200">{log.msg}</span>
+                      </div>
+                    ))}
+                    <div ref={logsEndRef} />
+                 </div>
               </div>
-              <h3 className="text-[11px] font-black uppercase tracking-widest text-orange-500 mb-4 flex items-center gap-2">
-                <Zap className="w-4 h-4" /> System Activity Logs
-              </h3>
-              <div className="flex-1 overflow-y-auto space-y-3 font-mono text-xs pr-4 custom-scrollbar">
-                {logs.map((log, i) => (
-                  <div key={i} className="flex gap-4 items-start">
-                    <span className="text-slate-500 shrink-0">[{log.time}]</span>
-                    <span className="text-slate-200">{log.msg}</span>
-                  </div>
-                ))}
-                <div ref={logsEndRef} />
-              </div>
-            </div>
-          </div>
+           </div>
 
-          {/* RIGHT: TRACKING WORKFLOW */}
-          <div className="lg:col-span-5 space-y-6">
-            
-            {/* Timeline */}
-            <div className="bg-white/70 backdrop-blur-2xl border-white/60 rounded-[2rem] p-8 shadow-sm border border-slate-100">
-              <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-6">Mission Timeline</h4>
+           {/* WORKFLOW PANEL */}
+           <div className="lg:col-span-4 space-y-6">
               
-              <div className="relative border-l-2 border-slate-100 ml-4 space-y-8">
-                {[
-                  { id: 'PENDING', label: 'Waiting for NGO response', icon: <Bot className="w-4 h-4" />, done: ['ACCEPTED','ON_THE_WAY','ARRIVED','PICKED_UP','IN_TRANSIT','DELIVERED'].includes(trackingState) || trackingState === 'PENDING' },
-                  { id: 'ACCEPTED', label: 'NGO accepted your donation', icon: <Building className="w-4 h-4" />, done: ['ON_THE_WAY','ARRIVED','PICKED_UP','IN_TRANSIT','DELIVERED'].includes(trackingState) || trackingState === 'ACCEPTED' },
-                  { id: 'ON_THE_WAY', label: 'Volunteer on the way', icon: <Bike className="w-4 h-4" />, done: ['ARRIVED','PICKED_UP','IN_TRANSIT','DELIVERED'].includes(trackingState) || trackingState === 'ON_THE_WAY' },
-                  { id: 'PICKED_UP', label: 'Secure Pickup (OTP)', icon: <Package className="w-4 h-4" />, done: ['IN_TRANSIT','DELIVERED'].includes(trackingState) || trackingState === 'PICKED_UP' },
-                  { id: 'DELIVERED', label: 'Delivered successfully', icon: <CheckCircle className="w-4 h-4" />, done: trackingState === 'DELIVERED' },
-                ].map((step, i) => (
-                  <div key={i} className="relative pl-8">
-                    <div className={`absolute -left-[17px] top-1 h-8 w-8 rounded-full border-4 border-white flex items-center justify-center shadow-sm transition-colors duration-500 ${step.done ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
-                      {step.icon}
-                    </div>
-                    <div>
-                      <p className={`font-black text-sm ${step.done ? 'text-slate-900' : 'text-slate-400'}`}>{step.label}</p>
-                      {step.id === trackingState && <p className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mt-1 animate-pulse">In Progress</p>}
-                    </div>
-                  </div>
-                ))}
+              <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 shadow-sm">
+                 <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-8 px-2">Operational_Flow</h3>
+                 <div className="space-y-6">
+                    {[
+                       { id: 'PENDING', label: 'Partner Negotiation', sub: 'Broadcasting signal...', icon: <Bot /> },
+                       { id: 'ON_THE_WAY', label: 'Unit Dispatch', sub: 'Volunteer in transit', icon: <Bike /> },
+                       { id: 'PICKED_UP', label: 'Handover Sequence', sub: 'OTP Authentication', icon: <Lock /> },
+                       { id: 'DELIVERED', label: 'Mission Closure', sub: 'Final delivery', icon: <CheckCircle /> },
+                    ].map((step, i) => {
+                       const isDone = ['ACCEPTED','ON_THE_WAY','ARRIVED','PICKED_UP','IN_TRANSIT','DELIVERED'].includes(trackingState);
+                       const isActive = trackingState === step.id || (step.id === 'PENDING' && trackingState === 'PENDING');
+                       return (
+                          <div key={i} className={`flex items-start gap-5 p-4 rounded-3xl border transition-all ${isActive ? 'bg-orange-50 border-orange-200' : 'bg-transparent border-transparent'}`}>
+                             <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${isActive ? 'bg-orange-500 text-white shadow-lg' : 'bg-slate-100 text-slate-400'}`}>
+                                {step.icon}
+                             </div>
+                             <div>
+                                <p className={`text-sm font-black ${isActive ? 'text-slate-900' : 'text-slate-400'}`}>{step.label}</p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase mt-0.5">{step.sub}</p>
+                             </div>
+                          </div>
+                       );
+                    })}
+                 </div>
               </div>
-            </div>
 
-            <AnimatePresence mode="popLayout">
-              {trackingState === 'PENDING' && (
-                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-yellow-50 border border-yellow-200 rounded-[2rem] p-8 text-center">
-                  <div className="h-16 w-16 bg-yellow-200 text-yellow-700 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-                    <Building className="w-8 h-8" />
-                  </div>
-                  <h4 className="text-lg font-black text-yellow-900 mb-2">Awaiting NGO Approval</h4>
-                  <p className="text-sm font-medium text-yellow-800">Your donation is locked. Waiting for a nearby NGO to review and accept the rescue mission.</p>
-                </motion.div>
-              )}
+              <AnimatePresence mode="wait">
+                 {trackingState === 'ARRIVED' && (
+                    <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="bg-slate-900 text-white rounded-[2.5rem] p-10 shadow-2xl">
+                       <h4 className="text-xs font-black uppercase tracking-widest text-orange-500 mb-6">Handover_Protocol</h4>
+                       <p className="text-sm text-slate-400 mb-8 leading-relaxed font-medium">Confirm pickup by entering the 4-digit code provided by the logistics unit.</p>
+                       <div className="space-y-4">
+                          <input 
+                             type="text" maxLength={4} placeholder="0000" value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
+                             className={`w-full bg-white/5 border border-white/10 text-white font-black text-3xl tracking-[0.5em] text-center rounded-2xl py-5 outline-none focus:bg-white/10 transition-all ${otpError ? 'border-red-500 bg-red-500/10' : ''}`}
+                          />
+                          <button onClick={verifyOtp} className="w-full py-5 bg-orange-600 text-white rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-orange-500 transition-colors">
+                             Authorize_Pickup
+                          </button>
+                       </div>
+                    </motion.div>
+                 )}
 
-              {trackingState === 'ON_THE_WAY' && (
-                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-blue-50 border border-blue-100 rounded-[2rem] p-8">
-                  <div className="flex justify-between items-center mb-4">
-                    <h4 className="text-sm font-black text-blue-900 uppercase tracking-widest flex items-center gap-2">
-                      <Bike className="w-5 h-5" /> Volunteer En Route
-                    </h4>
-                    <span className="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-black animate-pulse">LIVE</span>
-                  </div>
-                  <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm mb-4">
-                    <div className="h-12 w-12 rounded-full bg-slate-200 border-2 border-white shadow-sm overflow-hidden"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Arjun" alt="avatar" /></div>
-                    <div>
-                      <p className="font-black text-slate-900">Arjun K.</p>
-                      <p className="text-xs font-bold text-slate-500 flex items-center gap-1"><Star className="w-3 h-3 text-amber-400" /> 4.9 Rating</p>
-                    </div>
-                    <button className="ml-auto h-10 w-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center hover:bg-blue-200 transition-colors"><Phone className="w-4 h-4" /></button>
-                  </div>
-                </motion.div>
-              )}
+                 {trackingState === 'DELIVERED' && (
+                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-emerald-600 text-white rounded-[2.5rem] p-10 text-center shadow-2xl">
+                       <div className="h-16 w-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                          <TrendingUp className="w-8 h-8" />
+                       </div>
+                       <h3 className="text-2xl font-black mb-2">Rescue Succeeded</h3>
+                       <p className="text-sm font-bold text-emerald-100 mb-8">Payload successfully distributed to the target community.</p>
+                       <div className="bg-black/10 p-6 rounded-3xl border border-white/10">
+                          <p className="text-[10px] font-mono text-emerald-200 mb-2">IMPACT_METRIC</p>
+                          <p className="text-4xl font-black">{formData.quantity} MEALS</p>
+                       </div>
+                    </motion.div>
+                 )}
+              </AnimatePresence>
 
-              {trackingState === 'ARRIVED' && (
-                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-orange-600 text-white rounded-[2rem] p-8 shadow-xl shadow-orange-500/30">
-                  <h4 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 mb-6">
-                    <ShieldCheck className="w-5 h-5" /> Secure Handover
-                  </h4>
-                  <p className="font-bold text-orange-100 mb-6 text-sm">Volunteer has arrived. Ask the volunteer for the 4-digit pickup OTP to confirm.</p>
-                  
-                  <div className="bg-white/10 p-6 rounded-3xl border border-white/20 backdrop-blur-sm">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-orange-200 mb-2 block">Enter Volunteer's OTP</label>
-                    <div className="flex gap-4">
-                      <input 
-                        type="text" maxLength={4} placeholder="••••" value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
-                        className={`w-full bg-white text-slate-900 font-black text-2xl tracking-[0.5em] text-center rounded-2xl py-3 outline-none ${otpError ? 'ring-4 ring-red-500' : 'focus:ring-4 focus:ring-white/50'}`}
-                      />
-                      <button onClick={verifyOtp} className="px-6 bg-slate-900 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-slate-800 transition-colors">Verify</button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
+           </div>
 
-              {trackingState === 'DELIVERED' && (
-                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-emerald-500 text-white rounded-[2rem] p-8 shadow-xl shadow-emerald-500/30 text-center">
-                  <div className="h-20 w-20 bg-white text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-900/20">
-                    <TrendingUp className="w-10 h-10" />
-                  </div>
-                  <h3 className="text-3xl font-black mb-2">Mission Accomplished!</h3>
-                  <p className="font-bold text-emerald-100 mb-6 text-sm">Your generous donation just made a huge impact.</p>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-black/10 p-4 rounded-2xl border border-white/10">
-                      <p className="text-[10px] uppercase font-black tracking-widest text-emerald-200 mb-1">Meals Saved</p>
-                      <p className="text-3xl font-black">{formData.quantity}</p>
-                    </div>
-                    <div className="bg-black/10 p-4 rounded-2xl border border-white/10">
-                      <p className="text-[10px] uppercase font-black tracking-widest text-emerald-200 mb-1">Success Rate</p>
-                      <p className="text-3xl font-black">100%</p>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen font-sans text-slate-800">
-      <div className="mb-10 max-w-7xl mx-auto">
-        <h1 className="text-4xl font-black text-slate-900 tracking-tight">Post Surplus Food</h1>
-        <p className="text-slate-500 text-lg mt-2 font-medium">Fill details. The system strictly waits for NGO approval before taking any action.</p>
-      </div>
-
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className="lg:col-span-7 space-y-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white/70 backdrop-blur-2xl border-white/60 rounded-[2.5rem] p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
-            <form onSubmit={handlePublish} className="space-y-8">
-              <div>
-                <label className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3 block">Food Category</label>
-                <div className="flex gap-4">
-                  {['Veg', 'Non-Veg', 'Vegan'].map(cat => (
-                    <button key={cat} type="button" onClick={() => setFormData({...formData, category: cat})} className={`flex-1 py-4 rounded-2xl border-2 transition-all font-bold text-sm ${formData.category === cat ? 'bg-orange-50 border-orange-500 text-orange-700 shadow-sm' : 'border-slate-100 text-slate-500 hover:border-slate-200'}`}>
-                      {cat}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2 relative">
-                <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">What are you donating?</label>
-                <input required placeholder="E.g. 50 plates of vegetable biryani..." value={formData.foodDesc} onChange={e => setFormData({...formData, foodDesc: e.target.value})} className="w-full bg-slate-50 border-2 border-transparent focus:border-orange-500 focus:bg-white px-6 py-5 rounded-[1.5rem] outline-none transition-all font-bold text-slate-700 shadow-inner" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Quantity</label>
-                  <div className="flex bg-slate-50 rounded-[1.5rem] p-1 shadow-inner focus-within:ring-2 focus-within:ring-orange-500">
-                    <input required type="number" min="1" placeholder="0" value={formData.quantity} onChange={e => setFormData({...formData, quantity: e.target.value})} className="w-full bg-transparent px-4 py-4 outline-none font-black text-slate-800" />
-                    <select value={formData.unit} onChange={e => setFormData({...formData, unit: e.target.value})} className="bg-white text-slate-700 px-4 rounded-xl font-bold text-xs border border-slate-200 outline-none">
-                      <option value="meals">Meals</option>
-                      <option value="kg">Kg</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Good for (Hours)</label>
-                  <div className="relative">
-                     <Clock className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                     <input required type="number" step="0.5" placeholder="E.g. 4" value={formData.expiry} onChange={e => setFormData({...formData, expiry: e.target.value})} className="w-full bg-slate-50 border-2 border-transparent focus:border-orange-500 focus:bg-white pl-14 pr-4 py-5 rounded-[1.5rem] outline-none transition-all font-bold text-slate-700 shadow-inner" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Pickup Location</label>
-                  <div className="relative">
-                     <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                     <input required value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full bg-slate-50 border-2 border-transparent focus:border-orange-500 focus:bg-white pl-14 pr-4 py-5 rounded-[1.5rem] outline-none transition-all font-bold text-slate-700 shadow-inner" />
-                  </div>
-                </div>
-
-                <div className="space-y-2 bg-slate-50 p-6 rounded-[1.5rem] border border-slate-100">
-                  <div className="flex justify-between items-center px-1 mb-4">
-                    <label className="text-xs font-black uppercase tracking-widest text-slate-400">Discovery Radius</label>
-                    <span className="bg-orange-600 text-white px-3 py-1 rounded-lg text-[10px] font-black">{formData.radius} KM</span>
-                  </div>
-                  <input type="range" min="1" max="50" value={formData.radius} onChange={e => setFormData({...formData, radius: parseInt(e.target.value)})} className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-orange-500" />
-                </div>
-              </div>
-
-              <button type="submit" disabled={isSubmitting || !formData.foodDesc || !formData.quantity || !formData.expiry} className="w-full bg-[#f97316] text-white py-6 rounded-[2rem] font-black uppercase tracking-[0.2em] text-sm shadow-[0_15px_30px_rgba(249,115,22,0.3)] hover:shadow-[0_20px_40px_rgba(249,115,22,0.4)] transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group">
-                {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin" /> : <><Bot className="w-6 h-6 group-hover:rotate-12 transition-transform" /> Post Food (Requires NGO Approval)</>}
-              </button>
-            </form>
-          </motion.div>
-        </div>
-
-        <div className="lg:col-span-5 space-y-6">
-          <div className="bg-slate-900 rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
-            <h3 className="text-xl font-black uppercase tracking-widest flex items-center gap-3 mb-10 text-orange-400"><ShieldCheck className="w-6 h-6" /> Strict Policy Enforced</h3>
-            <div className="space-y-8">
-              <div className="flex gap-4 items-center">
-                <div className="h-12 w-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20"><Building className="w-5 h-5 text-emerald-400" /></div>
-                <div><p className="font-bold text-sm text-slate-300">No auto-accept.</p><p className="text-xs text-slate-500">NGOs must review and approve.</p></div>
-              </div>
-              <div className="flex gap-4 items-center">
-                <div className="h-12 w-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20"><Bike className="w-5 h-5 text-blue-400" /></div>
-                <div><p className="font-bold text-sm text-slate-300">No early dispatch.</p><p className="text-xs text-slate-500">Volunteers assigned only after approval.</p></div>
-              </div>
-              <div className="flex gap-4 items-center">
-                <div className="h-12 w-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20"><Lock className="w-5 h-5 text-orange-400" /></div>
-                <div><p className="font-bold text-sm text-slate-300">Secure OTP Handover.</p><p className="text-xs text-slate-500">Real validation required to proceed.</p></div>
-              </div>
+    <div className="min-h-screen pb-20">
+      <div className="w-full">
+         
+         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16">
+            <div>
+               <div className="flex items-center gap-2 mb-2">
+                  <span className="h-px w-8 bg-slate-900"></span>
+                  <span className="text-[10px] font-mono font-black uppercase tracking-widest text-slate-900">Rescue_Planning_Unit</span>
+               </div>
+               <h2 className="text-5xl font-black text-slate-900 tracking-tighter">Plan Rescue</h2>
             </div>
-            <div className="mt-10 pt-8 border-t border-white/10 text-center">
-              <p className="text-xs font-bold text-orange-400">Your donation will sit in PENDING state until an NGO clicks "Accept" in their dashboard.</p>
+            <div className="bg-slate-100 px-6 py-3 rounded-xl border border-slate-200">
+               <p className="text-[10px] font-mono font-black text-slate-500 uppercase tracking-widest mb-1">Session_ID</p>
+               <p className="text-xs font-mono font-black text-slate-900">RM-{Math.random().toString(36).substr(2, 6).toUpperCase()}</p>
             </div>
-          </div>
-        </div>
+         </div>
+
+         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            {/* Planning Form */}
+            <div className="lg:col-span-7">
+               <form onSubmit={handlePublish} className="space-y-12">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div className="space-y-3">
+                        <label className="text-[10px] font-mono font-black uppercase tracking-widest text-slate-400 px-1">Payload_Category</label>
+                        <div className="grid grid-cols-3 gap-2">
+                           {['Veg', 'Non-Veg', 'Vegan'].map(cat => (
+                              <button key={cat} type="button" onClick={() => setFormData({...formData, category: cat})} className={`py-3 rounded-xl border text-[11px] font-black uppercase tracking-wider transition-all ${formData.category === cat ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-400'}`}>
+                                 {cat}
+                              </button>
+                           ))}
+                        </div>
+                     </div>
+                     <div className="space-y-3">
+                        <label className="text-[10px] font-mono font-black uppercase tracking-widest text-slate-400 px-1">Payload_Shelf_Life</label>
+                        <div className="relative">
+                           <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                           <input required type="number" placeholder="Hours" value={formData.expiry} onChange={e => setFormData({...formData, expiry: e.target.value})} className="w-full bg-white border border-slate-200 pl-12 pr-4 py-3 rounded-xl font-bold text-sm outline-none focus:border-slate-900 transition-all" />
+                        </div>
+                     </div>
+                  </div>
+
+                  <div className="space-y-3">
+                     <label className="text-[10px] font-mono font-black uppercase tracking-widest text-slate-400 px-1">Payload_Description</label>
+                     <input required placeholder="Specify food items and condition..." value={formData.foodDesc} onChange={e => setFormData({...formData, foodDesc: e.target.value})} className="w-full bg-white border border-slate-200 px-6 py-4 rounded-2xl font-bold text-sm outline-none focus:border-slate-900 transition-all shadow-sm" />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div className="space-y-3">
+                        <label className="text-[10px] font-mono font-black uppercase tracking-widest text-slate-400 px-1">Unit_Quantity</label>
+                        <div className="flex gap-2">
+                           <input required type="number" placeholder="0" value={formData.quantity} onChange={e => setFormData({...formData, quantity: e.target.value})} className="flex-1 bg-white border border-slate-200 px-6 py-3 rounded-xl font-bold text-sm outline-none focus:border-slate-900" />
+                           <select value={formData.unit} onChange={e => setFormData({...formData, unit: e.target.value})} className="bg-slate-50 border border-slate-200 px-4 rounded-xl font-black text-[10px] uppercase outline-none">
+                              <option value="meals">Meals</option>
+                              <option value="kg">Kg</option>
+                           </select>
+                        </div>
+                     </div>
+                     <div className="space-y-3">
+                        <label className="text-[10px] font-mono font-black uppercase tracking-widest text-slate-400 px-1">Dispatch_Radius</label>
+                        <div className="flex items-center gap-4 bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl">
+                           <input type="range" min="1" max="50" value={formData.radius} onChange={e => setFormData({...formData, radius: parseInt(e.target.value)})} className="flex-1 accent-slate-900" />
+                           <span className="text-[10px] font-mono font-black text-slate-900 w-8">{formData.radius}km</span>
+                        </div>
+                     </div>
+                  </div>
+
+                  <div className="space-y-3">
+                     <label className="text-[10px] font-mono font-black uppercase tracking-widest text-slate-400 px-1">Pickup_Point</label>
+                     <div className="relative">
+                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                        <input required value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full bg-white border border-slate-200 pl-12 pr-4 py-3 rounded-xl font-bold text-sm outline-none focus:border-slate-900 transition-all" />
+                     </div>
+                  </div>
+
+                  <button type="submit" disabled={isSubmitting || !formData.foodDesc || !formData.quantity} className="w-full bg-orange-600 text-white py-6 rounded-3xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-orange-600/20 hover:bg-orange-500 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50">
+                     {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Initiate_Rescue_Sequence <ChevronRight className="w-4 h-4" /></>}
+                  </button>
+               </form>
+            </div>
+
+            {/* Constraints & Rules */}
+            <div className="lg:col-span-5 space-y-8">
+               <div className="bg-slate-900 rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 h-40 w-40 bg-orange-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                  <h3 className="text-xs font-mono font-black uppercase tracking-[0.2em] text-orange-500 mb-10 flex items-center gap-2">
+                     <ShieldCheck className="w-4 h-4" /> Operational_Constraints
+                  </h3>
+                  <div className="space-y-10">
+                     {[
+                        { title: "Manual Validation", desc: "Partners must manually verify payload suitability before dispatch.", icon: <Building className="text-emerald-400" /> },
+                        { title: "OTP Synchronization", desc: "Secure token exchange required at pickup endpoint.", icon: <Lock className="text-amber-400" /> },
+                        { title: "Live Telemetry", desc: "Real-time unit tracking enabled upon partner acceptance.", icon: <Activity className="text-blue-400" /> }
+                     ].map((item, i) => (
+                        <div key={i} className="flex gap-5">
+                           <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                              {item.icon}
+                           </div>
+                           <div>
+                              <p className="font-black text-sm mb-1">{item.title}</p>
+                              <p className="text-xs text-slate-400 font-medium leading-relaxed">{item.desc}</p>
+                           </div>
+                        </div>
+                     ))}
+                  </div>
+                  <div className="mt-12 pt-8 border-t border-white/5">
+                     <div className="flex items-start gap-3 p-4 bg-orange-500/5 rounded-2xl border border-orange-500/10">
+                        <Info className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
+                        <p className="text-[10px] text-orange-200/60 font-medium leading-relaxed uppercase tracking-wider">Plan stays in PENDING state until an authorized NGO unit accepts the mission.</p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+         </div>
       </div>
     </div>
   );
